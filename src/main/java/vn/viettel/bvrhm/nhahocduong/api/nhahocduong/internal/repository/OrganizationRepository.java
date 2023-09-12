@@ -1,0 +1,29 @@
+package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
+
+import java.util.List;
+
+@RepositoryRestResource
+public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+  List<Organization> findByName(String name);
+
+  List<Organization> findByAddress(String address);
+
+  List<Organization> findByAreaCode(String areaCode);
+
+  List<Organization> findByNameAndAddress(String name, String address);
+
+  List<Organization> findByNameAndAreaCode(String name, String areaCode);
+
+  List<Organization> findByNameAndAddressAndAreaCode(String name, String address, String areaCode);
+
+  @Query("SELECT o from Organization o where o.name is null or o.name like %:name%")
+  List<Organization> findByNameIsLikeOrderByName(String name);
+  List<Organization> findAllByOrderByName();
+
+  List<Organization> findByAreaCodeIn(List<String> areaCodes);
+}
