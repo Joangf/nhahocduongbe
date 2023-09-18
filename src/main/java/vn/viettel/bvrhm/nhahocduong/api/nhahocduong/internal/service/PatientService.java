@@ -5,10 +5,13 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.viettel.bvrhm.nhahocduong.api.common.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.PatientSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Disease;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMapper;
@@ -16,11 +19,14 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.DiseaseR
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class PatientService {
 
+  @Autowired
+  AreaService areaService;
   @Autowired PatientRepository patientRepository;
   @Autowired PatientMapper patientMapper;
   @Autowired DiseaseRepository diseaseRepository;
@@ -71,12 +77,21 @@ public class PatientService {
   }
 
   public Page<PatientDTO> getPagePatientByCondition(
-          String searchText,
-          String organizationName,
-          List<String> schoolClass,
-          Pageable pageable) {
+          PatientSearchCriteria searchCriteria, Pageable pageable) {
+
+    if (searchCriteria.getAreaCode() != null) {
+      if (areaService.getAreaByCode(searchCriteria.getAreaCode()) == null) {
+        return new PageImpl<>(Collections.emptyList(), pageable, 0);
+      }
+    }
+    List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
+    
     Page<Patient> patients =
-            patientRepository.findAllByCondition(searchText, organizationName, schoolClass, pageable);
+            patientRepository.findAllByCondition(searchCriteria.getSearchText(),
+                                                 searchCriteria.getOrganizationName(),
+                                                 areaCodesInside,
+                                                 searchCriteria.getSchoolClass(),
+                                                 pageable);
 
     return patients.map(patientMapper::toDto);
   }

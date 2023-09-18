@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.PatientSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PatientService;
@@ -26,10 +27,8 @@ public class PatientController {
   }
   @GetMapping("/patient/all")
   public Page<PatientDTO> getPatientsByCondition(
-          @RequestParam(required = false) String searchText,
-          @RequestParam(required = false) String organizationName,
-          @RequestParam(required = false) List<String> schoolClass, Pageable pageable) {
-    return patientService.getPagePatientByCondition(searchText, organizationName, schoolClass, pageable);
+          PatientSearchCriteria patientSearchCriteria, Pageable pageable) {
+    return patientService.getPagePatientByCondition(patientSearchCriteria, pageable);
   }
 
   @PutMapping("/patient/{id}")
