@@ -3,6 +3,8 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.PatientSearchCriteria;
@@ -10,6 +12,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMappe
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PatientService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +45,13 @@ public class PatientController {
     return dto;
   }
 
-  @GetMapping("/patients/search/getByCondition")
-  public List<PatientDTO> getPatientsByCondition(
-      @RequestParam(name = "searchText",required = false) String searchText,
-      @RequestParam(name = "organizationName",required = false) String organizationName,
-      @RequestParam(name = "schoolClass",required = false) List<String> schoolClass) {
-    return patientService.getPatientByCondition(searchText, organizationName, schoolClass);
-  }
+//  @GetMapping("/patients/search/getByCondition")
+//  public List<PatientDTO> getPatientsByCondition(
+//      @RequestParam(name = "searchText",required = false) String searchText,
+//      @RequestParam(name = "organizationName",required = false) String organizationName,
+//      @RequestParam(name = "schoolClass",required = false) List<String> schoolClass) {
+//    return patientService.getPatientByCondition(searchText, organizationName, schoolClass);
+//  }
 
   @GetMapping("/patients")
   public Page<PatientDTO> getPatientsAll(Pageable pageable) {

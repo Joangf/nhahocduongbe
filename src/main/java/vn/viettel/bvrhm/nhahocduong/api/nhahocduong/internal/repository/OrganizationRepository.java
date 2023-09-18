@@ -1,5 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -32,9 +34,13 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     SELECT org
     FROM Organization org
     WHERE (:#{#areaCodes.size()} = 0 OR org.areaCode IN :areaCodes)
-      AND (:type IS NULL OR org.type = :type)
+      AND (:organizationId IS NULL OR org.id = :organizationId)
+      AND (:organizationId IS NOT NULL OR (:type IS NULL OR org.type = :type))
   """)
-  List<Organization> findByAreaCodeInAndType(List<String> areaCodes, OrganizationType type);
+  Page<Organization> findByCondition(List<String> areaCodes,
+                                     OrganizationType type,
+                                     Long organizationId,
+                                     Pageable pageable);
 
   // TODO: implement search
 //  List<Organization> findByCriteria();

@@ -1,6 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.SearchOrganizationDTO;
@@ -16,19 +18,20 @@ public class OrganizationController {
     private OrganizationService organizationService;
 
     @GetMapping("/all")
-    public List<OrganizationDTO> getByCondition(){
+    public List<OrganizationDTO> getAll(){
         return organizationService.getAll();
     }
     @GetMapping("/search")
-    public List<OrganizationDTO> search(
-        SearchOrganizationDTO searchCriteria
+    public Page<OrganizationDTO> search(
+        SearchOrganizationDTO searchCriteria,
+        Pageable pageable
     ) {
-        return organizationService.search(searchCriteria);
+        return organizationService.search(searchCriteria, pageable);
     }
-    @GetMapping("")
-    public List<OrganizationDTO> getByCondition(@RequestParam(required = false) String name){
-        return organizationService.getByCondition(name);
-    }
+//    @GetMapping("")
+//    public List<OrganizationDTO> getByCondition(@RequestParam(required = false) String name){
+//        return organizationService.getByCondition(name);
+//    }
     @PostMapping("")
     public OrganizationDTO createOrganization(@RequestBody OrganizationDTO organizationDTO) {
         OrganizationDTO createdDto = organizationService.createOrganization(organizationDTO);

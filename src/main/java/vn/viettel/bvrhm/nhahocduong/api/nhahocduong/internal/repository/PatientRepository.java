@@ -37,13 +37,15 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
           "SELECT DISTINCT p FROM Patient p "
                   + "WHERE (:searchText is null or (p.fullName like %:searchText% " +
                   "or p.healthInsuranceNumber like %:searchText%)) " +
-                  "and (:organizationName is null or p.organization.name like %:organizationName%) " +
+                  "and (:organizationId is null or p.organization.id = :organizationId) " +
+                  "and (:organizationId is not null or (:organizationName is null or p.organization.name like %:organizationName%))" +
                   "and (:#{null eq #schoolClass} = true or p.schoolClass in :schoolClass) " +
                   "AND (:#{#areaCodes.size()} = 0 OR  p.organization.areaCode IN :areaCodes)"
   )
   Page<Patient> findAllByCondition(
           @RequestParam("searchText") String searchText,
           @RequestParam("organizationName") String organizationName,
+          @RequestParam("organizationId") Long organizationId,
           @RequestParam("areaCodes") List<String> areaCodes,
           @RequestParam("schoolClass") List<String> schoolClass,
           Pageable pageable);

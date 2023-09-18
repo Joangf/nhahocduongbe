@@ -3,12 +3,13 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.AuthorizationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.AuthorizationService.AuthorizationData;
 import vn.viettel.bvrhm.nhahocduong.api.common.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.PatientSearchCriteria;
@@ -17,8 +18,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.DiseaseRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.UserRepository;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,11 @@ public class PatientService {
   @Autowired PatientMapper patientMapper;
   @Autowired DiseaseRepository diseaseRepository;
   @PersistenceContext EntityManager entityManager;
+  @Autowired
+  private UserRepository userRepository;
+
+  @Autowired
+  private AuthorizationService authorizationService;
 
   public PatientDTO getPatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElse(null);
@@ -78,6 +84,10 @@ public class PatientService {
 
   public Page<PatientDTO> getPagePatientByCondition(
           PatientSearchCriteria searchCriteria, Pageable pageable) {
+    AuthorizationData authData = authorizationService.authorize();
+    if (authData.getAreaCode() != null) {
+      searchCriteria.setAreaCode(authData.getAreaCode());
+    }
 
     if (searchCriteria.getAreaCode() != null) {
       if (areaService.getAreaByCode(searchCriteria.getAreaCode()) == null) {
@@ -89,6 +99,7 @@ public class PatientService {
     Page<Patient> patients =
             patientRepository.findAllByCondition(searchCriteria.getSearchText(),
                                                  searchCriteria.getOrganizationName(),
+                                                 authData.getOrganizationId(),
                                                  areaCodesInside,
                                                  searchCriteria.getSchoolClass(),
                                                  pageable);

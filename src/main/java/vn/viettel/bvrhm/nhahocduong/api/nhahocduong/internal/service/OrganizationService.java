@@ -3,8 +3,12 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.AuthorizationService;
 import vn.viettel.bvrhm.nhahocduong.api.common.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.search.SearchOrganizationDTO;
@@ -29,6 +33,8 @@ public class OrganizationService {
   @PersistenceContext EntityManager entityManager;
 
   @Autowired private AreaService areaService;
+
+  @Autowired private AuthorizationService authorizationService;
 
   public OrganizationDTO getOrganizationById(Long id) {
     Organization organization = organizationRepository.findById(id).orElse(null);
@@ -88,14 +94,24 @@ public class OrganizationService {
     return organizationMapper.toDtoList(organizationRepository.findAllByOrderByName());
   }
 
-  public List<OrganizationDTO> search(SearchOrganizationDTO searchCriteria) {
+  public Page<OrganizationDTO> search(SearchOrganizationDTO searchCriteria, Pageable pageable) {
+    AuthorizationService.AuthorizationData authData = authorizationService.authorize();
+    if (authData.getAreaCode() != null) {
+      searchCriteria.setAreaCode(authData.getAreaCode());
+    }
+
     if (searchCriteria.getAreaCode() != null) {
       if (areaService.getAreaByCode(searchCriteria.getAreaCode()) == null) {
-        return Collections.emptyList();
+        return new PageImpl<>(Collections.emptyList(), pageable, 0);
       }
     }
-    List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
 
-    return organizationMapper.toDtoList(organizationRepository.findByAreaCodeInAndType(areaCodesInside, searchCriteria.getType()));
+    List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
+    Page<Organization> organizations = organizationRepository.findByCondition(areaCodesInside,
+                                                                              searchCriteria.getType(),
+                                                                              authData.getOrganizationId(),
+                                                                              pageable);
+
+    return organizations.map(organizationMapper::toDto);
   }
 }
