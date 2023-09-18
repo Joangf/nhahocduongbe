@@ -502,16 +502,16 @@ create table NHAHOCDUONG_EXAM(
     teeth_record_id bigint references nhahocduong_teeth_record(id) unique ,
     plaque_record_id bigint references nhahocduong_plaque_record(id) unique ,
     tartar_record_id bigint references nhahocduong_tartar_record(id) unique ,
-    prescription jsonb,
-    treatment_record jsonb,
-    exam_place varchar not null,
-    diagnosis varchar
+    treatment_record jsonb
+--     prescription jsonb,
+--     exam_place varchar not null,
+--     diagnosis varchar
 );
-insert into nhahocduong_exam(id, patient_id, dentist_id, organization_id, class, year, teeth_record_id, plaque_record_id, tartar_record_id, prescription, exam_place, diagnosis)
+insert into nhahocduong_exam(id, patient_id, dentist_id, organization_id, class, year, teeth_record_id, plaque_record_id, tartar_record_id)
 values
-    (1, 1, 2, 1, '1A', '2023', 1, 1, 1, '[{"quantity": 1, "medicationCode": "1"}, {"quantity": 2, "medicationCode": "2"}]', 'YTTH', 'Binh thuong')
-    ,(2, 2, 2, 1, '1B', '2023', 2, 2, 2, '[{"quantity": 1, "medicationCode": "1"}, {"quantity": 2, "medicationCode": "2"}]', 'TYT/TTYT', 'Sau rang')
-    ,(3, 3, 1, 1, '1C', '2023', 3, 3, 3, '[{"quantity": 1, "medicationCode": "1"}, {"quantity": 2, "medicationCode": "2"}]', 'YTTH', 'Nha chu' )
+    (1, 1, 2, 1, '1A', '2023', 1, 1, 1)
+    ,(2, 2, 2, 1, '1B', '2023', 2, 2, 2)
+    ,(3, 3, 1, 1, '1C', '2023', 3, 3, 3)
 ;
 alter sequence nhahocduong_exam_id_seq restart 100;
 

@@ -105,16 +105,6 @@
 						{
 							"name": "hello",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwiaWF0IjoxNjk0NzQ3NDczLCJuYmYiOjE2OTQ3NDc0NzMsImV4cCI6MTY5NzMzOTQ3Mywicm9sZXMiOiJhLGIsYyJ9.1b4PAWFUq3AbKtzbOuyKkg-k1PGUvlMxnzWWaOYMTcM",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -154,14 +144,28 @@
 													"formdata": []
 												},
 												"url": {
-													"raw": "{{server}}/api/organization/all",
+													"raw": "{{server}}/api/organization/search",
 													"host": [
 														"{{server}}"
 													],
 													"path": [
 														"api",
 														"organization",
-														"all"
+														"search"
+													],
+													"query": [
+														{
+															"key": "type",
+															"value": "1",
+															"description": "Nếu không truyền gì default là 1\n(1, \"Trường học\"),\n(2, \"Sở\"),\n(3, \"Bộ\"),\n(4, \"Bệnh viện Răng hàm mặt trung ương TP. Hồ Chí Minh\");",
+															"disabled": true
+														},
+														{
+															"key": "areaCode",
+															"value": "79",
+															"description": "Theo areaCode từ API danh mục địa phương",
+															"disabled": true
+														}
 													]
 												}
 											},
@@ -1395,16 +1399,16 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{server}}/api/patients/1/exams/1/tartarRecord",
+													"raw": "{{server}}/api/patients/2/exams/2/tartarRecord",
 													"host": [
 														"{{server}}"
 													],
 													"path": [
 														"api",
 														"patients",
-														"1",
+														"2",
 														"exams",
-														"1",
+														"2",
 														"tartarRecord"
 													]
 												}
@@ -1527,7 +1531,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"status\": \"Chuyển TYT/TTYT\",\n    \"treatmentPlace\": \"BVRHM\",\n    \"treatmentList\": [\n        {\n            \"dentistId\": 13,\n            \"toothTreatmentCode\": 3,\n            \"teeth\": [\"52\", \"54\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"3\",\n                    \"quantity\": 1\n                },\n                {\n                    \"medicationCode\": \"1\",\n                    \"quantity\": 4\n                }\n            ]\n        },\n        {\n            \"dentistId\": 3,\n            \"toothTreatmentCode\": 2,\n            \"teeth\": [\"32\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"2\",\n                    \"quantity\": 1\n                }\n            ]\n        }\n    ]\n}\n\n",
+													"raw": "{\n    \"treatmentList\": [\n        {\n            \"dentistName\": \"Nguyễn Văn A\",\n            \"diagnosis\": \"OK\",\n            \"teeth\": [\"52\", \"54\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"3\",\n                    \"quantity\": 1\n                },\n                {\n                    \"medicationCode\": \"1\",\n                    \"quantity\": 4\n                }\n            ]\n        },\n        {\n            \"dentistName\": \"Nguyễn Thị HH\",\n            \"diagnosis\": \"NOT OK\",\n            \"teeth\": [\"32\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"2\",\n                    \"quantity\": 1\n                }\n            ]\n        }\n    ]\n}\n\n",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1535,16 +1539,16 @@
 													}
 												},
 												"url": {
-													"raw": "{{server}}/api/patients/2/exams/2/treatmentRecord",
+													"raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
 													"host": [
 														"{{server}}"
 													],
 													"path": [
 														"api",
 														"patients",
-														"2",
+														"1",
 														"exams",
-														"2",
+														"1",
 														"treatmentRecord"
 													]
 												}
@@ -1557,16 +1561,16 @@
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{server}}/api/patients/2/exams/2/treatmentRecord",
+													"raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
 													"host": [
 														"{{server}}"
 													],
 													"path": [
 														"api",
 														"patients",
-														"2",
+														"1",
 														"exams",
-														"2",
+														"1",
 														"treatmentRecord"
 													]
 												}
@@ -2390,13 +2394,13 @@
 		{
 			"key": "server",
 			"value": "https://nhahocduong.gpmn.net",
-			"type": "string",
-			"disabled": true
+			"type": "string"
 		},
 		{
 			"key": "server",
 			"value": "http://localhost:8081",
-			"type": "default"
+			"type": "default",
+			"disabled": true
 		}
 	]
 }

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum OrganizationType {
     SCHOOL(1, "Trường học"),
-
     DEPARTMENT(2, "Sở"),
     MINISTRY(3, "Bộ"),
     HCMC_CENTRAL_DENTAL_HOSPITAL(4, "Bệnh viện Răng hàm mặt trung ương TP. Hồ Chí Minh");

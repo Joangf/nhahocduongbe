@@ -41,9 +41,9 @@ public class Exam {
   @Column(name = "profile_number")
   private Long profileNumber;
 
-  @Convert(converter = ExamPlaceJpaConverter.class)
-  @Column(name = "exam_place")
-  private ExamPlace examPlace;
+//  @Convert(converter = ExamPlaceJpaConverter.class)
+//  @Column(name = "exam_place")
+//  private ExamPlace examPlace;
 
   @Column(name = "date")
   private LocalDate date;
@@ -64,17 +64,17 @@ public class Exam {
       inverseJoinColumns = {@JoinColumn(name = "disease_id")})
   private List<Disease> chronicConditions;
 
-  @SuppressWarnings("JpaAttributeTypeInspection")
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "prescription")
-  private List<PrescriptionItem> prescription;
+//  @SuppressWarnings("JpaAttributeTypeInspection")
+//  @JdbcTypeCode(SqlTypes.JSON)
+//  @Column(name = "prescription")
+//  private List<PrescriptionItem> prescription;
 
   @SuppressWarnings("JpaAttributeTypeInspection")
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "treatment_record")
   private TreatmentRecord treatmentRecord;
-
-  @Column(name = "diagnosis")
-  private String diagnosis;
+//
+//  @Column(name = "diagnosis")
+//  private String diagnosis;
 
 }

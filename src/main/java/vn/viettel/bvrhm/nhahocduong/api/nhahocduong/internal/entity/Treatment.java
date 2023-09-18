@@ -3,8 +3,8 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 import java.util.List;
 
 public record Treatment(
-    Long dentistId,
-    String toothTreatmentCode,
+    String dentistName,
+    String diagnosis,
     List<Tooth> teeth,
     List<PrescriptionItem> prescription
 ) {}

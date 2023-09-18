@@ -71,22 +71,22 @@ public class ExamService {
     return examMapper.toDto(updated);
   }
 
-  public List<PrescriptionItem> getPrescriptionByExamId(Long examId) {
-    Exam exam = examRepository.getReferenceById(examId);
-    if (exam.getPrescription() == null) {
-      return new ArrayList<PrescriptionItem>();
-    }
-    return exam.getPrescription();
-  }
-
-  public List<PrescriptionItem> updatePrescriptionByExamId(
-      Long examId, List<PrescriptionItem> prescriptionItemList) {
-    Exam exam = examRepository.getReferenceById(examId);
-
-    exam.setPrescription(prescriptionItemList);
-    Exam saved = examRepository.save(exam);
-    return saved.getPrescription();
-  }
+//  public List<PrescriptionItem> getPrescriptionByExamId(Long examId) {
+//    Exam exam = examRepository.getReferenceById(examId);
+//    if (exam.getPrescription() == null) {
+//      return new ArrayList<PrescriptionItem>();
+//    }
+//    return exam.getPrescription();
+//  }
+//
+//  public List<PrescriptionItem> updatePrescriptionByExamId(
+//      Long examId, List<PrescriptionItem> prescriptionItemList) {
+//    Exam exam = examRepository.getReferenceById(examId);
+//
+//    exam.setPrescription(prescriptionItemList);
+//    Exam saved = examRepository.save(exam);
+//    return saved.getPrescription();
+//  }
 
   public List<String> getChronicDiseasesCodesByExamId(Long examId) {
     Exam exam = examRepository.getReferenceById(examId);
@@ -133,10 +133,7 @@ public class ExamService {
             entity.getTeethRecordId(),
             entity.getPlaqueRecordId(),
             entity.getTartarRecordId(),
-            entity.getTreatmentRecord(),
-            entity.getExamPlace(), 
-            entity.getPrescription(),
-            entity.getDiagnosis());
+            entity.getTreatmentRecord());
 
     return dto;
   }
