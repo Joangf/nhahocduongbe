@@ -29,11 +29,11 @@ public class AuthenticationService implements UserDetailsService {
   private PasswordEncoder passwordEncoder;
 
   public LoginResponse authenticate(LoginRequest loginRequest) throws InvalidCredentialException {
-    String loginName = loginRequest.loginName();
+    String username = loginRequest.username();
     // TODO expand logic to allow login with email, phoneNumber, security key, etc...
-//    String username = loginName;
+//    String username = username;
 //    Long userId = userService.getUserIdFromUsername(username);
-    UserAuthDetails userAuthDetails = loadUserByUsername(loginName);
+    UserAuthDetails userAuthDetails = loadUserByUsername(username);
 
     String password = loginRequest.password();
 
