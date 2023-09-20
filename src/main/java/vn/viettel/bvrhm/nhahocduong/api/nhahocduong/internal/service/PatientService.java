@@ -18,7 +18,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.DiseaseRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.UserRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;

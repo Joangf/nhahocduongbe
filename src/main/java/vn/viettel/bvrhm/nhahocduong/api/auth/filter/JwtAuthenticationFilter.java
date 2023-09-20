@@ -14,6 +14,7 @@ import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.Authority;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.JwtService;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthenticationService;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.UserAuthDetails;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 import static java.util.Objects.isNull;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class  JwtAuthenticationFilter extends OncePerRequestFilter {
   @Autowired
   private JwtService jwtService;
   @Autowired
@@ -63,9 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // TODO extract roles
     // Option 1: get from JWT token => Use this for now
     // Option 2: load from database => Revise later
-    List<String> authorityStrList = jwtService.extractRoles(jwtString);
+    List<RoleDTO> authorityStrList = jwtService.extractRoles(jwtString);
 
-    List<Authority> authorityList = authorityStrList.stream().map(Authority::fromName).toList();
+    List<Authority> authorityList = authorityStrList.stream().map(role -> Authority.fromName(role.name())).toList();
 
     // populate Authentication object into SecurityContext
     Authentication authentication = new AuthenticationToken(userId, null, authorityList);

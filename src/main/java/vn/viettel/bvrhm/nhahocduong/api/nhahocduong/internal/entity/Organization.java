@@ -5,7 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.OrganizationTypeConverter;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.User;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 
 import java.util.List;
 import java.util.Map;

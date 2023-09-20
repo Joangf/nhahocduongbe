@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.User;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.UserRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 
 /**
  * @author: longlb1

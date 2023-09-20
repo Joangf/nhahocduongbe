@@ -1,6 +1,7 @@
-package vn.viettel.bvrhm.nhahocduong.api.user;
+package vn.viettel.bvrhm.nhahocduong.api.user.internal.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record UserDTO (
   Long id,
@@ -10,5 +11,6 @@ public record UserDTO (
   String lastName,
   String email,
   String phoneNumber,
-  LocalDate birthDate
+  LocalDate birthDate,
+  List<RoleDTO> roleList
 ) {}

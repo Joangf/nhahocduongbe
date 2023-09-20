@@ -1,4 +1,4 @@
-package vn.viettel.bvrhm.nhahocduong.api.user;
+package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.User;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.UserRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.mapper.UserMapper;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -53,7 +55,7 @@ public class UserService {
     return userMapper.userDTOFromUser(user);
   }
 
-  public UserDTO getUserByUsername(String username) {
+  public UserDTO getUserByUsername(String username) throws NoSuchElementException {
     User user = userRepository.getByUsername(username).orElseThrow();
     return userMapper.userDTOFromUser(user);
   }

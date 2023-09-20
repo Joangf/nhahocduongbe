@@ -442,7 +442,7 @@ alter sequence nhahocduong_teeth_record_id_seq restart 100;
 --        (2, '2', 'Mảng bám > 2/3 răng');
 
 DROP TABLE if exists NHAHOCDUONG_PLAqUE_RECORD cascade ;
-create table NHAHOCDUONG_PLAqUE_RECORD(
+create table NHAHOCDUONG_PLAQUE_RECORD(
     id bigserial primary key not null,
     "17-16n" varchar not null,
     "11n" varchar not null,

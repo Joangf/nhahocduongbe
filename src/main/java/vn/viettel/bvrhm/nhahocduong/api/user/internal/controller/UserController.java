@@ -1,4 +1,4 @@
-package vn.viettel.bvrhm.nhahocduong.api.user;
+package vn.viettel.bvrhm.nhahocduong.api.user.internal.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
-  @Autowired UserService userService;
+  @Autowired
+  UserService userService;
   private Logger log = LoggerFactory.getLogger(UserController.class);
 
   @PostMapping("/register")

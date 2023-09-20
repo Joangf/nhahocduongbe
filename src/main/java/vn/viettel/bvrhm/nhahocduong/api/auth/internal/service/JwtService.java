@@ -8,6 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 
 import java.security.Key;
 import java.util.*;
@@ -31,17 +32,14 @@ public class JwtService {
     return extractClaim(token, Claims::getSubject);
   }
 
-  public List<String> extractRoles(String token) {
+  public List<RoleDTO> extractRoles(String token) {
     final Claims claims = extractAllClaims(token);
-    String rolesString = claims.get("roles", String.class);
 
-    if (rolesString == null) {
-      return List.<String>of();
+    if (claims.get("roles") == null) {
+      return List.of();
     }
-    List<String> rolesStringList =
-        Arrays.stream(rolesString.split(",+")).map(String::trim).toList();
 
-    return rolesStringList;
+    return (List<RoleDTO>) claims.get("roles");
   }
 
   public String extractUsername(String token) {

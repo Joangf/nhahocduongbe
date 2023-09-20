@@ -1,6 +1,7 @@
-package vn.viettel.bvrhm.nhahocduong.api.user.internal;
+package vn.viettel.bvrhm.nhahocduong.api.user.internal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 
 import java.util.Optional;
 
