@@ -28,7 +28,7 @@ public class PatientController {
     PatientDTO createdDto = patientService.createPatient(patientDTO);
     return createdDto;
   }
-  @GetMapping("/patient/all")
+  @GetMapping("/patient/search")
   public Page<PatientDTO> getPatientsByCondition(
           PatientSearchCriteria patientSearchCriteria, Pageable pageable) {
     return patientService.getPagePatientByCondition(patientSearchCriteria, pageable);

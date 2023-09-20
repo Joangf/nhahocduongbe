@@ -14,5 +14,5 @@ public class PatientSearchCriteria {
     String searchText;
     String organizationName;
     String areaCode;
-    List<String> schoolClass;
+    String schoolClass;
 }

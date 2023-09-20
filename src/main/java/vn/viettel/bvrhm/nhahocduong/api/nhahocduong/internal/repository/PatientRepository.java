@@ -34,12 +34,12 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
       @RequestParam("schoolClass") List<String> schoolClass);
 
   @Query(
-          "SELECT DISTINCT p FROM Patient p "
+          "SELECT DISTINCT p FROM Patient p LEFT JOIN p.organization "
                   + "WHERE (:searchText is null or (p.fullName like %:searchText% " +
                   "or p.healthInsuranceNumber like %:searchText%)) " +
                   "and (:organizationId is null or p.organization.id = :organizationId) " +
                   "and (:organizationId is not null or (:organizationName is null or p.organization.name like %:organizationName%))" +
-                  "and (:#{null eq #schoolClass} = true or p.schoolClass in :schoolClass) " +
+                  "and (:#{null eq #schoolClass} = true or p.schoolClass = :schoolClass) " +
                   "AND (:#{#areaCodes.size()} = 0 OR  p.organization.areaCode IN :areaCodes)"
   )
   Page<Patient> findAllByCondition(
@@ -47,7 +47,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
           @RequestParam("organizationName") String organizationName,
           @RequestParam("organizationId") Long organizationId,
           @RequestParam("areaCodes") List<String> areaCodes,
-          @RequestParam("schoolClass") List<String> schoolClass,
+          @RequestParam("schoolClass") String schoolClass,
           Pageable pageable);
 
   List<Patient> findAllByOrganization_Id(Long id);
