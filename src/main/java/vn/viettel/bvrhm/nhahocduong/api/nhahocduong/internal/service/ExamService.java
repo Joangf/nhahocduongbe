@@ -2,9 +2,16 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
@@ -49,6 +56,9 @@ public class ExamService {
     return createdExamDTO;
   }
 
+
+  @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3, backoff = @Backoff(delay = 300))
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updateTeethRecordIdOfExamId(
     Long examId, Long teethRecordId) {
     Exam exam = examRepository.getReferenceById(examId);
@@ -57,15 +67,19 @@ public class ExamService {
     return examMapper.toDto(updated);
   }
 
+  @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3, backoff = @Backoff(delay = 300))
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updatePlaqueRecordIdOfExam(Long examId, Long plaqueRecordId) {
-    Exam exam = examRepository.getReferenceById(examId);
+    Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
     exam.setPlaqueRecordId(plaqueRecordId);
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
   }
 
+  @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3, backoff = @Backoff(delay = 300))
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updateTartarRecordIdOfExam(Long examId, Long tartarRecordId) {
-    Exam exam = examRepository.getReferenceById(examId);
+    Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
     exam.setTartarRecordId(tartarRecordId);
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
@@ -99,7 +113,7 @@ public class ExamService {
   /** Bệnh mãn tính */
   public List<String> updateChronicDiseasesCodesByExamId(
       Long examId, List<String> diseaseCodeList) {
-    Exam exam = examRepository.getReferenceById(examId);
+    Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
 
     List<Disease> newDiseaseList =
         diseaseCodeList.stream()
@@ -142,9 +156,12 @@ public class ExamService {
     examRepository.deleteById(id);
   }
 
+
+  @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 3, backoff = @Backoff(delay = 300))
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public TreatmentRecord updateTreatmentRecordByExamId(
       Long examId, TreatmentRecord treatmentRecord) {
-    Exam exam = examRepository.getReferenceById(examId);
+    Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
 
     exam.setTreatmentRecord(treatmentRecord);
     Exam saved = examRepository.save(exam);

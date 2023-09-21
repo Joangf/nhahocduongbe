@@ -31,9 +31,11 @@ public class AuthorizationService {
         User user = userRepository.getReferenceById(Long.parseLong(userId));
 
         AuthorizationData data = new AuthorizationData();
-        switch (user.getOrganization().getType()) {
-            case SCHOOL -> data.setOrganizationId(user.getOrganization().getId());
-            case DEPARTMENT -> data.setAreaCode(user.getOrganization().getAreaCode());
+        if (user.getOrganization() != null) {
+            switch (user.getOrganization().getType()) {
+                case SCHOOL -> data.setOrganizationId(user.getOrganization().getId());
+                case DEPARTMENT -> data.setAreaCode(user.getOrganization().getAreaCode());
+            }
         }
 
         return data;

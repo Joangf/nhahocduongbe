@@ -50,7 +50,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"loginName\": \"longlb1\",\r\n    \"password\": \"123456aA@\"\r\n}",
+									"raw": "{\r\n    \"username\": \"longlb1\",\r\n    \"password\": \"123456aA@\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -58,11 +58,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{server}}/auth/login",
+									"raw": "{{server}}/api/auth/login",
 									"host": [
 										"{{server}}"
 									],
 									"path": [
+										"api",
 										"auth",
 										"login"
 									]
@@ -132,7 +133,7 @@
 									"name": "DONE Organization",
 									"item": [
 										{
-											"name": "general",
+											"name": "byCondition",
 											"protocolProfileBehavior": {
 												"disableBodyPruning": true
 											},
@@ -1630,19 +1631,13 @@
 											"response": []
 										},
 										{
-											"name": "create teethRecord",
+											"name": "Upsert Teeth Record",
 											"request": {
 												"method": "POST",
-												"header": [
-													{
-														"key": "Content-Type",
-														"value": "application/json",
-														"type": "default"
-													}
-												],
+												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n    \"record\": {\n        \"61\": {\n            \"problem\": \"1\",\n            \"locations\": [\n                \"G\",\n                \"Nh\"\n            ],\n            \"treatment\": \"1\"\n        },\n        \"72\": {\n            \"problem\": \"2\",\n            \"locations\": [\n                \"T\",\n                \"Nh\"\n            ],\n            \"treatment\": \"6\"\n        }\n    }\n}",
+													"raw": "{\n    \"treatmentList\": [\n        {\n            \"dentistName\": \"Nguyễn Văn A\",\n            \"diagnosis\": \"OK\",\n            \"teeth\": [\"52\", \"54\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"3\",\n                    \"quantity\": 1\n                },\n                {\n                    \"medicationCode\": \"1\",\n                    \"quantity\": 4\n                }\n            ]\n        },\n        {\n            \"dentistName\": \"Nguyễn Thị HH\",\n            \"diagnosis\": \"NOT OK\",\n            \"teeth\": [\"32\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"2\",\n                    \"quantity\": 1\n                }\n            ]\n        }\n    ]\n}\n\n",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -1650,13 +1645,17 @@
 													}
 												},
 												"url": {
-													"raw": "{{server}}/api/teethRecord",
+													"raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
 													"host": [
 														"{{server}}"
 													],
 													"path": [
 														"api",
-														"teethRecord"
+														"patients",
+														"1",
+														"exams",
+														"1",
+														"treatmentRecord"
 													]
 												}
 											},
@@ -2416,20 +2415,16 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{server}}/api/areas/lookup?region=north",
+									"raw": "{{server}}/api/areas/lookup/23836/454",
 									"host": [
 										"{{server}}"
 									],
 									"path": [
 										"api",
 										"areas",
-										"lookup"
-									],
-									"query": [
-										{
-											"key": "region",
-											"value": "north"
-										}
+										"lookup",
+										"23836",
+										"454"
 									]
 								}
 							},

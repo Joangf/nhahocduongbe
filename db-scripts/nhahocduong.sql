@@ -351,7 +351,8 @@ create table NHAHOCDUONG_PATIENT(
                                     school_class varchar,
                                     national_id_num varchar,
                                     care_taker varchar,
-                                    organization bigint references nhahocduong_organization(id)
+                                    organization bigint references nhahocduong_organization(id),
+                                    status boolean not null default true
 );
 insert into nhahocduong_patient (id, full_name, health_insurance_number, gender, birthdate, ethnic, area_type, phone_number, address_line, school_class, national_id_num, care_taker, organization)
 values
