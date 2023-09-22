@@ -25,11 +25,11 @@ public interface OrganizationMapper {
 
   /*
     Overwrite default behavior of Mapper partialUpdate when perform JSONB property 'classes' of organization
-    Default: clear current map and put data of DTO map inside
+    Default behavior: clear current map and put data of DTO map inside
     (won't change reference -> JPA won't detect updated entity is a dirty record -> not perform update)
    */
   static Map<Grade, List<String>> overwriteClasses(OrganizationDTO organizationDTO, Organization organization) {
-      Map<Grade, List<String>> map = organizationDTO.classes();
+      Map<Grade, List<String>> map = organizationDTO.getClasses();
       if ( map != null ) {
         return map;
       }

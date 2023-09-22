@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.OrganizationTypeConverter;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 

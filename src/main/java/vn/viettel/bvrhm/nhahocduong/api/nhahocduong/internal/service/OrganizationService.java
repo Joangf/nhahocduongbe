@@ -23,6 +23,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientR
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Service
 public class OrganizationService {
 
@@ -46,6 +48,9 @@ public class OrganizationService {
   @Transactional
   public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
     var entity = organizationMapper.toEntity(organizationDTO);
+
+    String orgCode = generateOrgCode(organizationDTO);
+    entity.setCode(orgCode);
 
     organizationRepository.saveAndFlush(entity);
     entityManager.refresh(entity);
@@ -116,5 +121,22 @@ public class OrganizationService {
                                                                              pageable);
 
     return organizations.map(organizationMapper::toDto);
+  }
+
+  private String generateOrgCode(OrganizationDTO organizationDTO) {
+    StringBuilder codeBuilder = new StringBuilder();
+    codeBuilder.append(String.format("%03d", Integer.parseInt(organizationDTO.getAreaCode())));
+
+    // Get latest org code and increase 1, if not exist start with xxx001
+    Organization organization = organizationRepository.findFirstByAreaCodeOrderByCodeDesc(organizationDTO.getAreaCode());
+    int orgOrderNumber;
+    if (nonNull(organization)) {
+      orgOrderNumber = Integer.parseInt(organization.getCode().substring(3, 6));
+    } else {
+      orgOrderNumber = 0;
+    }
+    codeBuilder.append(String.format("%03d", orgOrderNumber + 1));
+
+    return codeBuilder.toString();
   }
 }

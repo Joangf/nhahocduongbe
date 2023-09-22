@@ -32,8 +32,7 @@ public class OrganizationController {
 
     @PostMapping("")
     public OrganizationDTO createOrganization(@RequestBody OrganizationDTO organizationDTO) {
-        OrganizationDTO createdDto = organizationService.createOrganization(organizationDTO);
-        return createdDto;
+        return organizationService.createOrganization(organizationDTO);
     }
     @PutMapping("/{id}")
     public OrganizationDTO updateOrganization(@RequestBody OrganizationDTO organizationDTO, @PathVariable Long id) {

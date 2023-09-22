@@ -43,4 +43,6 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
                                     OrganizationSearchCriteria searchCriteria,
                                     Long organizationId,
                                     Pageable pageable);
+
+  Organization findFirstByAreaCodeOrderByCodeDesc(String areaCode);
 }
