@@ -2,15 +2,12 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.PrescriptionItem;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
-
-import java.util.List;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 
 @RestController
 @RequestMapping("/api")
 public class PrescriptionController {
-  @Autowired private ExamService examService;
+  @Autowired private ExamServiceImpl examService;
 //
 //  @GetMapping("/patients/{patientId}/exams/{examId}/prescription")
 //  public List<PrescriptionItem> getPrescriptionByPatientIdAndExamId(

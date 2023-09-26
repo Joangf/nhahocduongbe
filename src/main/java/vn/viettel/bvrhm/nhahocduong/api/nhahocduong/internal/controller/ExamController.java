@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 
 import java.util.List;
 
@@ -12,7 +12,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class ExamController {
 
-  @Autowired ExamService examService;
+  @Autowired
+  ExamServiceImpl examService;
 
   @GetMapping("/patients/{patientId}/exams")
   List<ExamDTO> getExamsByPatientId(@PathVariable Long patientId) throws JsonProcessingException {
@@ -57,6 +58,14 @@ public class ExamController {
       .build();
     var createdExamDTO = examService.createExam(newExamDTO);
     return createdExamDTO;
+  }
+
+  @PutMapping("/patients/{patientId}/exams")
+  ExamDTO updateExam(@PathVariable("patientId") Long patientId, @RequestBody ExamDTO examDTO) {
+    var newExamDTO = examDTO.toBuilder()
+            .patientId(patientId)
+            .build();
+    return examService.updateExam(newExamDTO);
   }
 
   @DeleteMapping("/exams/{id}")

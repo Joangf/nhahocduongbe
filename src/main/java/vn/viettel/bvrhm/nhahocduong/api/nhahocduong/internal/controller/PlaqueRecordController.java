@@ -3,14 +3,15 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PlaqueRecordDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PlaqueRecordService;
 
 @RestController
 @RequestMapping("/api")
 public class PlaqueRecordController {
   @Autowired PlaqueRecordService plaqueRecordService;
-  @Autowired ExamService examService;
+  @Autowired
+  ExamServiceImpl examService;
 
   @GetMapping("/patients/{patientId}/exams/{examId}/plaqueRecord")
   PlaqueRecordDTO getPlaqueRecord(

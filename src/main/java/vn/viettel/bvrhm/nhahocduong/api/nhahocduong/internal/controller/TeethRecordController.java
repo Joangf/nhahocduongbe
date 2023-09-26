@@ -4,11 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TeethRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TeethRecordMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.TeethRecordRepository;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TeethRecordService;
 
 @RestController
@@ -20,7 +19,8 @@ public class TeethRecordController {
   @Autowired TeethRecordRepository teethRecordRepository;
   @Autowired TeethRecordMapper teethRecordMapper;
 
-  @Autowired ExamService examService;
+  @Autowired
+  ExamServiceImpl examService;
 
   @GetMapping("/patients/{patientId}/exams/{examId}/teethRecord")
   TeethRecordDTO getTeethRecord(
