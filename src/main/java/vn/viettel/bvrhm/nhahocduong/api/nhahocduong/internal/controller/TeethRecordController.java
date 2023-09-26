@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TeethRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TeethRecordMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.TeethRecordRepository;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TeethRecordService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
 
 @RestController
 @RequestMapping("/api")
@@ -31,18 +31,18 @@ public class TeethRecordController {
   }
 
   @PostMapping("/patients/{patientId}/exams/{examId}/teethRecord")
-  TeethRecordDTO createTeethRecordOfExam(
+  TeethRecordDTO upsertTeethRecord(
     @PathVariable("patientId") Long patientId,
     @PathVariable("examId") Long examId,
     @RequestBody TeethRecordDTO teethRecordDTO) {
-    TeethRecordDTO createdDto = teethRecordService.createTeethRecord(teethRecordDTO);
-    var updatedExam = examService.updateTeethRecordIdOfExamId(examId, createdDto.id());
+    TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
+    examService.updateTeethRecordIdOfExamId(examId, createdDto.id());
     return createdDto;
   }
 
   @PostMapping("/teethRecord")
   public TeethRecordDTO createTeethRecord(@RequestBody TeethRecordDTO teethRecordDTO) {
-    TeethRecordDTO createdDto = teethRecordService.createTeethRecord(teethRecordDTO);
+    TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
     return createdDto;
   }
 

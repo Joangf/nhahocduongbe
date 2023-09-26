@@ -37,8 +37,7 @@ public class PlaqueRecordService {
   public PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO) {
     var entity = plaqueRecordMapper.toEntity(plaqueRecordDTO);
     var savedEntity = plagueRecordRepository.save(entity);
-    var savedDto = plaqueRecordMapper.toDto(savedEntity);
 
-    return savedDto;
+    return plaqueRecordMapper.toDto(savedEntity);
   }
 }

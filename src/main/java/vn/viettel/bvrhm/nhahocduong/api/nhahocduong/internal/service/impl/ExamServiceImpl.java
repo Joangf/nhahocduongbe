@@ -183,7 +183,7 @@ public class ExamServiceImpl implements ExamService {
     @Override
     @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 5, backoff = @Backoff(delay = 300))
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public TreatmentRecord updateTreatmentRecordByExamId(
+    public TreatmentRecord upsertTreatmentRecordByExamId(
             Long examId, TreatmentRecord treatmentRecord) {
         Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
 

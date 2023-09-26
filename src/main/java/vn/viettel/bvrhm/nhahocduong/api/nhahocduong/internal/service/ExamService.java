@@ -30,7 +30,7 @@ public interface ExamService {
 
     void delete(Long id);
     
-    TreatmentRecord updateTreatmentRecordByExamId(Long examId, TreatmentRecord treatmentRecord);
+    TreatmentRecord upsertTreatmentRecordByExamId(Long examId, TreatmentRecord treatmentRecord);
 
     TreatmentRecord getTreatmentRecordByExamId(Long examId);
 

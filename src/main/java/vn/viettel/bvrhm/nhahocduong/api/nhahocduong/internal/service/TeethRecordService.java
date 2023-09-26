@@ -1,7 +1,5 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TeethRecordDTO;
@@ -42,9 +40,9 @@ public class TeethRecordService {
     return dto;
   }
 
-  public TeethRecordDTO createTeethRecord(TeethRecordDTO teethRecordDTO) {
-    System.out.println(
-        ReflectionToStringBuilder.toString(teethRecordDTO, new RecursiveToStringStyle()));
+  public TeethRecordDTO upsertTeethRecord(TeethRecordDTO teethRecordDTO) {
+//    System.out.println(
+//        ReflectionToStringBuilder.toString(teethRecordDTO, new RecursiveToStringStyle()));
     var entity = teethRecordMapper.toEntity(teethRecordDTO);
     teethRecordRepository.save(entity);
 

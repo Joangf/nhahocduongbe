@@ -18,12 +18,12 @@ public class TreatmentRecordController {
   }
 
   @PostMapping("/patients/{patientId}/exams/{examId}/treatmentRecord")
-  public TreatmentRecord updateTreatmentRecordByPatientIdAndExamId(
+  public TreatmentRecord upsertTreatmentRecordByPatientIdAndExamId(
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestBody TreatmentRecord treatmentRecord) {
     TreatmentRecord updatedRecord =
-        examService.updateTreatmentRecordByExamId(examId, treatmentRecord);
+        examService.upsertTreatmentRecordByExamId(examId, treatmentRecord);
     return updatedRecord;
   }
 }
