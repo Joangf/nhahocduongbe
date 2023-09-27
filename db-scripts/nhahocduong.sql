@@ -508,7 +508,12 @@ create table NHAHOCDUONG_EXAM(
     date date,
     teeth_record_id bigint references nhahocduong_teeth_record(id) unique ,
     plaque_record_id bigint references nhahocduong_plaque_record(id) unique ,
-    tartar_record_id bigint references nhahocduong_tartar_record(id) unique
+    tartar_record_id bigint references nhahocduong_tartar_record(id) unique,
+    status boolean not null default true,
+    created_date timestamp,
+    updated_date timestamp,
+    created_by varchar,
+    updated_by varchar
 --     treatment_record jsonb
 --     prescription jsonb,
 --     exam_place varchar not null,
