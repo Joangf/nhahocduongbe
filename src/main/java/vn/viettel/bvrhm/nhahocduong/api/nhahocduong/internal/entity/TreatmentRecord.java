@@ -27,24 +27,24 @@ public class TreatmentRecord extends BaseEntity {
 
     @Column(name = "treatment_service")
     @Convert(converter = ToothTreatmentJpaConverter.class)
-    ToothTreatment service;
+    private ToothTreatment service;
 
     @Column(name = "dentist_name")
-    String dentistName;
+    private String dentistName;
 
     @Column(name = "diagnosis")
-    String diagnosis;
+    private String diagnosis;
 
     @Column(name = "tooth")
     @Convert(converter = ToothJpaConverter.class)
-    Tooth tooth;
+    private Tooth tooth;
 
     @SuppressWarnings("JpaAttributeTypeInspection")
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "prescription")
-    List<PrescriptionItem> prescription;
+    private List<PrescriptionItem> prescription;
 
     @ManyToOne
     @JoinColumn(name = "exam")
-    Exam exam;
+    private Exam exam;
 }

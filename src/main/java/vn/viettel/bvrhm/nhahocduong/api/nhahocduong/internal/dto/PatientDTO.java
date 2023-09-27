@@ -1,12 +1,12 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Ethnic;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Builder(toBuilder = true)
 public record PatientDTO(
@@ -25,5 +25,6 @@ public record PatientDTO(
         String schoolClass,
         String nationalIdNum,
         String careTaker,
+        @JsonIgnore
         Boolean status
 ) implements Serializable {}

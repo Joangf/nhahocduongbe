@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface ExamRepository extends JpaRepository<Exam, Long> {
-  @Query("SELECT e FROM Exam e where e.patientId = :patientId " +
-          "ORDER BY e.id DESC")
-  List<Exam> getExamsByPatientId(@Param("patientId") Long patientId);
+  List<Exam> getExamsByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);
 
   Exam findExamByIdAndPatientId(Long id, Long patientId);
+
+  Exam findExamByIdAndStatus(Long id, boolean status);
 }

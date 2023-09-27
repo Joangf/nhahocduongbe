@@ -20,7 +20,6 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -46,8 +45,8 @@ public class ExamServiceImpl implements ExamService {
     private TreatmentRecordRepository treatmentRecordRepository;
 
     @Override
-    public List<ExamDTO> getExamsByPatientId(Long patientId) {
-        List<Exam> examList = examRepository.getExamsByPatientId(patientId);
+    public List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status) {
+        List<Exam> examList = examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, status);
 
         List<ExamDTO> examDTOList = new ArrayList<ExamDTO>();
         for (Exam exam : examList) {
@@ -59,8 +58,8 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public ExamDTO getExamById(Long id) {
-        Exam exam = examRepository.getReferenceById(id);
+    public ExamDTO getExamByIdAndStatus(Long id, boolean status) {
+        Exam exam = examRepository.findExamByIdAndStatus(id, status);
         if (exam == null) {
             return null;
         }
@@ -183,8 +182,13 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public void delete(Long id) {
-        examRepository.deleteById(id);
+    public boolean delete(Long id) {
+        Exam exam = examRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Not found exam with ID " + id
+        ));
+        exam.setStatus(false);
+        examRepository.save(exam);
+        return true;
     }
 
 

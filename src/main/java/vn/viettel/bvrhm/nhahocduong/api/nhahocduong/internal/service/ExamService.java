@@ -3,7 +3,6 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.TreatmentRecord;
 
 import java.util.List;
 
@@ -12,9 +11,9 @@ import java.util.List;
  * @since: 26-Sep-23
  */
 public interface ExamService {
-    List<ExamDTO> getExamsByPatientId(Long patientId);
+    List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status);
 
-    ExamDTO getExamById(Long id);
+    ExamDTO getExamByIdAndStatus(Long id, boolean status);
 
     ExamDTO createExam(ExamDTO newExamDTO);
     
@@ -29,7 +28,7 @@ public interface ExamService {
 
     ExamDTO injectChildObject(Exam entity);
 
-    void delete(Long id);
+    boolean delete(Long id);
 
     List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS);
 
