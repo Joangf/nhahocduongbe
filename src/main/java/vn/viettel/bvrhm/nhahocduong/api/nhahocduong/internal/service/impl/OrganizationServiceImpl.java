@@ -22,7 +22,9 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientR
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.OrganizationService;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.nonNull;
 
@@ -48,7 +50,16 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Transactional
   public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
-    //TODO: check trùng lớp trước khi save
+    // Check duplicate class
+    List<String> flattenClassList = organizationDTO.getFlattenClassList();
+    Set<String> classes = new HashSet<>();
+    List<String> duplicateClasses = flattenClassList.stream().filter(clazz -> !classes.add(clazz.trim().toLowerCase())).toList();
+    if (!duplicateClasses.isEmpty()) {
+      throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "Duplicated class(es): " + String.join(", ", duplicateClasses)
+      );
+    }
+
     var entity = organizationMapper.toEntity(organizationDTO);
 
     entity.setCode(generateCode(organizationDTO));
