@@ -10,14 +10,17 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TreatmentRecordMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -32,11 +35,15 @@ public class ExamServiceImpl implements ExamService {
     @Autowired
     private ExamMapper examMapper;
     @Autowired
+    private TreatmentRecordMapper treatmentRecordMapper;
+    @Autowired
     private PatientRepository patientRepository;
     @Autowired
     private DentistRepository dentistRepository;
     @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
+    private TreatmentRecordRepository treatmentRecordRepository;
 
     @Override
     public List<ExamDTO> getExamsByPatientId(Long patientId) {
@@ -169,7 +176,8 @@ public class ExamServiceImpl implements ExamService {
                         entity.getTeethRecordId(),
                         entity.getPlaqueRecordId(),
                         entity.getTartarRecordId(),
-                        entity.getTreatmentRecord());
+                        treatmentRecordMapper.toListDto(entity.getTreatmentRecords())
+                );
 
         return dto;
     }
@@ -183,19 +191,20 @@ public class ExamServiceImpl implements ExamService {
     @Override
     @Retryable(retryFor = CannotAcquireLockException.class, maxAttempts = 5, backoff = @Backoff(delay = 300))
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public TreatmentRecord upsertTreatmentRecordByExamId(
-            Long examId, TreatmentRecord treatmentRecord) {
+    public List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(
+            Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS) {
         Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
 
-        exam.setTreatmentRecord(treatmentRecord);
-        Exam saved = examRepository.save(exam);
-        return saved.getTreatmentRecord();
+        List<TreatmentRecord> treatmentRecords = treatmentRecordMapper.toListEntity(treatmentRecordDTOS);
+        treatmentRecords.forEach(treatmentRecord -> treatmentRecord.setExam(exam));
+        List<TreatmentRecord> savedTreatmentRecord = treatmentRecordRepository.saveAll(treatmentRecords);
+
+        return treatmentRecordMapper.toListDto(savedTreatmentRecord);
     }
 
     @Override
-    public TreatmentRecord getTreatmentRecordByExamId(Long examId) {
-        Exam exam = examRepository.getReferenceById(examId);
-        return exam.getTreatmentRecord();
+    public List<TreatmentRecordDTO> getTreatmentRecordsByExamId(Long examId) {
+        return treatmentRecordMapper.toListDto(treatmentRecordRepository.findByExamIdAndStatus(examId, true));
     }
 
     @Override
@@ -207,5 +216,22 @@ public class ExamServiceImpl implements ExamService {
 
         examMapper.partialUpdate(examDTO, exam);
         return examMapper.toDto(examRepository.save(exam));
+    }
+
+    @Override
+    public boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId) {
+        Exam exam = examRepository.findById(examId).orElse(null);
+        if (isNull(exam)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found exam with ID " + examId);
+        }
+
+        TreatmentRecord treatmentRecord = exam.getTreatmentRecords().stream().filter(record -> record.getId().equals(treatmentRecordId)).findFirst().orElseThrow(() -> {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found treatment record ID " + treatmentRecordId + " in the exam with ID " + examId);
+        });
+
+        treatmentRecord.setStatus(false);
+        treatmentRecordRepository.save(treatmentRecord);
+
+        return true;
     }
 }

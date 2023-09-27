@@ -48,6 +48,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Transactional
   public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
+    //TODO: check trùng lớp trước khi save
     var entity = organizationMapper.toEntity(organizationDTO);
 
     entity.setCode(generateCode(organizationDTO));

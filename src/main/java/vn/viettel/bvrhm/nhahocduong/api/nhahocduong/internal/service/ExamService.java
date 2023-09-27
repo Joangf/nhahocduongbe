@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.TreatmentRecord;
 
@@ -29,10 +30,12 @@ public interface ExamService {
     ExamDTO injectChildObject(Exam entity);
 
     void delete(Long id);
-    
-    TreatmentRecord upsertTreatmentRecordByExamId(Long examId, TreatmentRecord treatmentRecord);
 
-    TreatmentRecord getTreatmentRecordByExamId(Long examId);
+    List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS);
+
+    List<TreatmentRecordDTO>  getTreatmentRecordsByExamId(Long examId);
+
+    boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId);
 
     ExamDTO updateExam(ExamDTO examDTO);
 }

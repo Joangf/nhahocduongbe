@@ -30,7 +30,7 @@ public record ExamDTO(
   Long teethRecordId,
   Long plaqueRecordId,
   Long tartarRecordId,
-  TreatmentRecord treatmentRecord
+  List<TreatmentRecordDTO> treatmentRecords
 //  ExamPlace examPlace,
 //  List<PrescriptionItem> prescription,
 //  String diagnosis

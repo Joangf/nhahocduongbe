@@ -10,7 +10,7 @@ public enum ToothTreatment {
   VENEER("4", "Veneer"),
   ROOT_CANAL("5", "Điều trị tuỷ"),
   REMOVE("6", "Nhổ răng"),
-  SEALANT("F", "Sealants"), //
+  SEALANT("F", "Sealants"),
   PREVENTATIVE_FILLING("P", "Trám phòng ngừa");
 
   private String code;

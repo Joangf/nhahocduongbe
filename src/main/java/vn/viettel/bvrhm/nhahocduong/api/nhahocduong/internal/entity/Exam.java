@@ -3,8 +3,10 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.ExamPlaceJpaConverter;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -64,15 +66,19 @@ public class Exam {
       inverseJoinColumns = {@JoinColumn(name = "disease_id")})
   private List<Disease> chronicConditions;
 
+  @OneToMany(mappedBy = "exam")
+  @Where(clause = "status = true")
+  private List<TreatmentRecord> treatmentRecords;
+
 //  @SuppressWarnings("JpaAttributeTypeInspection")
 //  @JdbcTypeCode(SqlTypes.JSON)
 //  @Column(name = "prescription")
 //  private List<PrescriptionItem> prescription;
 
-  @SuppressWarnings("JpaAttributeTypeInspection")
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "treatment_record")
-  private TreatmentRecord treatmentRecord;
+//  @SuppressWarnings("JpaAttributeTypeInspection")
+//  @JdbcTypeCode(SqlTypes.JSON)
+//  @Column(name = "treatment_record")
+//  private TreatmentRecord treatmentRecord;
 //
 //  @Column(name = "diagnosis")
 //  private String diagnosis;

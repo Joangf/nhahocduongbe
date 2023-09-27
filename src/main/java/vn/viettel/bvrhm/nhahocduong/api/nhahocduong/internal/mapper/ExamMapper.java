@@ -7,8 +7,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import java.util.List;
 
 @Mapper(
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    componentModel = MappingConstants.ComponentModel.SPRING)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ExamMapper {
   Exam toEntity(ExamDTO examDTO);
 
