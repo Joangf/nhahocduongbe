@@ -2,15 +2,10 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Where;
-import org.hibernate.type.SqlTypes;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.ExamPlaceJpaConverter;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

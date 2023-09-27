@@ -17,7 +17,7 @@ public class PlaqueRecordService {
 
   public PlaqueRecordDTO getPlaqueRecordByPatientIdAndExamId(Long patientId, Long examId) {
     Exam exam =
-        examRepository.getExamsByPatientId(patientId).stream()
+        examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true).stream()
             .filter(e -> e.getId().equals(examId))
             .findFirst()
             .orElse(null);
