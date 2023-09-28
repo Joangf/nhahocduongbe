@@ -71,7 +71,11 @@ public class ExcelUtil {
                 cellValue = evaluator.evaluate(cell).getNumberValue();
                 break;
             case NUMERIC:
-                cellValue = NumberToTextConverter.toText(cell.getNumericCellValue());
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    cellValue = cell.getDateCellValue();
+                } else {
+                    cellValue = NumberToTextConverter.toText(cell.getNumericCellValue());
+                }
                 break;
             case STRING:
                 cellValue = cell.getStringCellValue();

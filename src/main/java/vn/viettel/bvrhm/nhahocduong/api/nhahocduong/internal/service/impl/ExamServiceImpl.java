@@ -175,7 +175,8 @@ public class ExamServiceImpl implements ExamService {
                         entity.getTeethRecordId(),
                         entity.getPlaqueRecordId(),
                         entity.getTartarRecordId(),
-                        treatmentRecordMapper.toListDto(entity.getTreatmentRecords())
+                        treatmentRecordMapper.toListDto(entity.getTreatmentRecords()),
+                        entity.getStatus()
                 );
 
         return dto;
@@ -213,9 +214,9 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public ExamDTO updateExam(ExamDTO examDTO) {
-        Exam exam = examRepository.findExamByIdAndPatientId(examDTO.id(), examDTO.patientId());
+        Exam exam = examRepository.findExamByIdAndPatientId(examDTO.getId(), examDTO.getPatientId());
         if (isNull(exam)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found exam for patient with ID " + examDTO.patientId());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found exam for patient with ID " + examDTO.getPatientId());
         }
 
         examMapper.partialUpdate(examDTO, exam);

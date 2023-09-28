@@ -54,23 +54,15 @@ public class ExamController {
 //            examDTO.tartarRecordId(),
 //                examDTO.examPlace(),
 //                examDTO.prescription());
-    var newExamDTO = examDTO.toBuilder()
-      .id(null)
-      .patientId(patientId)
-      .patientName(null)
-      .dentistName(null)
-      .organizationName(null)
-      .build();
-    var createdExamDTO = examService.createExam(newExamDTO);
+    examDTO.setPatientId(patientId);
+    var createdExamDTO = examService.createExam(examDTO);
     return createdExamDTO;
   }
 
   @PutMapping("/patients/{patientId}/exams")
   ExamDTO updateExam(@PathVariable("patientId") Long patientId, @RequestBody ExamDTO examDTO) {
-    var newExamDTO = examDTO.toBuilder()
-            .patientId(patientId)
-            .build();
-    return examService.updateExam(newExamDTO);
+    examDTO.setPatientId(patientId);
+    return examService.updateExam(examDTO);
   }
 
   @DeleteMapping("/exams/{id}")

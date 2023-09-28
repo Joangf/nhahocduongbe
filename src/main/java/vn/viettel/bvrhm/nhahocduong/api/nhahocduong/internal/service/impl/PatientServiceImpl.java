@@ -4,7 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
@@ -36,8 +38,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PatientServ
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -167,8 +169,9 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   public byte[] generateExcelTemplateFile(HttpServletResponse response) throws IOException {
-    FileInputStream inputStream = new FileInputStream(ResourceUtils.getFile("classpath:template/excel/Import_Hocsinh.xlsx"));;
-    try (FileInputStream is = inputStream){
+    ClassLoader cl = this.getClass().getClassLoader();
+    //    FileInputStream inputStream = new FileInputStream(new ClassPathResource("template/excel/Import_Hocsinh.xlsx").getFile());
+    try (InputStream is = cl.getResourceAsStream("template/excel/Import_Hocsinh.xlsx")){
       List<OrganizationDTO> organizationDTOList = organizationService.search(new OrganizationSearchCriteria(), null).toList();
       XSSFWorkbook workbook = new XSSFWorkbook(is);
       XSSFSheet sheet = workbook.getSheetAt(1);
@@ -251,7 +254,7 @@ public class PatientServiceImpl implements PatientService {
         // Check cell
         if (cellValue == null || cellValue.isEmpty()) {
           if (column.isRequired()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required field '" + column.getHeader() + "' of row " + row.getRowNum() + 1 + "is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Required field '" + column.getHeader() + "' of row " + row.getRowNum() + 1 + " is missing");
           }
           continue;
         }
@@ -260,8 +263,10 @@ public class PatientServiceImpl implements PatientService {
         switch (column) {
           case FULL_NAME -> patientDTOBuilder.fullName(cellValue);
           case BIRTHDAY -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z yyyy");
             LocalDate date = LocalDate.parse(cellValue, formatter);
+
+//            LocalDate date = new Date(cellValue).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             patientDTOBuilder.birthDate(date);
           }
           case GENDER -> patientDTOBuilder.gender(Integer.parseInt(cellValue.replace(".0", "")));
