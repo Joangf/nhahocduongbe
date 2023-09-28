@@ -597,8 +597,8 @@ DROP TABLE if exists NHAHOCDUONG_TREATMENT_RECORD cascade ;
 create table NHAHOCDUONG_TREATMENT_RECORD(
       id bigserial primary key not null,
       treatment_service varchar not null,
-      dentist_name varchar not null,
-      diagnosis varchar not null,
+      dentist_name varchar,
+      diagnosis varchar,
       tooth varchar not null,
       prescription jsonb,
       exam bigserial not null references NHAHOCDUONG_EXAM(id),

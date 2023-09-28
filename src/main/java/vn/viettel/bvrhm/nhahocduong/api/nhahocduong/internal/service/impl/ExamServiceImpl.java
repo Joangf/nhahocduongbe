@@ -201,6 +201,16 @@ public class ExamServiceImpl implements ExamService {
         Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
 
         List<TreatmentRecord> treatmentRecords = treatmentRecordMapper.toListEntity(treatmentRecordDTOS);
+        // Remove treatment record that not in upsert list
+        List<TreatmentRecord> treatmentRecordsNotIncluded = exam.getTreatmentRecords().stream()
+                                                                                    .filter(record -> treatmentRecords.stream()
+                                                                                            .anyMatch(upsertRecord -> !record.getId().equals(upsertRecord.getId()))
+                                                                                    ).toList();
+        treatmentRecordsNotIncluded.forEach(record -> record.setStatus(false));
+        treatmentRecordRepository.saveAll(treatmentRecordsNotIncluded);
+
+
+        // Upsert records
         treatmentRecords.forEach(treatmentRecord -> treatmentRecord.setExam(exam));
         List<TreatmentRecord> savedTreatmentRecord = treatmentRecordRepository.saveAll(treatmentRecords);
 

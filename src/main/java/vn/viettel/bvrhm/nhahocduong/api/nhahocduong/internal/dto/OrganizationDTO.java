@@ -21,7 +21,7 @@ public class OrganizationDTO{
     private Boolean status = true;
     @JsonIgnore
     public List<String> getFlattenClassList() {
-        if (this.getClasses().isEmpty()) return null;
+        if (this.getClasses() == null || this.getClasses().isEmpty()) return null;
         return this.getClasses()
                 .values()
                 .stream()
