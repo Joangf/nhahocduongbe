@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
@@ -177,7 +178,7 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public boolean delete(Long id) {
         Exam exam = examRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Not found exam with ID " + id
+                HttpStatus.NOT_FOUND, ResponseMessage.EXAM_NOT_FOUND_WITH_ID + id
         ));
         exam.setStatus(false);
         examRepository.save(exam);
@@ -188,7 +189,7 @@ public class ExamServiceImpl implements ExamService {
     public ExamDTO updateExam(ExamDTO examDTO) {
         Exam exam = examRepository.findExamByIdAndPatientId(examDTO.getId(), examDTO.getPatientId());
         if (isNull(exam)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found exam for patient with ID " + examDTO.getPatientId());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.EXAM_NOT_FOUND_WITH_PATIENT_ID + examDTO.getPatientId());
         }
 
         examMapper.partialUpdate(examDTO, exam);

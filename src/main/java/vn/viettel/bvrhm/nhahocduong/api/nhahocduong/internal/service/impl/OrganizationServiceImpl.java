@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.service.AreaService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
@@ -25,6 +26,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.Organizatio
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -34,13 +36,17 @@ public class OrganizationServiceImpl implements OrganizationService {
   private OrganizationRepository organizationRepository;
   @Autowired
   private PatientRepository patientRepository;
+
   @Autowired
   private OrganizationMapper organizationMapper;
-  @PersistenceContext EntityManager entityManager;
+  @PersistenceContext
+  private EntityManager entityManager;
 
-  @Autowired private AreaService areaService;
+  @Autowired
+  private AreaService areaService;
 
-  @Autowired private AuthorizationService authorizationService;
+  @Autowired
+  private AuthorizationService authorizationService;
 
   @Autowired
   private OrganizationHelper organizationHelper;
@@ -56,7 +62,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     List<String> duplicateClasses = organizationHelper.getDuplicateClassList(organizationDTO);
     if (nonNull(duplicateClasses) && !duplicateClasses.isEmpty()) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, "Duplicated class(es): " + String.join(", ", duplicateClasses)
+              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses)
       );
     }
 
@@ -73,14 +79,14 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Transactional
   public OrganizationDTO updateOrganization(OrganizationDTO organizationDTO, Long id) {
     var entity = organizationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND, "Not found organization with ID " + id
+            HttpStatus.NOT_FOUND, ResponseMessage.ORGANIZATION_NOT_FOUND_WITH_ID + id
     ));
 
     // Check duplicate class
     List<String> duplicateClasses = organizationHelper.getDuplicateClassList(organizationDTO);
     if (nonNull(duplicateClasses) && !duplicateClasses.isEmpty()) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, "Duplicated class(es): " + String.join(", ", duplicateClasses)
+              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses)
       );
     }
 
@@ -94,7 +100,9 @@ public class OrganizationServiceImpl implements OrganizationService {
   public boolean delete(Long id){
     List<Patient> patientList = patientRepository.findAllByOrganization_Id(id);
     if(patientList.size() > 0){
-      return false;
+      throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_CAN_NOT_DELETE_HAS_STUDENT
+      );
     }
     Organization organization = organizationRepository.findById(id).orElse(null);
     if(organization != null){
@@ -107,7 +115,6 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   public List<OrganizationDTO> getByCondition(String name){
-
     return organizationMapper.toDtoList(organizationRepository.findByNameIsLikeOrderByName(name));
   }
 
@@ -120,7 +127,6 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   public List<OrganizationDTO> getAll(){
-
     return organizationMapper.toDtoList(organizationRepository.findAllByOrderByName());
   }
 
