@@ -52,5 +52,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   List<Patient> findAllByOrganization_Id(Long id);
 
+  List<Patient> findAllByOrganization_IdAndSchoolClass(Long id, String schoolClass);
+
   Patient findFirstByOrganizationCodeOrderByCodeDesc(String organizationCode);
 }

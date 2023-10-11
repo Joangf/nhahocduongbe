@@ -48,4 +48,9 @@ public class OrganizationController {
     public boolean deleteOrganization(@PathVariable Long id){
         return organizationService.delete(id);
     }
+
+    @GetMapping("/{id}/classes/{clazz}/deletable")
+    public boolean checkDeletableClass(@PathVariable("id") Long organizationId, @PathVariable String clazz) {
+        return organizationService.checkDeletableClass(organizationId, clazz);
+    }
 }

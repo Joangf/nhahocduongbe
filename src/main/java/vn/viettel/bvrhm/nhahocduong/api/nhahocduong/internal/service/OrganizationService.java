@@ -29,4 +29,6 @@ public interface OrganizationService {
     Page<OrganizationDTO> search(OrganizationSearchCriteria searchCriteria, Pageable pageable);
 
     OrganizationDTO getOrganizationByCode(String code);
+
+    boolean checkDeletableClass(Long organizationId, String clazz);
 }

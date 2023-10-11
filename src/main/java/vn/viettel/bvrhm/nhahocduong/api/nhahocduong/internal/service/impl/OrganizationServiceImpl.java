@@ -155,4 +155,10 @@ public class OrganizationServiceImpl implements OrganizationService {
   public OrganizationDTO getOrganizationByCode(String code) {
     return organizationMapper.toDto(organizationRepository.findByCode(code));
   }
+
+  @Override
+  public boolean checkDeletableClass(Long organizationId, String clazz) {
+    List<Patient> patientList = patientRepository.findAllByOrganization_IdAndSchoolClass(organizationId, clazz);
+    return isNull(patientList) || patientList.isEmpty();
+  }
 }

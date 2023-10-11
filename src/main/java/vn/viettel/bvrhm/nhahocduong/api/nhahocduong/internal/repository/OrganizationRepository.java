@@ -12,6 +12,8 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+  Organization findByIdAndStatus(Long id, boolean status);
+
   List<Organization> findByName(String name);
 
   List<Organization> findByAddress(String address);
@@ -29,6 +31,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
   List<Organization> findAllByOrderByName();
 
   List<Organization> findByAreaCodeIn(List<String> areaCodes);
+
+  Organization findFirstByAreaCodeOrderByCodeDesc(String areaCode);
 
   @Query("""
     SELECT org
