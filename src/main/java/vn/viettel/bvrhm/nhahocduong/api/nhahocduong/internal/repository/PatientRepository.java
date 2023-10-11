@@ -23,9 +23,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   @Query(
       "SELECT DISTINCT p FROM Patient p "
-          + "WHERE (:searchText is null or (p.fullName like %:searchText% " +
-              "or p.healthInsuranceNumber like %:searchText%)) " +
-              "and (:organizationName is null or p.organization.name like %:organizationName%) " +
+          + "WHERE (:searchText is null or (LOWER(p.fullName) like LOWER(CONCAT('%', :searchText, '%')) " +
+              "or LOWER(p.healthInsuranceNumber) like LOWER(CONCAT('%', :searchText, '%')))) " +
+              "and (:organizationName is null or LOWER(p.organization.name) like LOWER(CONCAT('%', :organizationName, '%'))) " +
               "and (:#{null eq #schoolClass} = true or p.schoolClass in :schoolClass)"
   )
   List<Patient> findByCondition(
@@ -35,11 +35,11 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   @Query(
           "SELECT DISTINCT p FROM Patient p LEFT JOIN p.organization "
-                  + "WHERE (:searchText is null or (p.fullName like %:searchText% " +
-                  "or p.healthInsuranceNumber like %:searchText%)) " +
+                  + "WHERE (:searchText is null or (LOWER(p.fullName) like LOWER(CONCAT('%', :searchText, '%')) " +
+                  "or LOWER(p.healthInsuranceNumber) like LOWER(CONCAT('%', :searchText, '%')))) " +
                   "and (:organizationId is null or p.organization.id = :organizationId) " +
-                  "and (:organizationId is not null or (:organizationName is null or p.organization.name like %:organizationName%))" +
-                  "and (:#{null eq #schoolClass} = true or p.schoolClass LIKE %:schoolClass%) " +
+                  "and (:organizationId is not null or (:organizationName is null or LOWER(p.organization.name) like LOWER(CONCAT('%', :organizationName, '%'))))" +
+                  "and (:#{null eq #schoolClass} = true or LOWER(p.schoolClass) LIKE LOWER(CONCAT('%', :schoolClass, '%'))) " +
                   "AND (:#{#areaCodes.size()} = 0 OR  p.organization.areaCode IN :areaCodes)"
   )
   Page<Patient> findAllByCondition(

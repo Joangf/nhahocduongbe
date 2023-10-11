@@ -38,8 +38,8 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     SELECT org
     FROM Organization org
     WHERE (:#{#areaCodes.size()} = 0 OR org.areaCode IN :areaCodes)
-      AND (:#{#searchCriteria.getSearchText()} IS NULL OR (org.code LIKE %:#{#searchCriteria.getSearchText()}%
-                                                          OR org.name LIKE %:#{#searchCriteria.getSearchText()}%))
+      AND (:#{#searchCriteria.getSearchText()} IS NULL OR (LOWER(org.code) LIKE LOWER(CONCAT('%', :#{#searchCriteria.getSearchText()}, '%'))
+                                                          OR LOWER(org.name) LIKE LOWER(CONCAT('%', :#{#searchCriteria.getSearchText()}, '%'))))
       AND (:organizationId IS NULL OR org.id = :organizationId)
       AND (:organizationId IS NOT NULL OR ((:#{#searchCriteria.getType() eq NULL} = TRUE OR org.type = :#{#searchCriteria.getType()})))
       AND (:#{#searchCriteria.getStatus() eq NULL} = TRUE OR org.status = :#{#searchCriteria.getStatus()})
@@ -48,8 +48,6 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
                                     OrganizationSearchCriteria searchCriteria,
                                     Long organizationId,
                                     Pageable pageable);
-
-  Organization findFirstByAreaCodeOrderByCodeDesc(String areaCode);
 
   Organization findByCode(String code);
 }
