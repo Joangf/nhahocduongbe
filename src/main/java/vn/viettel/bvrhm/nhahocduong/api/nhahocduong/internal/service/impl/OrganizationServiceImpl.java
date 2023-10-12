@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response.ResponseModel;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response.UpsertResponseModel;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.service.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
@@ -23,10 +25,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.Organiza
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.OrganizationService;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -101,7 +101,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     List<Patient> patientList = patientRepository.findAllByOrganization_Id(id);
     if(nonNull(patientList) && patientList.size() > 0){
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_CAN_NOT_DELETE_HAS_STUDENT
+              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_CANT_DELETE_HAS_STUDENT
       );
     }
     Organization organization = organizationRepository.findById(id).orElse(null);
@@ -157,8 +157,31 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   @Override
-  public boolean checkDeletableClass(Long organizationId, String clazz) {
-    List<Patient> patientList = patientRepository.findAllByOrganization_IdAndSchoolClass(organizationId, clazz);
-    return isNull(patientList) || patientList.isEmpty();
+  public UpsertResponseModel checkDeletableClasses(Long organizationId, List<String> classes) {
+    List<Patient> patientList = patientRepository.findAllByOrganization_Id(organizationId);
+
+    // Only allow to delete classes not have any student
+    List<String> classesHaveStudent = classes.stream().filter(clazz -> patientList.stream().anyMatch(patient -> patient.getSchoolClass().equals(clazz))).toList();
+    List<String> classesDontHaveStudent = new ArrayList<>(classes);
+    classesDontHaveStudent.removeAll(classesHaveStudent);
+
+    // Map to response model
+    List<ResponseModel> notAllowList = classesHaveStudent.stream().map(clazz -> ResponseModel.builder()
+                                                                                              .status(HttpStatus.BAD_REQUEST.value())
+                                                                                              .message(ResponseMessage.ORGANIZATION_CANT_DELETE_CLASS_HAS_STUDENT)
+                                                                                              .content(clazz)
+                                                                                              .build()
+                                                                      ).toList();
+    List<ResponseModel> allowList = classesDontHaveStudent.stream().map(clazz -> ResponseModel.builder()
+                                                                                              .status(HttpStatus.ACCEPTED.value())
+                                                                                              .message(HttpStatus.ACCEPTED.getReasonPhrase())
+                                                                                              .content(clazz)
+                                                                                              .build()
+                                                                        ).toList();
+
+    return UpsertResponseModel.builder()
+            .successList(allowList).successCount(allowList.size())
+            .errorList(notAllowList).errorCount(notAllowList.size())
+            .build();
   }
 }

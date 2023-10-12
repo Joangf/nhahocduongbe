@@ -52,7 +52,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   List<Patient> findAllByOrganization_Id(Long id);
 
-  List<Patient> findAllByOrganization_IdAndSchoolClass(Long id, String schoolClass);
+  List<Patient> findAllByOrganization_IdAndSchoolClassIn(Long id, List<String> schoolClass);
 
   Patient findFirstByOrganizationCodeOrderByCodeDesc(String organizationCode);
 }

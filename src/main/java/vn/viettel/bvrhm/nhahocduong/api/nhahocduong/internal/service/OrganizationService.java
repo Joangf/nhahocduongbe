@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response.UpsertResponseModel;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
 
@@ -30,5 +31,5 @@ public interface OrganizationService {
 
     OrganizationDTO getOrganizationByCode(String code);
 
-    boolean checkDeletableClass(Long organizationId, String clazz);
+    UpsertResponseModel checkDeletableClasses(Long organizationId, List<String> clazz);
 }

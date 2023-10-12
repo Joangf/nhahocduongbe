@@ -6,11 +6,12 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants;
  */
 public final class ResponseMessage {
     // Organization
-    public final static String ORGANIZATION_DUPLICATE_CLASS = "Trùng lớp: ";
-    public final static String ORGANIZATION_NOT_FOUND_WITH_ID = "Không tìm thấy trường với ID ";
-    public final static String ORGANIZATION_CAN_NOT_DELETE_HAS_STUDENT ="Không thể xóa trường có học sinh";
+    public final static String ORGANIZATION_DUPLICATE_CLASS = "Duplicate class(es): ";
+    public final static String ORGANIZATION_NOT_FOUND_WITH_ID = "Can't find organization with ID ";
+    public final static String ORGANIZATION_CANT_DELETE_HAS_STUDENT ="Can't delete organization which has student";
+    public final static String ORGANIZATION_CANT_DELETE_CLASS_HAS_STUDENT = "Can't delete class which has student";
 
     // Exam
-    public final static String EXAM_NOT_FOUND_WITH_ID = "Không tìm thấy phiếu khám với ID ";
-    public final static String EXAM_NOT_FOUND_WITH_PATIENT_ID = "Không tìm thấy phiếu khám của học sinh với ID ";
+    public final static String EXAM_NOT_FOUND_WITH_ID = "Can't find exam with ID ";
+    public final static String EXAM_NOT_FOUND_WITH_PATIENT_ID = "Can't find exam for the student with ID ";
 }

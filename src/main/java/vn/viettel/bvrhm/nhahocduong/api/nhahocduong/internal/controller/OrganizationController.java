@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response.UpsertResponseModel;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.OrganizationService;
@@ -48,8 +49,8 @@ public class OrganizationController {
         return organizationService.delete(id);
     }
 
-    @GetMapping("/{id}/classes/{clazz}/deletable")
-    public boolean checkDeletableClass(@PathVariable("id") Long organizationId, @PathVariable String clazz) {
-        return organizationService.checkDeletableClass(organizationId, clazz);
+    @PostMapping("/{id}/classes/deletable")
+    public UpsertResponseModel checkDeletableClass(@PathVariable("id") Long organizationId, @RequestBody List<String> classes) {
+        return organizationService.checkDeletableClasses(organizationId, classes);
     }
 }
