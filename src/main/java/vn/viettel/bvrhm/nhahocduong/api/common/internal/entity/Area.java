@@ -1,24 +1,22 @@
 package vn.viettel.bvrhm.nhahocduong.api.common.internal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
-
 @Entity
 @Table(name = "common_area", schema = "nhahocduong")
-@Getter @Setter
-//@JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
+// @JsonIgnoreProperties(ignoreUnknown = true)
 public class Area {
   @Id
   @Column(name = "id", nullable = false)
@@ -45,5 +43,4 @@ public class Area {
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "ancestor")
   private List<Area> ancestor;
-
 }

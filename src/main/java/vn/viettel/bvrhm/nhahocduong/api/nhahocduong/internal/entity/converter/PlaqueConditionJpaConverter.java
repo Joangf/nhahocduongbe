@@ -2,9 +2,8 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.PlaqueCondition;
-
 import java.util.stream.Stream;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.PlaqueCondition;
 
 @Converter
 public class PlaqueConditionJpaConverter implements AttributeConverter<PlaqueCondition, String> {

@@ -1,6 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
 import jakarta.transaction.Transactional;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.mapper.UserMapper;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -22,7 +21,6 @@ public class UserService {
   @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private UserRepository userRepository;
   @Autowired private UserMapper userMapper;
-
 
   @Transactional
   public UserDTO createUser(UserDTO newUserDTO) throws Exception {

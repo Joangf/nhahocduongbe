@@ -12,39 +12,36 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TartarRecor
 
 @Service
 public class TartarRecordServiceImpl implements TartarRecordService {
-    @Autowired
-    private TartarRecordRepository tartarRecordRepository;
-    @Autowired
-    private ExamRepository examRepository;
-    @Autowired
-    private TartarRecordMapper tartarRecordMapper;
+  @Autowired private TartarRecordRepository tartarRecordRepository;
+  @Autowired private ExamRepository examRepository;
+  @Autowired private TartarRecordMapper tartarRecordMapper;
 
-    @Override
-    public TartarRecordDTO getTartarRecordByPatientIdAndExamId(Long patientId, Long examId) {
-        Exam exam =
-                examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true).stream()
-                        .filter(e -> e.getId().equals(examId))
-                        .findFirst()
-                        .orElse(null);
+  @Override
+  public TartarRecordDTO getTartarRecordByPatientIdAndExamId(Long patientId, Long examId) {
+    Exam exam =
+        examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true).stream()
+            .filter(e -> e.getId().equals(examId))
+            .findFirst()
+            .orElse(null);
 
-        if (exam == null) {
-            return null;
-        }
-        Long tartarRecordId = exam.getTartarRecordId();
-        if (tartarRecordId == null) {
-            return null;
-        }
-        TartarRecord tartarRecord = tartarRecordRepository.getReferenceById(tartarRecordId);
-        TartarRecordDTO dto = tartarRecordMapper.toDto(tartarRecord);
-        return dto;
+    if (exam == null) {
+      return null;
     }
-
-    @Override
-    public TartarRecordDTO upsertTartarRecord(TartarRecordDTO tartarRecordDTO) {
-        var entity = tartarRecordMapper.toEntity(tartarRecordDTO);
-        var savedEntity = tartarRecordRepository.save(entity);
-        var savedDto = tartarRecordMapper.toDto(savedEntity);
-
-        return savedDto;
+    Long tartarRecordId = exam.getTartarRecordId();
+    if (tartarRecordId == null) {
+      return null;
     }
+    TartarRecord tartarRecord = tartarRecordRepository.getReferenceById(tartarRecordId);
+    TartarRecordDTO dto = tartarRecordMapper.toDto(tartarRecord);
+    return dto;
+  }
+
+  @Override
+  public TartarRecordDTO upsertTartarRecord(TartarRecordDTO tartarRecordDTO) {
+    var entity = tartarRecordMapper.toEntity(tartarRecordDTO);
+    var savedEntity = tartarRecordRepository.save(entity);
+    var savedDto = tartarRecordMapper.toDto(savedEntity);
+
+    return savedDto;
+  }
 }

@@ -1,5 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.auth.internal.object;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
@@ -7,10 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

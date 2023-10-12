@@ -12,38 +12,35 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PlaqueRecor
 
 @Service
 public class PlaqueRecordServiceImpl implements PlaqueRecordService {
-    @Autowired
-    private PlaqueRecordRepository plagueRecordRepository;
-    @Autowired
-    private ExamRepository examRepository;
-    @Autowired
-    private PlaqueRecordMapper plaqueRecordMapper;
+  @Autowired private PlaqueRecordRepository plagueRecordRepository;
+  @Autowired private ExamRepository examRepository;
+  @Autowired private PlaqueRecordMapper plaqueRecordMapper;
 
-    @Override
-    public PlaqueRecordDTO getPlaqueRecordByPatientIdAndExamId(Long patientId, Long examId) {
-        Exam exam =
-                examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true).stream()
-                        .filter(e -> e.getId().equals(examId))
-                        .findFirst()
-                        .orElse(null);
+  @Override
+  public PlaqueRecordDTO getPlaqueRecordByPatientIdAndExamId(Long patientId, Long examId) {
+    Exam exam =
+        examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true).stream()
+            .filter(e -> e.getId().equals(examId))
+            .findFirst()
+            .orElse(null);
 
-        if (exam == null) {
-            return null;
-        }
-        Long plaqueRecordId = exam.getPlaqueRecordId();
-        if (plaqueRecordId == null) {
-            return null;
-        }
-        PlaqueRecord plaqueRecord = plagueRecordRepository.getReferenceById(plaqueRecordId);
-        PlaqueRecordDTO dto = plaqueRecordMapper.toDto(plaqueRecord);
-        return dto;
+    if (exam == null) {
+      return null;
     }
-
-    @Override
-    public PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO) {
-        var entity = plaqueRecordMapper.toEntity(plaqueRecordDTO);
-        var savedEntity = plagueRecordRepository.save(entity);
-
-        return plaqueRecordMapper.toDto(savedEntity);
+    Long plaqueRecordId = exam.getPlaqueRecordId();
+    if (plaqueRecordId == null) {
+      return null;
     }
+    PlaqueRecord plaqueRecord = plagueRecordRepository.getReferenceById(plaqueRecordId);
+    PlaqueRecordDTO dto = plaqueRecordMapper.toDto(plaqueRecord);
+    return dto;
+  }
+
+  @Override
+  public PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO) {
+    var entity = plaqueRecordMapper.toEntity(plaqueRecordDTO);
+    var savedEntity = plagueRecordRepository.save(entity);
+
+    return plaqueRecordMapper.toDto(savedEntity);
+  }
 }

@@ -1,6 +1,11 @@
 package vn.viettel.bvrhm.nhahocduong.api.auth.internal.service;
 
+import static java.util.Objects.nonNull;
+
 import jakarta.transaction.Transactional;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,12 +22,6 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.RoleService;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Objects.nonNull;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -73,8 +72,8 @@ public class AuthenticationService implements UserDetailsService {
   @Override
   @Transactional()
   public UserAuthDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-      UserDTO userDTO = userService.getUserByUsername(username);
-      return userDTO == null ? null : userAuthDetailsMapper.userAuthDetailsFromUserDTO(userDTO);
+    UserDTO userDTO = userService.getUserByUsername(username);
+    return userDTO == null ? null : userAuthDetailsMapper.userAuthDetailsFromUserDTO(userDTO);
   }
 
   //  public boolean createPasswordForUser(Long userId, String inputPassword) {

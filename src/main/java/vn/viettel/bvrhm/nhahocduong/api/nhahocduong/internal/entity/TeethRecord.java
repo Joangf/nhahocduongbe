@@ -1,14 +1,13 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 
 import jakarta.persistence.*;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Tooth;
-
-import java.util.Map;
 
 @Entity
 @Data

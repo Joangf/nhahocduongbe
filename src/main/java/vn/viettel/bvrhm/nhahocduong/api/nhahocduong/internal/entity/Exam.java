@@ -1,12 +1,11 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import org.hibernate.annotations.Where;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Data
@@ -39,9 +38,9 @@ public class Exam extends BaseEntity {
   @Column(name = "profile_number")
   private Long profileNumber;
 
-//  @Convert(converter = ExamPlaceJpaConverter.class)
-//  @Column(name = "exam_place")
-//  private ExamPlace examPlace;
+  //  @Convert(converter = ExamPlaceJpaConverter.class)
+  //  @Column(name = "exam_place")
+  //  private ExamPlace examPlace;
 
   @Column(name = "date")
   private LocalDate date;
@@ -53,7 +52,7 @@ public class Exam extends BaseEntity {
   private Long plaqueRecordId;
 
   @Column(name = "tartar_record_id")
-    private Long tartarRecordId;
+  private Long tartarRecordId;
 
   @ManyToMany()
   @JoinTable(
@@ -66,17 +65,17 @@ public class Exam extends BaseEntity {
   @Where(clause = "status = true")
   private List<TreatmentRecord> treatmentRecords;
 
-//  @SuppressWarnings("JpaAttributeTypeInspection")
-//  @JdbcTypeCode(SqlTypes.JSON)
-//  @Column(name = "prescription")
-//  private List<PrescriptionItem> prescription;
+  //  @SuppressWarnings("JpaAttributeTypeInspection")
+  //  @JdbcTypeCode(SqlTypes.JSON)
+  //  @Column(name = "prescription")
+  //  private List<PrescriptionItem> prescription;
 
-//  @SuppressWarnings("JpaAttributeTypeInspection")
-//  @JdbcTypeCode(SqlTypes.JSON)
-//  @Column(name = "treatment_record")
-//  private TreatmentRecord treatmentRecord;
-//
-//  @Column(name = "diagnosis")
-//  private String diagnosis;
+  //  @SuppressWarnings("JpaAttributeTypeInspection")
+  //  @JdbcTypeCode(SqlTypes.JSON)
+  //  @Column(name = "treatment_record")
+  //  private TreatmentRecord treatmentRecord;
+  //
+  //  @Column(name = "diagnosis")
+  //  private String diagnosis;
 
 }

@@ -18,15 +18,6 @@ public enum Ethnic {
     this.description = description;
   }
 
-  @JsonValue
-  public Integer getCode() {
-    return this.code;
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
   public static Ethnic getByCode(int code) {
     for (Ethnic ethnic : Ethnic.values()) {
       if (ethnic.code == code) {
@@ -43,5 +34,14 @@ public enum Ethnic {
       }
     }
     return null;
+  }
+
+  @JsonValue
+  public Integer getCode() {
+    return this.code;
+  }
+
+  public String getDescription() {
+    return this.description;
   }
 }

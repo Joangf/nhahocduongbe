@@ -1,5 +1,6 @@
 -- tao view nay truoc
-CREATE OR REPLACE VIEW nhahocduong_report.app_view AS(
+CREATE
+OR REPLACE VIEW nhahocduong_report.app_view AS(
 	WITH rvv AS (
 		SELECT generate_series(11, 18)::text AS id
 		UNION

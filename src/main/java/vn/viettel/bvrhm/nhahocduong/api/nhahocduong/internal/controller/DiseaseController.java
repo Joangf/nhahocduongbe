@@ -1,12 +1,11 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DiseaseDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.DiseaseServiceImpl;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

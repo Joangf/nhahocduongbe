@@ -1,5 +1,6 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,48 +10,46 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.OrganizationService;
 
-import java.util.List;
-
-
 @RestController
 @RequestMapping("/api/organization")
 public class OrganizationController {
-    @Autowired
-    private OrganizationService organizationService;
+  @Autowired private OrganizationService organizationService;
 
-    @GetMapping("/all")
-    public List<OrganizationDTO> getAll(){
-        return organizationService.getAll();
-    }
+  @GetMapping("/all")
+  public List<OrganizationDTO> getAll() {
+    return organizationService.getAll();
+  }
 
-    @GetMapping("/search")
-    public Page<OrganizationDTO> search(
-        OrganizationSearchCriteria searchCriteria,
-        Pageable pageable
-    ) {
-        return organizationService.search(searchCriteria, pageable);
-    }
+  @GetMapping("/search")
+  public Page<OrganizationDTO> search(
+      OrganizationSearchCriteria searchCriteria, Pageable pageable) {
+    return organizationService.search(searchCriteria, pageable);
+  }
 
-    @PostMapping("")
-    public OrganizationDTO createOrganization(@RequestBody OrganizationDTO organizationDTO) {
-        return organizationService.createOrganization(organizationDTO);
-    }
-    @PutMapping("/{id}")
-    public OrganizationDTO updateOrganization(@RequestBody OrganizationDTO organizationDTO, @PathVariable Long id) {
-        return organizationService.updateOrganization(organizationDTO, id);
-    }
+  @PostMapping("")
+  public OrganizationDTO createOrganization(@RequestBody OrganizationDTO organizationDTO) {
+    return organizationService.createOrganization(organizationDTO);
+  }
 
-    @GetMapping("/{id}")
-    public OrganizationDTO getOrganizationById(@PathVariable Long id) {
-        return organizationService.getOrganizationById(id);
-    }
-    @DeleteMapping("/{id}")
-    public boolean deleteOrganization(@PathVariable Long id){
-        return organizationService.delete(id);
-    }
+  @PutMapping("/{id}")
+  public OrganizationDTO updateOrganization(
+      @RequestBody OrganizationDTO organizationDTO, @PathVariable Long id) {
+    return organizationService.updateOrganization(organizationDTO, id);
+  }
 
-    @PostMapping("/{id}/classes/deletable")
-    public UpsertResponseModel checkDeletableClass(@PathVariable("id") Long organizationId, @RequestBody List<String> classes) {
-        return organizationService.checkDeletableClasses(organizationId, classes);
-    }
+  @GetMapping("/{id}")
+  public OrganizationDTO getOrganizationById(@PathVariable Long id) {
+    return organizationService.getOrganizationById(id);
+  }
+
+  @DeleteMapping("/{id}")
+  public boolean deleteOrganization(@PathVariable Long id) {
+    return organizationService.delete(id);
+  }
+
+  @PostMapping("/{id}/classes/deletable")
+  public UpsertResponseModel checkDeletableClass(
+      @PathVariable("id") Long organizationId, @RequestBody List<String> classes) {
+    return organizationService.checkDeletableClasses(organizationId, classes);
+  }
 }

@@ -1,12 +1,11 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper;
 
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
-
-import java.util.List;
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -18,7 +17,7 @@ public interface PatientMapper {
 
   List<PatientDTO> toDtoList(List<Patient> patientList);
 
-  List<Patient> toEntityList (List<PatientDTO> dtoList);
+  List<Patient> toEntityList(List<PatientDTO> dtoList);
 
   //  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   //  Patient partialUpdate(

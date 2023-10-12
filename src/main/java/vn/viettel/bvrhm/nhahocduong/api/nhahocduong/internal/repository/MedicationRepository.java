@@ -1,10 +1,9 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Medication;
-
-import java.util.List;
 
 @RepositoryRestResource
 public interface MedicationRepository extends JpaRepository<Medication, Long> {

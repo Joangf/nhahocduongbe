@@ -10,25 +10,25 @@ import java.util.List;
  * @since: 26-Sep-23
  */
 public interface ExamService {
-    List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status);
+  List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status);
 
-    ExamDTO getExamByIdAndStatus(Long id, boolean status);
+  ExamDTO getExamByIdAndStatus(Long id, boolean status);
 
-    ExamDTO createExam(ExamDTO newExamDTO);
+  ExamDTO createExam(ExamDTO newExamDTO);
 
-    ExamDTO updateTeethRecordIdOfExam(Long examId, Long teethRecordId);
+  ExamDTO updateTeethRecordIdOfExam(Long examId, Long teethRecordId);
 
-    ExamDTO updatePlaqueRecordIdOfExam(Long examId, Long plaqueRecordId);
+  ExamDTO updatePlaqueRecordIdOfExam(Long examId, Long plaqueRecordId);
 
-    ExamDTO updateTartarRecordIdOfExam(Long examId, Long tartarRecordId);
+  ExamDTO updateTartarRecordIdOfExam(Long examId, Long tartarRecordId);
 
-    List<String> getChronicDiseasesCodesByExamId(Long examId);
+  List<String> getChronicDiseasesCodesByExamId(Long examId);
 
-    List<String> updateChronicDiseasesCodesByExamId(Long examId, List<String> diseaseCodeList);
+  List<String> updateChronicDiseasesCodesByExamId(Long examId, List<String> diseaseCodeList);
 
-    ExamDTO injectChildObject(Exam entity);
+  ExamDTO injectChildObject(Exam entity);
 
-    boolean delete(Long id);
+  boolean delete(Long id);
 
-    ExamDTO updateExam(ExamDTO examDTO);
+  ExamDTO updateExam(ExamDTO examDTO);
 }

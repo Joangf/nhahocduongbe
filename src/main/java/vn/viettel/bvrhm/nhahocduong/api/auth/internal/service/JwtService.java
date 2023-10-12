@@ -7,13 +7,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
-
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 
 @Service
 public class JwtService {
@@ -25,7 +24,7 @@ public class JwtService {
   private static final long TOKEN_EXP_TIME_MILLIS = (long) (1000L * 60 * 60 * 24 * 30);
 
   // 1000 miliseconds x 60 seconds x 5 min
-//  private static final long TOKEN_EXP_TIME_MILLIS = 1000L * 60 * 5;
+  //  private static final long TOKEN_EXP_TIME_MILLIS = 1000L * 60 * 5;
 
   private Key getJwtSigningKey() {
     byte[] keyBytes = Decoders.BASE64.decode(JWT_SIGNING_KEY);
@@ -46,9 +45,7 @@ public class JwtService {
     ObjectMapper objectMapper = new ObjectMapper();
 
     return ((List<LinkedHashMap>) claims.get("roles"))
-                                  .stream()
-                                  .map(entry -> objectMapper.convertValue(entry, RoleDTO.class))
-                                  .toList();
+        .stream().map(entry -> objectMapper.convertValue(entry, RoleDTO.class)).toList();
   }
 
   public String extractUsername(String token) {
@@ -90,14 +87,14 @@ public class JwtService {
     Date expDate = new Date(currentEpoch + TOKEN_EXP_TIME_MILLIS);
 
     String token =
-            Jwts.builder()
-                    .setSubject(String.valueOf(userId))
-                    .setIssuedAt(currentDate)
-                    .setNotBefore(currentDate)
-                    .setExpiration(expDate)
-                    .addClaims(extraClaims)
-                    .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
-                    .compact();
+        Jwts.builder()
+            .setSubject(String.valueOf(userId))
+            .setIssuedAt(currentDate)
+            .setNotBefore(currentDate)
+            .setExpiration(expDate)
+            .addClaims(extraClaims)
+            .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
 
     return token;
   }

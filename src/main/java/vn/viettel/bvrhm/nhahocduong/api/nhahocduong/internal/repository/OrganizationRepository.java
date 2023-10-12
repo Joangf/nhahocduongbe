@@ -1,5 +1,6 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
-
-import java.util.List;
 
 @RepositoryRestResource
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
@@ -28,13 +27,15 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
   @Query("SELECT o from Organization o where o.name is null or o.name like %:name%")
   List<Organization> findByNameIsLikeOrderByName(String name);
+
   List<Organization> findAllByOrderByName();
 
   List<Organization> findByAreaCodeIn(List<String> areaCodes);
 
   Organization findFirstByAreaCodeOrderByCodeDesc(String areaCode);
 
-  @Query("""
+  @Query(
+      """
     SELECT org
     FROM Organization org
     WHERE (:#{#areaCodes.size()} = 0 OR org.areaCode IN :areaCodes)
@@ -44,10 +45,11 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
       AND (:organizationId IS NOT NULL OR ((:#{#searchCriteria.getType() eq NULL} = TRUE OR org.type = :#{#searchCriteria.getType()})))
       AND (:#{#searchCriteria.getStatus() eq NULL} = TRUE OR org.status = :#{#searchCriteria.getStatus()})
   """)
-  Page<Organization> findByCriteria(List<String> areaCodes,
-                                    OrganizationSearchCriteria searchCriteria,
-                                    Long organizationId,
-                                    Pageable pageable);
+  Page<Organization> findByCriteria(
+      List<String> areaCodes,
+      OrganizationSearchCriteria searchCriteria,
+      Long organizationId,
+      Pageable pageable);
 
   Organization findByCode(String code);
 }

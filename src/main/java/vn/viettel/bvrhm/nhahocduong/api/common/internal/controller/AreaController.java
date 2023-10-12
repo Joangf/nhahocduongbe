@@ -1,26 +1,22 @@
 package vn.viettel.bvrhm.nhahocduong.api.common.internal.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.dto.AreaDTO;
-import vn.viettel.bvrhm.nhahocduong.api.common.internal.service.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.dto.AreaLookupDTO;
-
-import java.util.List;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.service.AreaService;
 
 @RestController
 @RequestMapping("/api")
 public class AreaController {
 
-  @Autowired
-  AreaService areaService;
+  @Autowired AreaService areaService;
 
   @GetMapping("areas/lookup")
-  public List<AreaDTO> getProvinces(
-      AreaLookupDTO lookupDTO
-  ) {
+  public List<AreaDTO> getProvinces(AreaLookupDTO lookupDTO) {
     if (lookupDTO == null) return areaService.getAllProvinces();
     return areaService.getAllProvincesByCondition(lookupDTO);
   }
@@ -33,9 +29,7 @@ public class AreaController {
 
   @GetMapping("/areas/lookup/{code1}/{code2}")
   public List<AreaDTO> getPrecinctsByProvinceCodeAndDistrictCode(
-    @PathVariable("code1") String code1,
-    @PathVariable("code2") String code2
-  ) {
+      @PathVariable("code1") String code1, @PathVariable("code2") String code2) {
     var areaList = areaService.getAllPrecinctOfProvinceOfDistrict(code1, code2);
     return areaList;
   }

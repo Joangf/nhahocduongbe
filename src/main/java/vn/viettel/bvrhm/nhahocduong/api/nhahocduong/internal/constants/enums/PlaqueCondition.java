@@ -23,7 +23,7 @@ public enum PlaqueCondition {
     return this.code;
   }
 
-//  @JsonValue
+  //  @JsonValue
   public String getDescription() {
     return this.description;
   }

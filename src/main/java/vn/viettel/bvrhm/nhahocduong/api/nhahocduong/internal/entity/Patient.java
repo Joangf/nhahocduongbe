@@ -52,9 +52,9 @@ public class Patient {
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-          name = "nhahocduong_patient_disease",
-          joinColumns = {@JoinColumn(name = "patient_id")},
-          inverseJoinColumns = {@JoinColumn(name = "disease_id")})
+      name = "nhahocduong_patient_disease",
+      joinColumns = {@JoinColumn(name = "patient_id")},
+      inverseJoinColumns = {@JoinColumn(name = "disease_id")})
   private List<Disease> chronicConditions;
 
   @ManyToOne

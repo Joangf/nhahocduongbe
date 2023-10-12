@@ -1,9 +1,13 @@
 package vn.viettel.bvrhm.nhahocduong.api.auth.filter;
 
+import static java.util.Objects.isNull;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,22 +15,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.AuthenticationToken;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.Authority;
-import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.JwtService;
-import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthenticationService;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.UserAuthDetails;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthenticationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.JwtService;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 
-import java.io.IOException;
-import java.util.List;
-
-import static java.util.Objects.isNull;
-
 @Component
-public class  JwtAuthenticationFilter extends OncePerRequestFilter {
-  @Autowired
-  private JwtService jwtService;
-  @Autowired
-  private AuthenticationService authenticationService;
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+  @Autowired private JwtService jwtService;
+  @Autowired private AuthenticationService authenticationService;
 
   @Override
   protected void doFilterInternal(
@@ -66,7 +63,8 @@ public class  JwtAuthenticationFilter extends OncePerRequestFilter {
     // Option 2: load from database => Revise later
     List<RoleDTO> authorityStrList = jwtService.extractRoles(jwtString);
 
-    List<Authority> authorityList = authorityStrList.stream().map(role -> Authority.fromName(role.name())).toList();
+    List<Authority> authorityList =
+        authorityStrList.stream().map(role -> Authority.fromName(role.name())).toList();
 
     // populate Authentication object into SecurityContext
     Authentication authentication = new AuthenticationToken(userId, null, authorityList);

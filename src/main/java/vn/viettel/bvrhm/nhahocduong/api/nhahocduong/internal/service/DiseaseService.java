@@ -10,5 +10,5 @@ import java.util.List;
  * @since: 29-Sep-23
  */
 public interface DiseaseService {
-    List<DiseaseDTO> getAllDiseases();
+  List<DiseaseDTO> getAllDiseases();
 }

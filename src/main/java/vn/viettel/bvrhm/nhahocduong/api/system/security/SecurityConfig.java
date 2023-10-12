@@ -19,6 +19,11 @@ public class SecurityConfig {
   @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
+  public static PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
         .sessionManagement(
@@ -37,10 +42,5 @@ public class SecurityConfig {
         // .authenticationProvider(jwtAuthenticationFilter)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
-  }
-
-  @Bean
-  public static PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
   }
 }

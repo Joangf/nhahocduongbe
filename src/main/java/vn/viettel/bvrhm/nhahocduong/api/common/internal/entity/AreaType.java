@@ -9,6 +9,7 @@ public enum AreaType {
   ;
 
   private int code;
+
   AreaType(int code) {
     this.code = code;
   }

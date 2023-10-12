@@ -9,27 +9,25 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamSe
 @RestController
 @RequestMapping("/api")
 public class PlaqueRecordController {
-    @Autowired
-    PlaqueRecordService plaqueRecordService;
-    @Autowired
-    ExamServiceImpl examService;
+  @Autowired PlaqueRecordService plaqueRecordService;
+  @Autowired ExamServiceImpl examService;
 
-    @GetMapping("/patients/{patientId}/exams/{examId}/plaqueRecord")
-    PlaqueRecordDTO getPlaqueRecord(
-            @PathVariable("patientId") Long patientId, @PathVariable("examId") Long examId) {
-        PlaqueRecordDTO plaqueRecordDTO =
-                plaqueRecordService.getPlaqueRecordByPatientIdAndExamId(patientId, examId);
-        return plaqueRecordDTO;
-    }
+  @GetMapping("/patients/{patientId}/exams/{examId}/plaqueRecord")
+  PlaqueRecordDTO getPlaqueRecord(
+      @PathVariable("patientId") Long patientId, @PathVariable("examId") Long examId) {
+    PlaqueRecordDTO plaqueRecordDTO =
+        plaqueRecordService.getPlaqueRecordByPatientIdAndExamId(patientId, examId);
+    return plaqueRecordDTO;
+  }
 
-    @PostMapping("/patients/{patientId}/exams/{examId}/plaqueRecord")
-    PlaqueRecordDTO upsertPlaqueRecordOfExam(
-            @PathVariable("patientId") Long patientId,
-            @PathVariable("examId") Long examId,
-            @RequestBody PlaqueRecordDTO plagueRecordDTO) {
+  @PostMapping("/patients/{patientId}/exams/{examId}/plaqueRecord")
+  PlaqueRecordDTO upsertPlaqueRecordOfExam(
+      @PathVariable("patientId") Long patientId,
+      @PathVariable("examId") Long examId,
+      @RequestBody PlaqueRecordDTO plagueRecordDTO) {
 
-        PlaqueRecordDTO plaqueRecordDTO = plaqueRecordService.upsertPlaqueRecord(plagueRecordDTO);
-        examService.updatePlaqueRecordIdOfExam(examId, plaqueRecordDTO.id());
-        return plaqueRecordDTO;
-    }
+    PlaqueRecordDTO plaqueRecordDTO = plaqueRecordService.upsertPlaqueRecord(plagueRecordDTO);
+    examService.updatePlaqueRecordIdOfExam(examId, plaqueRecordDTO.id());
+    return plaqueRecordDTO;
+  }
 }

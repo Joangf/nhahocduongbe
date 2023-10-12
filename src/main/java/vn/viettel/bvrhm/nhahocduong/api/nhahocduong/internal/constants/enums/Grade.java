@@ -27,5 +27,4 @@ public enum Grade {
   public String getCode() {
     return this.code;
   }
-
 }

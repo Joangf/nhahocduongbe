@@ -23,7 +23,8 @@ public enum TartarCondition {
   public String getCode() {
     return this.code;
   }
-//  @JsonValue
+
+  //  @JsonValue
   public String getDescription() {
     return this.description;
   }

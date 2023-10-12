@@ -1,7 +1,10 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
+import static java.util.Objects.nonNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,31 +28,20 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.Organiza
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.OrganizationService;
 
-import java.util.*;
-
-import static java.util.Objects.nonNull;
-
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
 
-  @Autowired
-  private OrganizationRepository organizationRepository;
-  @Autowired
-  private PatientRepository patientRepository;
+  @Autowired private OrganizationRepository organizationRepository;
+  @Autowired private PatientRepository patientRepository;
 
-  @Autowired
-  private OrganizationMapper organizationMapper;
-  @PersistenceContext
-  private EntityManager entityManager;
+  @Autowired private OrganizationMapper organizationMapper;
+  @PersistenceContext private EntityManager entityManager;
 
-  @Autowired
-  private AreaService areaService;
+  @Autowired private AreaService areaService;
 
-  @Autowired
-  private AuthorizationService authorizationService;
+  @Autowired private AuthorizationService authorizationService;
 
-  @Autowired
-  private OrganizationHelper organizationHelper;
+  @Autowired private OrganizationHelper organizationHelper;
 
   public OrganizationDTO getOrganizationById(Long id) {
     Organization organization = organizationRepository.findById(id).orElse(null);
@@ -62,8 +54,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     List<String> duplicateClasses = organizationHelper.getDuplicateClassList(organizationDTO);
     if (nonNull(duplicateClasses) && !duplicateClasses.isEmpty()) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses)
-      );
+          HttpStatus.BAD_REQUEST,
+          ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses));
     }
 
     var entity = organizationMapper.toEntity(organizationDTO);
@@ -78,16 +70,20 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Transactional
   public OrganizationDTO updateOrganization(OrganizationDTO organizationDTO, Long id) {
-    var entity = organizationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND, ResponseMessage.ORGANIZATION_NOT_FOUND_WITH_ID + id
-    ));
+    var entity =
+        organizationRepository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, ResponseMessage.ORGANIZATION_NOT_FOUND_WITH_ID + id));
 
     // Check duplicate class
     List<String> duplicateClasses = organizationHelper.getDuplicateClassList(organizationDTO);
     if (nonNull(duplicateClasses) && !duplicateClasses.isEmpty()) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses)
-      );
+          HttpStatus.BAD_REQUEST,
+          ResponseMessage.ORGANIZATION_DUPLICATE_CLASS + String.join(", ", duplicateClasses));
     }
 
     var updatedEntity = organizationMapper.partialUpdate(organizationDTO, entity);
@@ -97,15 +93,14 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   @Transactional
-  public boolean delete(Long id){
+  public boolean delete(Long id) {
     List<Patient> patientList = patientRepository.findAllByOrganization_Id(id);
-    if(nonNull(patientList) && patientList.size() > 0){
+    if (nonNull(patientList) && patientList.size() > 0) {
       throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_CANT_DELETE_HAS_STUDENT
-      );
+          HttpStatus.BAD_REQUEST, ResponseMessage.ORGANIZATION_CANT_DELETE_HAS_STUDENT);
     }
     Organization organization = organizationRepository.findById(id).orElse(null);
-    if(organization != null){
+    if (organization != null) {
       organization.setStatus(false);
       organizationRepository.save(organization);
       return true;
@@ -114,7 +109,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     return false;
   }
 
-  public List<OrganizationDTO> getByCondition(String name){
+  public List<OrganizationDTO> getByCondition(String name) {
     return organizationMapper.toDtoList(organizationRepository.findByNameIsLikeOrderByName(name));
   }
 
@@ -126,11 +121,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     return organizationMapper.toDtoList(organizationRepository.findByAreaCodeIn(areaCodesInside));
   }
 
-  public List<OrganizationDTO> getAll(){
+  public List<OrganizationDTO> getAll() {
     return organizationMapper.toDtoList(organizationRepository.findAllByOrderByName());
   }
 
-  public Page<OrganizationDTO> search(OrganizationSearchCriteria searchCriteria, Pageable pageable) {
+  public Page<OrganizationDTO> search(
+      OrganizationSearchCriteria searchCriteria, Pageable pageable) {
     AuthorizationService.AuthorizationData authData = authorizationService.authorize();
     if (authData.getAreaCode() != null) {
       searchCriteria.setAreaCode(authData.getAreaCode());
@@ -143,10 +139,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
-    Page<Organization> organizations = organizationRepository.findByCriteria(areaCodesInside,
-                                                                             searchCriteria,
-                                                                             authData.getOrganizationId(),
-                                                                             pageable);
+    Page<Organization> organizations =
+        organizationRepository.findByCriteria(
+            areaCodesInside, searchCriteria, authData.getOrganizationId(), pageable);
 
     return organizations.map(organizationMapper::toDto);
   }
@@ -161,27 +156,43 @@ public class OrganizationServiceImpl implements OrganizationService {
     List<Patient> patientList = patientRepository.findAllByOrganization_Id(organizationId);
 
     // Only allow to delete classes not have any student
-    List<String> classesHaveStudent = classes.stream().filter(clazz -> patientList.stream().anyMatch(patient -> patient.getSchoolClass().equals(clazz))).toList();
+    List<String> classesHaveStudent =
+        classes.stream()
+            .filter(
+                clazz ->
+                    patientList.stream()
+                        .anyMatch(patient -> patient.getSchoolClass().equals(clazz)))
+            .toList();
     List<String> classesDontHaveStudent = new ArrayList<>(classes);
     classesDontHaveStudent.removeAll(classesHaveStudent);
 
     // Map to response model
-    List<ResponseModel> notAllowList = classesHaveStudent.stream().map(clazz -> ResponseModel.builder()
-                                                                                              .status(HttpStatus.BAD_REQUEST.value())
-                                                                                              .message(ResponseMessage.ORGANIZATION_CANT_DELETE_CLASS_HAS_STUDENT)
-                                                                                              .content(clazz)
-                                                                                              .build()
-                                                                      ).toList();
-    List<ResponseModel> allowList = classesDontHaveStudent.stream().map(clazz -> ResponseModel.builder()
-                                                                                              .status(HttpStatus.ACCEPTED.value())
-                                                                                              .message(HttpStatus.ACCEPTED.getReasonPhrase())
-                                                                                              .content(clazz)
-                                                                                              .build()
-                                                                        ).toList();
+    List<ResponseModel> notAllowList =
+        classesHaveStudent.stream()
+            .map(
+                clazz ->
+                    ResponseModel.builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .message(ResponseMessage.ORGANIZATION_CANT_DELETE_CLASS_HAS_STUDENT)
+                        .content(clazz)
+                        .build())
+            .toList();
+    List<ResponseModel> allowList =
+        classesDontHaveStudent.stream()
+            .map(
+                clazz ->
+                    ResponseModel.builder()
+                        .status(HttpStatus.ACCEPTED.value())
+                        .message(HttpStatus.ACCEPTED.getReasonPhrase())
+                        .content(clazz)
+                        .build())
+            .toList();
 
     return UpsertResponseModel.builder()
-            .successList(allowList).successCount(allowList.size())
-            .errorList(notAllowList).errorCount(notAllowList.size())
-            .build();
+        .successList(allowList)
+        .successCount(allowList.size())
+        .errorList(notAllowList)
+        .errorCount(notAllowList.size())
+        .build();
   }
 }

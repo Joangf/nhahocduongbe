@@ -1,17 +1,17 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecordDTO;
-
 import java.util.List;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecordDTO;
 
 /**
  * @author: longlb1
  * @since: 29-Sep-23
  */
 public interface TreatmentRecordService {
-    List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS);
+  List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(
+      Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS);
 
-    List<TreatmentRecordDTO> getTreatmentRecordsByExamId(Long examId);
+  List<TreatmentRecordDTO> getTreatmentRecordsByExamId(Long examId);
 
-    boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId);
+  boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId);
 }

@@ -1,25 +1,21 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamServiceImpl;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class ExamController {
 
-  @Autowired
-  ExamService examService;
+  @Autowired ExamService examService;
 
   @GetMapping("/patients/{patientId}/exams")
   List<ExamDTO> getExamsByPatientId(
-          @PathVariable Long patientId,
-          @RequestParam(value = "status", defaultValue = "true") boolean status) {
+      @PathVariable Long patientId,
+      @RequestParam(value = "status", defaultValue = "true") boolean status) {
     return examService.getExamsByPatientIdAndStatus(patientId, status);
   }
 
@@ -33,27 +29,25 @@ public class ExamController {
   }
 
   @PostMapping("/patients/{patientId}/exams")
-  ExamDTO createExam(
-          @PathVariable("patientId") Long patientId,
-          @RequestBody ExamDTO examDTO) {
-//    var newExamDTO =
-//        new ExamDTO(
-//            null,
-//            patientId,
-//            null,
-//            examDTO.dentistId(),
-//            null,
-//            examDTO.organizationId(),
-//            null,
-//            examDTO.schoolClass(),
-//            examDTO.year(),
-//            examDTO.profileNumber(),
-//            examDTO.date(),
-//            examDTO.teethRecordId(),
-//            examDTO.plaqueRecordId(),
-//            examDTO.tartarRecordId(),
-//                examDTO.examPlace(),
-//                examDTO.prescription());
+  ExamDTO createExam(@PathVariable("patientId") Long patientId, @RequestBody ExamDTO examDTO) {
+    //    var newExamDTO =
+    //        new ExamDTO(
+    //            null,
+    //            patientId,
+    //            null,
+    //            examDTO.dentistId(),
+    //            null,
+    //            examDTO.organizationId(),
+    //            null,
+    //            examDTO.schoolClass(),
+    //            examDTO.year(),
+    //            examDTO.profileNumber(),
+    //            examDTO.date(),
+    //            examDTO.teethRecordId(),
+    //            examDTO.plaqueRecordId(),
+    //            examDTO.tartarRecordId(),
+    //                examDTO.examPlace(),
+    //                examDTO.prescription());
     examDTO.setPatientId(patientId);
     var createdExamDTO = examService.createExam(examDTO);
     return createdExamDTO;

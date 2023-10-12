@@ -14,44 +14,40 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamSe
 @RequestMapping("/api")
 public class TeethRecordController {
 
-    Logger log = LoggerFactory.getLogger(TeethRecordController.class);
-    @Autowired
-    TeethRecordService teethRecordService;
-    @Autowired
-    TeethRecordRepository teethRecordRepository;
-    @Autowired
-    TeethRecordMapper teethRecordMapper;
+  Logger log = LoggerFactory.getLogger(TeethRecordController.class);
+  @Autowired TeethRecordService teethRecordService;
+  @Autowired TeethRecordRepository teethRecordRepository;
+  @Autowired TeethRecordMapper teethRecordMapper;
 
-    @Autowired
-    ExamServiceImpl examService;
+  @Autowired ExamServiceImpl examService;
 
-    @GetMapping("/patients/{patientId}/exams/{examId}/teethRecord")
-    TeethRecordDTO getTeethRecord(
-            @PathVariable("patientId") Long patientId, @PathVariable("examId") Long examId) {
-        TeethRecordDTO teethRecordDTO =
-                teethRecordService.getTeethRecordByPatientIdAndExamId(patientId, examId);
-        return teethRecordDTO;
-    }
+  @GetMapping("/patients/{patientId}/exams/{examId}/teethRecord")
+  TeethRecordDTO getTeethRecord(
+      @PathVariable("patientId") Long patientId, @PathVariable("examId") Long examId) {
+    TeethRecordDTO teethRecordDTO =
+        teethRecordService.getTeethRecordByPatientIdAndExamId(patientId, examId);
+    return teethRecordDTO;
+  }
 
-    @PostMapping("/patients/{patientId}/exams/{examId}/teethRecord")
-    TeethRecordDTO upsertTeethRecord(
-            @PathVariable("patientId") Long patientId,
-            @PathVariable("examId") Long examId,
-            @RequestBody TeethRecordDTO teethRecordDTO) {
-        TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
-        examService.updateTeethRecordIdOfExam(examId, createdDto.id());
-        return createdDto;
-    }
+  @PostMapping("/patients/{patientId}/exams/{examId}/teethRecord")
+  TeethRecordDTO upsertTeethRecord(
+      @PathVariable("patientId") Long patientId,
+      @PathVariable("examId") Long examId,
+      @RequestBody TeethRecordDTO teethRecordDTO) {
+    TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
+    examService.updateTeethRecordIdOfExam(examId, createdDto.id());
+    return createdDto;
+  }
 
-    @PostMapping("/teethRecord")
-    public TeethRecordDTO createTeethRecord(@RequestBody TeethRecordDTO teethRecordDTO) {
-        TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
-        return createdDto;
-    }
+  @PostMapping("/teethRecord")
+  public TeethRecordDTO createTeethRecord(@RequestBody TeethRecordDTO teethRecordDTO) {
+    TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
+    return createdDto;
+  }
 
-    @GetMapping("/teethRecord/{id}")
-    public TeethRecordDTO getTeethRecordById(@PathVariable Long id) {
-        TeethRecordDTO dto = teethRecordService.getTeethRecordById(id);
-        return dto;
-    }
+  @GetMapping("/teethRecord/{id}")
+  public TeethRecordDTO getTeethRecordById(@PathVariable Long id) {
+    TeethRecordDTO dto = teethRecordService.getTeethRecordById(id);
+    return dto;
+  }
 }

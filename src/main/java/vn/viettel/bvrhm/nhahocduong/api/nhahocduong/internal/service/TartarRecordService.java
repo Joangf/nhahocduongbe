@@ -7,7 +7,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TartarRecordDTO
  * @since: 29-Sep-23
  */
 public interface TartarRecordService {
-    TartarRecordDTO getTartarRecordByPatientIdAndExamId(Long patientId, Long examId);
+  TartarRecordDTO getTartarRecordByPatientIdAndExamId(Long patientId, Long examId);
 
-    TartarRecordDTO upsertTartarRecord(TartarRecordDTO tartarRecordDTO);
+  TartarRecordDTO upsertTartarRecord(TartarRecordDTO tartarRecordDTO);
 }

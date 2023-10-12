@@ -7,6 +7,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PlaqueRecordDTO
  * @since: 29-Sep-23
  */
 public interface PlaqueRecordService {
-    PlaqueRecordDTO getPlaqueRecordByPatientIdAndExamId(Long patientId, Long examId);
-    PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO);
+  PlaqueRecordDTO getPlaqueRecordByPatientIdAndExamId(Long patientId, Long examId);
+
+  PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO);
 }

@@ -45,8 +45,8 @@ public class TeethRecordServiceImpl implements TeethRecordService {
 
   @Override
   public TeethRecordDTO upsertTeethRecord(TeethRecordDTO teethRecordDTO) {
-//    System.out.println(
-//        ReflectionToStringBuilder.toString(teethRecordDTO, new RecursiveToStringStyle()));
+    //    System.out.println(
+    //        ReflectionToStringBuilder.toString(teethRecordDTO, new RecursiveToStringStyle()));
     var entity = teethRecordMapper.toEntity(teethRecordDTO);
     teethRecordRepository.save(entity);
 

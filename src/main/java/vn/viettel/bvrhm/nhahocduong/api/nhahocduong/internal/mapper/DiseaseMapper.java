@@ -1,10 +1,9 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper;
 
+import java.util.List;
 import org.mapstruct.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DiseaseDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Disease;
-
-import java.util.List;
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,

@@ -1,6 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,14 +14,10 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMappe
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.PatientServiceImpl;
 
-import java.io.IOException;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 public class PatientController {
-  @Autowired
-  PatientServiceImpl patientService;
+  @Autowired PatientServiceImpl patientService;
   @Autowired PatientRepository patientRepository;
   @Autowired PatientMapper patientMapper;
 
@@ -28,9 +26,10 @@ public class PatientController {
     PatientDTO createdDto = patientService.createPatient(patientDTO);
     return createdDto;
   }
+
   @GetMapping("/patient/search")
   public Page<PatientDTO> getPatientsByCondition(
-          PatientSearchCriteria patientSearchCriteria, Pageable pageable) {
+      PatientSearchCriteria patientSearchCriteria, Pageable pageable) {
     return patientService.getPagePatientByCondition(patientSearchCriteria, pageable);
   }
 
@@ -50,13 +49,13 @@ public class PatientController {
     return patientService.deletePatientById(id);
   }
 
-//  @GetMapping("/patients/search/getByCondition")
-//  public List<PatientDTO> getPatientsByCondition(
-//      @RequestParam(name = "searchText",required = false) String searchText,
-//      @RequestParam(name = "organizationName",required = false) String organizationName,
-//      @RequestParam(name = "schoolClass",required = false) List<String> schoolClass) {
-//    return patientService.getPatientByCondition(searchText, organizationName, schoolClass);
-//  }
+  //  @GetMapping("/patients/search/getByCondition")
+  //  public List<PatientDTO> getPatientsByCondition(
+  //      @RequestParam(name = "searchText",required = false) String searchText,
+  //      @RequestParam(name = "organizationName",required = false) String organizationName,
+  //      @RequestParam(name = "schoolClass",required = false) List<String> schoolClass) {
+  //    return patientService.getPatientByCondition(searchText, organizationName, schoolClass);
+  //  }
 
   @GetMapping("/patient")
   public Page<PatientDTO> getPatientsAll(Pageable pageable) {
@@ -64,7 +63,8 @@ public class PatientController {
   }
 
   @PostMapping("/patient/excel")
-  public List<PatientDTO> importPatientsFromExcel(@RequestParam MultipartFile file) throws IOException {
+  public List<PatientDTO> importPatientsFromExcel(@RequestParam MultipartFile file)
+      throws IOException {
     return patientService.importPatientsFromExcel(file);
   }
 

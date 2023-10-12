@@ -16,9 +16,8 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
 @RequestMapping("/api/user")
 public class UserController {
 
-  @Autowired
-  UserService userService;
-  private Logger log = LoggerFactory.getLogger(UserController.class);
+  private final Logger log = LoggerFactory.getLogger(UserController.class);
+  @Autowired UserService userService;
 
   @PostMapping("/register")
   UserDTO createUser(@RequestBody UserDTO newUserDTO) {

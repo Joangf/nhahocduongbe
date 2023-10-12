@@ -1,19 +1,18 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper;
 
+import java.util.List;
 import org.mapstruct.*;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.mapper.ReferenceMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 
-import java.util.List;
-
 @Mapper(
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {ReferenceMapper.class}
-)
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = {ReferenceMapper.class})
 public interface ExamMapper {
   Exam toEntity(ExamDTO examDTO);
+
   Exam toEntity(Long id);
 
   public List<Exam> toEntityList(List<ExamDTO> examDTOList);

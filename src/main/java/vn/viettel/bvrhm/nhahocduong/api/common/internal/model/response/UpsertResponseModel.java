@@ -1,9 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author: longlb1
@@ -12,8 +11,8 @@ import java.util.List;
 @Data
 @Builder
 public class UpsertResponseModel {
-    int successCount;
-    int errorCount;
-    List<ResponseModel> successList;
-    List<ResponseModel> errorList;
+  int successCount;
+  int errorCount;
+  List<ResponseModel> successList;
+  List<ResponseModel> errorList;
 }
