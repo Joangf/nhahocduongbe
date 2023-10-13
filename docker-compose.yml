@@ -12,7 +12,7 @@ services:
     volumes:
       - c:/docker/log:/var/log
     environment:
-      - "SPRING_PROFILES_ACTIVE=prod"
+      - "SPRING_PROFILES_ACTIVE=prod-docker"
       - "DB_URL=jdbc:postgresql://host.docker.internal:5432/nhahocduong?currentSchema=nhahocduong"
       - "DB_USERNAME=nhahocduong"
       - "DB_PASSWORD=nhahocduong"

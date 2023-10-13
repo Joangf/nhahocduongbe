@@ -19,6 +19,9 @@ spring:
       name: app
       password: app
 
+  config:
+    import: optional:file:.env[.properties]
+
 server:
   error:
     whitelabel:
