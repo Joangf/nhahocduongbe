@@ -10,9 +10,10 @@ CREATE TABLE USER_USER
     last_name    varchar        not null,
     birthdate    date,
     organization bigint,
-    created_date date default now(),
-    updated_date date,
-    deleted_date date
+    created_date timestamp default now(),
+    updated_date timestamp,
+    created_by   varchar,
+    updated_by   varchar
 );
 
 --default password: 123
@@ -47,10 +48,10 @@ CREATE TABLE USER_ROLE
     id           BIGSERIAL primary key,
     code         VARCHAR UNIQUE NOT NULL,
     name         VARCHAR UNIQUE NOT NULL,
-    status       BOOLEAN default TRUE,
+    status       BOOLEAN   default TRUE,
     description  VARCHAR,
-    created_date date    default now(),
-    updated_date date,
+    created_date timestamp default now(),
+    updated_date timestamp,
     created_by   varchar,
     updated_by   varchar
 );
