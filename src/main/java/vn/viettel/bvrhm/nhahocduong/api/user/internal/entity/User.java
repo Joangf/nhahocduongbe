@@ -14,14 +14,6 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization
 @AllArgsConstructor
 @Table(name = "USER_USER")
 public class User {
-
-  @ManyToMany
-  @JoinTable(
-      name = "user_role_mapping",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "role_id")})
-  List<Role> roleList;
-
   @Id
   @GeneratedValue(generator = "user_id_generator")
   @SequenceGenerator(
@@ -56,9 +48,10 @@ public class User {
   @JoinColumn(name = "organization")
   private Organization organization;
 
-  @Column(name = "created_date")
-  private LocalDate createdDate;
-
-  @Column(name = "updated_date")
-  private LocalDate updatedDate;
+    @ManyToMany
+    @JoinTable(
+            name = "user_role_mapping",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    List<Role> roleList;
 }
