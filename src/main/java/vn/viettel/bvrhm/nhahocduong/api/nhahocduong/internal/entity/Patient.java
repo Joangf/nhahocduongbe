@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
+import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Ethnic;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.EthnicJpaConverter;
 
 @Entity
 @Data
 @Table(name = "nhahocduong_patient")
-public class Patient {
+public class Patient extends BaseEntity {
   @Id
   @GeneratedValue(generator = "patient_id_generator")
   @SequenceGenerator(
