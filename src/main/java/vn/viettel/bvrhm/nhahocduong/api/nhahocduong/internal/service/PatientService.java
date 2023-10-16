@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.PatientSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.PatientSearchCriteria;
 
 /**
  * @author: longlb1

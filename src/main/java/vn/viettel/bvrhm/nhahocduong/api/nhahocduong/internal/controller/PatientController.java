@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.PatientSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.PatientSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.PatientMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.PatientServiceImpl;

@@ -37,8 +37,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Eth
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DiseaseDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.OrganizationSearchCriteria;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.criteria.PatientSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.OrganizationSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.PatientSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Disease;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;

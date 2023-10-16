@@ -1,5 +1,8 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 
@@ -31,4 +34,6 @@ public interface ExamService {
   boolean delete(Long id);
 
   ExamDTO updateExam(ExamDTO examDTO);
+
+  Page<ExamDTO> search(ExamSearchCriteria searchCriteria, Pageable pageable);
 }
