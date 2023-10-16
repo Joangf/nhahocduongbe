@@ -66,8 +66,9 @@ public class ExamController {
     return examService.delete(id);
   }
 
-  @GetMapping("/exams/search")
-  public Page<ExamDTO> search(ExamSearchCriteria searchCriteria, Pageable pageable) {
+  @GetMapping("/patients/{patientId}/exams/search")
+  public Page<ExamDTO> search(ExamSearchCriteria searchCriteria, @PathVariable("patientId") Long patientId, Pageable pageable) {
+    searchCriteria.setPatientId(patientId);
     return examService.search(searchCriteria, pageable);
   }
 }

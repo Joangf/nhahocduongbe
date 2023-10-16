@@ -9,6 +9,7 @@ import lombok.Data;
  */
 @Data
 public class ExamSearchCriteria {
+  private Long patientId;
   private Long id;
   private LocalDate fromDate;
   private LocalDate toDate;
