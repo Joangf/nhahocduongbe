@@ -6,12 +6,16 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.mapper.UserMapper;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.validator.UserValidator;
 
 @Service
 public class UserService {
@@ -27,7 +31,11 @@ public class UserService {
     User newUser = userMapper.userFromUserDTO(newUserDTO);
 
     String inputPassword = newUserDTO.password();
-    // TODO validate password strength
+    boolean isValidPassword = UserValidator.validatePasswordStrength(inputPassword);
+    if (!isValidPassword) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.USER_WEAK_PASSWORD);
+    }
+
     String hashedPassword = passwordEncoder.encode(inputPassword);
 
     newUser.setId(null);

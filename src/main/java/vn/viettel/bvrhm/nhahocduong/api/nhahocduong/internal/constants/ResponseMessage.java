@@ -30,4 +30,7 @@ public final class ResponseMessage {
 
   // Patient
   public static final String PATIENT_CANT_DELETE_HAS_EXAMS = "Can't delete student who has exams";
+
+  // User
+  public static final String USER_WEAK_PASSWORD = "Weak password";
 }
