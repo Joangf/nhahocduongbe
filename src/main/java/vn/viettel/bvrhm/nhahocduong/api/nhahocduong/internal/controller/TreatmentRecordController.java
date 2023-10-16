@@ -23,7 +23,7 @@ public class TreatmentRecordController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestBody List<TreatmentRecordDTO> treatmentRecords) {
-    return treatmentRecordService.upsertTreatmentRecordsByExamId(examId, treatmentRecords);
+    return treatmentRecordService.upsertTreatmentRecordsByExamIdAndPatientId(examId, patientId,treatmentRecords);
   }
 
   @DeleteMapping("/patients/{patientId}/exams/{examId}/treatmentRecord/{treatmentRecordId}")
@@ -31,6 +31,6 @@ public class TreatmentRecordController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @PathVariable("treatmentRecordId") Long treatmentRecordId) {
-    return treatmentRecordService.deleteTreatmentRecord(examId, treatmentRecordId);
+    return treatmentRecordService.deleteTreatmentRecord(examId, patientId, treatmentRecordId);
   }
 }

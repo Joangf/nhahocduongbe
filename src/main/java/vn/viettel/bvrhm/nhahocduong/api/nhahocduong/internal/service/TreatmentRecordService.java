@@ -8,10 +8,10 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TreatmentRecord
  * @since: 29-Sep-23
  */
 public interface TreatmentRecordService {
-  List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(
-      Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS);
+  List<TreatmentRecordDTO> upsertTreatmentRecordsByExamIdAndPatientId(
+      Long examId, Long patientId, List<TreatmentRecordDTO> treatmentRecordDTOS);
 
   List<TreatmentRecordDTO> getTreatmentRecordsByExamId(Long examId);
 
-  boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId);
+  boolean deleteTreatmentRecord(Long examId, Long patientId, Long treatmentRecordId);
 }

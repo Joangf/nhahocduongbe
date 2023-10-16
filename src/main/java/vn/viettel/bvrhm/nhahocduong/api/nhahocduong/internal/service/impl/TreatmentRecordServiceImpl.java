@@ -39,9 +39,9 @@ public class TreatmentRecordServiceImpl implements TreatmentRecordService {
       maxAttempts = 5,
       backoff = @Backoff(delay = 300))
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public List<TreatmentRecordDTO> upsertTreatmentRecordsByExamId(
-      Long examId, List<TreatmentRecordDTO> treatmentRecordDTOS) {
-    ExamDTO examDTO = examService.getExamByIdAndStatus(examId, true);
+  public List<TreatmentRecordDTO> upsertTreatmentRecordsByExamIdAndPatientId(
+      Long examId, Long patientId, List<TreatmentRecordDTO> treatmentRecordDTOS) {
+    ExamDTO examDTO = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
     treatmentRecordDTOS.forEach(treatmentRecordDTO -> treatmentRecordDTO.setExamId(examId));
     List<TreatmentRecord> treatmentRecords =
         treatmentRecordMapper.toListEntity(treatmentRecordDTOS);
@@ -74,8 +74,8 @@ public class TreatmentRecordServiceImpl implements TreatmentRecordService {
   }
 
   @Override
-  public boolean deleteTreatmentRecord(Long examId, Long treatmentRecordId) {
-    ExamDTO examDTO = examService.getExamByIdAndStatus(examId, true);
+  public boolean deleteTreatmentRecord(Long examId, Long patientId, Long treatmentRecordId) {
+    ExamDTO examDTO = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
     if (isNull(examDTO)) {
       throw new ResponseStatusException(
           HttpStatus.NOT_FOUND, ResponseMessage.EXAM_NOT_FOUND_WITH_ID + examId);
