@@ -20,15 +20,15 @@ public class UserController {
   @Autowired UserService userService;
 
   @PostMapping("/register")
-  UserDTO createUser(@RequestBody UserDTO newUserDTO) {
-    UserDTO createdUser = null;
-    try {
-      createdUser = userService.createUser(newUserDTO);
-    } catch (Exception e) {
-      e.printStackTrace();
-      log.error("Error creating new user");
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  UserDTO createUser(@RequestBody UserDTO newUserDTO) throws Exception {
+    UserDTO createdUser = userService.createUser(newUserDTO);
+//    try {
+//      createdUser = userService.createUser(newUserDTO);
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      log.error("Error creating new user");
+//      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
     return createdUser;
   }
 

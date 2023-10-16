@@ -34,7 +34,7 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
     FROM Exam e
     WHERE
       (:#{#searchCriteria.getId()} IS NULL OR e.id = :#{#searchCriteria.getId()} )
-      AND (:#{#searchCriteria.patientId()} IS NULL OR e.patientId = :#{#searchCriteria.patientId()})
+      AND (:#{#searchCriteria.getPatientId()} IS NULL OR e.patientId = :#{#searchCriteria.getPatientId()})
       AND (COALESCE(:#{#searchCriteria.getFromDate()}, NULL) IS NULL OR e.date >= :#{#searchCriteria.getFromDate()})
       AND (COALESCE(:#{#searchCriteria.getToDate()}, NULL) IS NULL OR e.date <= :#{#searchCriteria.getToDate()})
       AND e.status = :#{#searchCriteria.isStatus()}
