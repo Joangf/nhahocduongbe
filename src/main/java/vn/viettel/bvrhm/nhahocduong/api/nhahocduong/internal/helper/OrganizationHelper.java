@@ -3,6 +3,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.helper;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,12 +24,8 @@ public class OrganizationHelper {
   public List<String> getFlattenClassList(OrganizationDTO organizationDTO) {
     if (organizationDTO.getClasses() == null || organizationDTO.getClasses().isEmpty()) return null;
     return organizationDTO.getClasses().values().stream()
-        .reduce(
-            (classList, classList2) -> {
-              classList.addAll(classList2);
-              return classList;
-            })
-        .orElse(null);
+        .flatMap(Collection::stream)
+        .toList();
   }
 
   public List<String> getDuplicateClassList(OrganizationDTO organizationDTO) {

@@ -10,6 +10,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamRepo
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PlaqueRecordRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PlaqueRecordService;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class PlaqueRecordServiceImpl implements PlaqueRecordService {
   @Autowired private PlaqueRecordRepository plagueRecordRepository;
@@ -27,13 +29,11 @@ public class PlaqueRecordServiceImpl implements PlaqueRecordService {
     if (exam == null) {
       return null;
     }
-    Long plaqueRecordId = exam.getPlaqueRecordId();
-    if (plaqueRecordId == null) {
+    PlaqueRecord plaqueRecord = exam.getPlaqueRecord();
+    if (isNull(plaqueRecord)) {
       return null;
     }
-    PlaqueRecord plaqueRecord = plagueRecordRepository.getReferenceById(plaqueRecordId);
-    PlaqueRecordDTO dto = plaqueRecordMapper.toDto(plaqueRecord);
-    return dto;
+    return plaqueRecordMapper.toDto(plaqueRecord);
   }
 
   @Override

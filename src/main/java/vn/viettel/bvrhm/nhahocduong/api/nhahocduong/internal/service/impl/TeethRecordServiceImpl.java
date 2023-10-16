@@ -10,6 +10,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamRepo
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.TeethRecordRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TeethRecordService;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class TeethRecordServiceImpl implements TeethRecordService {
 
@@ -34,13 +36,11 @@ public class TeethRecordServiceImpl implements TeethRecordService {
     if (exam == null) {
       return null;
     }
-    Long teethRecordId = exam.getTeethRecordId();
-    if (teethRecordId == null) {
+    TeethRecord teethRecord  = exam.getTeethRecord();
+    if (isNull(teethRecord)) {
       return null;
     }
-    TeethRecord teethRecord = teethRecordRepository.getReferenceById(teethRecordId);
-    TeethRecordDTO dto = teethRecordMapper.toDto(teethRecord);
-    return dto;
+    return teethRecordMapper.toDto(teethRecord);
   }
 
   @Override

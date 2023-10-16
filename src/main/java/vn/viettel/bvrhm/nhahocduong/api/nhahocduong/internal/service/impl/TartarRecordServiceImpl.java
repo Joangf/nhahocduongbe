@@ -10,6 +10,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamRepo
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.TartarRecordRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TartarRecordService;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class TartarRecordServiceImpl implements TartarRecordService {
   @Autowired private TartarRecordRepository tartarRecordRepository;
@@ -27,13 +29,12 @@ public class TartarRecordServiceImpl implements TartarRecordService {
     if (exam == null) {
       return null;
     }
-    Long tartarRecordId = exam.getTartarRecordId();
-    if (tartarRecordId == null) {
+
+    TartarRecord tartarRecord = exam.getTartarRecord();
+    if (isNull(tartarRecord)) {
       return null;
     }
-    TartarRecord tartarRecord = tartarRecordRepository.getReferenceById(tartarRecordId);
-    TartarRecordDTO dto = tartarRecordMapper.toDto(tartarRecord);
-    return dto;
+    return tartarRecordMapper.toDto(tartarRecord);
   }
 
   @Override

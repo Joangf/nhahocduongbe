@@ -28,8 +28,6 @@ public interface ExamService {
 
   List<String> updateChronicDiseasesCodesByExamId(Long examId, List<String> diseaseCodeList);
 
-  ExamDTO injectChildObject(Exam entity);
-
   boolean delete(Long id);
 
   ExamDTO updateExam(ExamDTO examDTO);

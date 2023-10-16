@@ -37,19 +37,15 @@ public class ExamServiceImpl implements ExamService {
   @Autowired private PatientRepository patientRepository;
   @Autowired private DentistRepository dentistRepository;
   @Autowired private OrganizationRepository organizationRepository;
+  @Autowired private TartarRecordRepository tartarRecordRepository;
+  @Autowired private TeethRecordRepository teethRecordRepository;
+  @Autowired private PlaqueRecordRepository plaqueRecordRepository;
 
   @Override
   public List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status) {
     List<Exam> examList =
         examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, status);
-
-    List<ExamDTO> examDTOList = new ArrayList<ExamDTO>();
-    for (Exam exam : examList) {
-      ExamDTO dto = injectChildObject(exam);
-      examDTOList.add(dto);
-    }
-
-    return examDTOList;
+    return examMapper.toDtoList(examList);
   }
 
   @Override
@@ -58,8 +54,7 @@ public class ExamServiceImpl implements ExamService {
     if (exam == null) {
       return null;
     }
-    //    ExamDTO dto = examMapper.toDto(exam);
-    return injectChildObject(exam);
+    return examMapper.toDto(exam);
   }
 
   @Override
@@ -78,7 +73,7 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updateTeethRecordIdOfExam(Long examId, Long teethRecordId) {
     Exam exam = examRepository.getReferenceById(examId);
-    exam.setTeethRecordId(teethRecordId);
+    exam.setTeethRecord(teethRecordRepository.getReferenceById(teethRecordId));
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
   }
@@ -91,7 +86,7 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updatePlaqueRecordIdOfExam(Long examId, Long plaqueRecordId) {
     Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
-    exam.setPlaqueRecordId(plaqueRecordId);
+    exam.setPlaqueRecord(plaqueRecordRepository.getReferenceById(plaqueRecordId));
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
   }
@@ -104,7 +99,7 @@ public class ExamServiceImpl implements ExamService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updateTartarRecordIdOfExam(Long examId, Long tartarRecordId) {
     Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
-    exam.setTartarRecordId(tartarRecordId);
+    exam.setTartarRecord(tartarRecordRepository.getReferenceById(tartarRecordId));
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
   }
@@ -150,31 +145,31 @@ public class ExamServiceImpl implements ExamService {
     return chronicConditions.stream().map(Disease::getCode).toList();
   }
 
-  @Override
-  public ExamDTO injectChildObject(Exam entity) {
-    Patient patient = patientRepository.findById(entity.getPatientId()).orElse(null);
-    Dentist dentist = dentistRepository.findById(entity.getDentistId()).orElse(null);
-    Organization organization =
-        organizationRepository.findById(entity.getOrganizationId()).orElse(null);
-
-    return new ExamDTO(
-        entity.getId(),
-        entity.getPatientId(),
-        patient.getFullName(),
-        entity.getDentistId(),
-        dentist.getTitle(),
-        entity.getOrganizationId(),
-        organization.getName(),
-        entity.getSchoolClass(),
-        entity.getYear(),
-        entity.getProfileNumber(),
-        entity.getDate(),
-        entity.getTeethRecordId(),
-        entity.getPlaqueRecordId(),
-        entity.getTartarRecordId(),
-        treatmentRecordMapper.toListDto(entity.getTreatmentRecords()),
-        entity.getStatus());
-  }
+//  @Override
+//  public ExamDTO injectChildObject(Exam entity) {
+//    Patient patient = patientRepository.findById(entity.getPatientId()).orElse(null);
+//    Dentist dentist = dentistRepository.findById(entity.getDentistId()).orElse(null);
+//    Organization organization =
+//        organizationRepository.findById(entity.getOrganizationId()).orElse(null);
+//
+//    return new ExamDTO(
+//        entity.getId(),
+//        entity.getPatientId(),
+//        patient.getFullName(),
+//        entity.getDentistId(),
+//        dentist.getTitle(),
+//        entity.getOrganizationId(),
+//        organization.getName(),
+//        entity.getSchoolClass(),
+//        entity.getYear(),
+//        entity.getProfileNumber(),
+//        entity.getDate(),
+//        entity.getTeethRecordId(),
+//        entity.getPlaqueRecordId(),
+//        entity.getTartarRecordId(),
+//        treatmentRecordMapper.toListDto(entity.getTreatmentRecords()),
+//        entity.getStatus());
+//  }
 
   @Override
   public boolean delete(Long id) {

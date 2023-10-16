@@ -17,6 +17,14 @@ public interface ExamMapper {
 
   List<Exam> toEntityList(List<ExamDTO> examDTOList);
 
+  @Mappings({
+    @Mapping(target = "patientId", source = "patient.id"),
+    @Mapping(target = "patientName", source = "patient.fullName"),
+    @Mapping(target = "dentistId", source = "dentist.id"),
+    @Mapping(target = "dentistName", source = "dentist.title"),
+    @Mapping(target = "organizationId", source = "organization.id"),
+    @Mapping(target = "organizationName", source = "organization.name"),
+  })
   ExamDTO toDto(Exam exam);
 
   List<ExamDTO> toDtoList(List<Exam> examList);

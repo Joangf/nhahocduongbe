@@ -20,14 +20,17 @@ public class Exam extends BaseEntity {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "patient_id")
-  private Long patientId;
+  @ManyToOne
+  @JoinColumn(name = "patient_id")
+  private Patient patient;
 
-  @Column(name = "dentist_id")
-  private Long dentistId;
+  @ManyToOne
+  @JoinColumn(name = "dentist_id")
+  private Dentist dentist;
 
-  @Column(name = "organization_id")
-  private Long organizationId;
+  @ManyToOne
+  @JoinColumn(name = "organization_id")
+  private Organization organization;
 
   @Column(name = "class")
   private String schoolClass;
@@ -45,14 +48,20 @@ public class Exam extends BaseEntity {
   @Column(name = "date")
   private LocalDate date;
 
-  @Column(name = "teeth_record_id")
-  private Long teethRecordId;
+  @ManyToOne
+  @JoinColumn(name = "teeth_record_id")
+  @Where(clause = "status = true")
+  private TeethRecord teethRecord;
 
-  @Column(name = "plaque_record_id")
-  private Long plaqueRecordId;
+  @ManyToOne
+  @JoinColumn(name = "plaque_record_id")
+  @Where(clause = "status = true")
+  private PlaqueRecord plaqueRecord;
 
-  @Column(name = "tartar_record_id")
-  private Long tartarRecordId;
+  @ManyToOne
+  @JoinColumn(name = "tartar_record_id")
+  @Where(clause = "status = true")
+  private TartarRecord tartarRecord;
 
   @ManyToMany()
   @JoinTable(
