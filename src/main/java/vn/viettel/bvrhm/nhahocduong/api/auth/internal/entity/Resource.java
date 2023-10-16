@@ -13,25 +13,25 @@ import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 @Data
 @NoArgsConstructor
 public class Resource extends BaseEntity {
-    @Id
-    @GeneratedValue(generator = "resource_id_generator")
-    @SequenceGenerator(
-            name = "resource_id_generator",
-            sequenceName = "nhahocduong_resource_id_seq",
-            allocationSize = 1)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(generator = "resource_id_generator")
+  @SequenceGenerator(
+      name = "resource_id_generator",
+      sequenceName = "nhahocduong_resource_id_seq",
+      allocationSize = 1)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Column(name = "api_base_path")
-    private String apiBasePath;
+  @Column(name = "api_base_path")
+  private String apiBasePath;
 
-    @Column(name = "ui_base_path")
-    private String uiBasePath;
+  @Column(name = "ui_base_path")
+  private String uiBasePath;
 
-    @ManyToOne
-    @JoinColumn(name = "policy_id")
-    private Policy policy;
+  @ManyToOne
+  @JoinColumn(name = "policy_id")
+  private Policy policy;
 }

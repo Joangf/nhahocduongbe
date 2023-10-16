@@ -223,7 +223,7 @@ public class PatientHelper {
       }
       if (nonNull(patient.getGender())) {
         row.createCell(ExportPatientExcelColumn.GENDER.getIndex())
-                .setCellValue(patient.getGender());
+            .setCellValue(patient.getGender());
       }
       if (nonNull(patient.getOrganization()) && nonNull(patient.getOrganization().getCode())) {
         row.createCell(ExportPatientExcelColumn.SCHOOL_CODE.getIndex())

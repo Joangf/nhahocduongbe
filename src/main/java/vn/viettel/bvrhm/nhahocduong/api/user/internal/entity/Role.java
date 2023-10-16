@@ -19,6 +19,7 @@ import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 public class Role extends BaseEntity {
   @ManyToMany(mappedBy = "roleList")
   List<User> userList;
+
   @Id
   @GeneratedValue(generator = "role_id_generator")
   @SequenceGenerator(
@@ -27,12 +28,16 @@ public class Role extends BaseEntity {
       allocationSize = 1)
   @Column(name = "id")
   private Long id;
+
   @Column(name = "code")
   private String code;
+
   @Column(name = "name")
   private String name;
+
   @Column(name = "status")
   private Boolean status;
+
   @Column(name = "description")
   private String description;
 }

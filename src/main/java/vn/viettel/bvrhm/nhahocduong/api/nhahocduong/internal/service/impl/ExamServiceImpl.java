@@ -53,8 +53,8 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
-  public ExamDTO getExamByIdAndStatus(Long id, boolean status) {
-    Exam exam = examRepository.findExamByIdAndStatus(id, status);
+  public ExamDTO getExamByIdAndPatientIdAndStatus(Long id, Long patientId, boolean status) {
+    Exam exam = examRepository.findExamByIdAndPatientIdAndStatus(id, patientId, status);
     if (exam == null) {
       return null;
     }

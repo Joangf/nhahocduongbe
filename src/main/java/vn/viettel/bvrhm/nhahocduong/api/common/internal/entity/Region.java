@@ -7,10 +7,10 @@ public enum Region {
   SOUTH("south", "Các tỉnh phía nam"),
   ;
 
-  private String code;
-  private String description;
+  private final String code;
+  private final String description;
 
-  private Region(String code, String description) {
+  Region(String code, String description) {
     this.code = code;
     this.description = description;
   }

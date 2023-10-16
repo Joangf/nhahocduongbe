@@ -14,7 +14,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 public interface ExamService {
   List<ExamDTO> getExamsByPatientIdAndStatus(Long patientId, boolean status);
 
-  ExamDTO getExamByIdAndStatus(Long id, boolean status);
+  ExamDTO getExamByIdAndPatientIdAndStatus(Long id, Long patientId, boolean status);
 
   ExamDTO createExam(ExamDTO newExamDTO);
 

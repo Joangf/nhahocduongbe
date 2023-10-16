@@ -27,8 +27,7 @@ public class ExamController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestParam(value = "status", defaultValue = "true") boolean status) {
-    // TODO check ownership
-    return examService.getExamByIdAndStatus(examId, status);
+    return examService.getExamByIdAndPatientIdAndStatus(examId, patientId, status);
   }
 
   @PostMapping("/patients/{patientId}/exams")

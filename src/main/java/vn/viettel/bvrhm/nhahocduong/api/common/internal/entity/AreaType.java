@@ -8,7 +8,7 @@ public enum AreaType {
   COMMUNE(3),
   ;
 
-  private int code;
+  private final int code;
 
   AreaType(int code) {
     this.code = code;

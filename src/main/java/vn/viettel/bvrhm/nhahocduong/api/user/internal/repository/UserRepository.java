@@ -7,10 +7,10 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-  public Optional<User> getByUsername(String username);
+  Optional<User> getByUsername(String username);
 
   // public List<User> findByName(String name); // TODO find by combine firstname + lastname
-  public Optional<User> findByEmail(String email);
+  Optional<User> findByEmail(String email);
 
-  public Optional<User> findByPhoneNumber(String phoneNumber);
+  Optional<User> findByPhoneNumber(String phoneNumber);
 }
