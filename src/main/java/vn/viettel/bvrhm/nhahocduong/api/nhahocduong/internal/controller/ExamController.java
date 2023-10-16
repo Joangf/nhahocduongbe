@@ -2,8 +2,13 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.OrganizationSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
 
 @RestController
@@ -62,5 +67,11 @@ public class ExamController {
   @DeleteMapping("/exams/{id}")
   boolean deleteExam(@PathVariable Long id) {
     return examService.delete(id);
+  }
+
+  @GetMapping("/exams/search")
+  public Page<ExamDTO> search(
+          ExamSearchCriteria searchCriteria, Pageable pageable) {
+    return examService.search(searchCriteria, pageable);
   }
 }

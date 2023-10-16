@@ -8,6 +8,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
@@ -197,5 +201,13 @@ public class ExamServiceImpl implements ExamService {
 
     examMapper.partialUpdate(examDTO, exam);
     return examMapper.toDto(examRepository.save(exam));
+  }
+
+  @Override
+  public Page<ExamDTO> search(ExamSearchCriteria searchCriteria, Pageable pageable) {
+//    Page<Exam> exams = examRepository.search(searchCriteria.getId(), searchCriteria.getFromDate(), searchCriteria.getToDate(), searchCriteria.isStatus());
+    Page<Exam> exams = examRepository.search(searchCriteria, pageable);
+    List<ExamDTO> examDTOList = exams.getContent().stream().map(examMapper::toDto).toList();
+    return new PageImpl<>(examDTOList, pageable, exams.getTotalElements());
   }
 }
