@@ -16,7 +16,8 @@ import vn.viettel.bvrhm.nhahocduong.api.auth.filter.JwtAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @Autowired 
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public static PasswordEncoder passwordEncoder() {
@@ -30,17 +31,15 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth -> {
-            auth.requestMatchers(
-                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml")
-              .permitAll();
+              auth.requestMatchers(
+                  "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml")
+                  .permitAll();
               auth.requestMatchers("/actuator/**")
                   .permitAll()
                   .requestMatchers("/api/auth/login")
                   .permitAll()
                   .requestMatchers("/api/user/register")
                   .permitAll()
-                  .requestMatchers("/user/hello")
-                  .authenticated()
                   .anyRequest()
                   .authenticated();
             })
