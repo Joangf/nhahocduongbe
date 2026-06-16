@@ -1,0 +1,71 @@
+
+networks:
+  nhd:
+
+services:
+  app:
+    container_name: nhd
+    build: ./
+    ports:
+      - "8081:8081"
+    volumes:
+      - c:/docker/log:/var/log
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod-docker"
+      - "DB_URL=jdbc:postgresql://db:5432/nhahocduong?currentSchema=nhahocduong"
+      - "DB_USERNAME=nhahocduong"
+      - "DB_PASSWORD=nhahocduong"
+    networks:
+      - nhd
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./metric-tools-config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - nhd
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - nhd
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./metric-tools-config/loki.yml:/etc/loki/loki.yml
+    command: -config.file=/etc/loki/loki.yml
+    networks:
+      - nhd
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - c:/docker/log:/var/log/
+      - ./metric-tools-config/promtail.yml:/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    networks:
+      - nhd
+  db:
+    image: postgres:15-alpine3.23
+    container_name: nhd-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=nhahocduong
+      - POSTGRES_USER=nhahocduong
+      - POSTGRES_PASSWORD=nhahocduong
+    volumes:
+      - nhd-db-data:/var/lib/postgresql/data
+      - ./db-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - nhd
+
+volumes:
+  nhd-db-data:

@@ -1,0 +1,2506 @@
+{
+  "info": {
+    "_postman_id": "e313de5a-8a31-4e70-90f0-245039f3b985",
+    "name": "NHAHOCDUONG-15 (07-07th)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "api",
+      "item": [
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "login",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Save token consumerKey\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "\r",
+                      "    // FOR VARIABLE\r",
+                      "    // pm.collectionVariables.set(\"token\", jsonData.token, String);\r",
+                      "\r",
+                      "    // FOR ENVIRONMENT\r",
+                      "    pm.environment.set(\"token\", jsonData.token, String);\r",
+                      "    console.log(pm.environment.get(\"token\"));\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"longlb1\",\r\n    \"password\": \"123456aA@\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{server}}/api/auth/login",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "user",
+          "item": [
+            {
+              "name": "register",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"longlb1\",\r\n    \"password\": \"123456aA@\",\r\n    \"firstName\": \"Long\",\r\n    \"lastName\": \"Le\",\r\n    \"email\": \"long@long.com\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{server}}/user/register",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "user",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "hello",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{server}}/user/hello",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "user",
+                    "hello"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "nhahocduong",
+          "item": [
+            {
+              "name": "internal",
+              "item": [
+                {
+                  "name": "DONE Organization",
+                  "item": [
+                    {
+                      "name": "byCondition",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                          "mode": "formdata",
+                          "formdata": []
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/organization/search",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organization",
+                            "search"
+                          ],
+                          "query": [
+                            {
+                              "key": "type",
+                              "value": "1",
+                              "description": "Nếu không truyền gì default là 1\n(1, \"Trường học\"),\n(2, \"Sở\"),\n(3, \"Bộ\"),\n(4, \"Bệnh viện Răng hàm mặt trung ương TP. Hồ Chí Minh\");",
+                              "disabled": true
+                            },
+                            {
+                              "key": "areaCode",
+                              "value": "79",
+                              "description": "Theo areaCode từ API danh mục địa phương",
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name, address, areaCode",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByNameAndAddressAndAreaCode?address=7 Barby Point&areaCode=3042&name=Instituto",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByNameAndAddressAndAreaCode"
+                          ],
+                          "query": [
+                            {
+                              "key": "address",
+                              "value": "7 Barby Point",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "areaCode",
+                              "value": "3042",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "name",
+                              "value": "Instituto"
+                            },
+                            {
+                              "key": "",
+                              "value": null,
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name, address",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByNameAndAddress?address=7 Barby Point&name=Instituto",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByNameAndAddress"
+                          ],
+                          "query": [
+                            {
+                              "key": "address",
+                              "value": "7 Barby Point",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "name",
+                              "value": "Instituto"
+                            },
+                            {
+                              "key": "",
+                              "value": null,
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name, areaCode",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByNameAndAreaCode?areaCode=3042&name=Instituto",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByNameAndAreaCode"
+                          ],
+                          "query": [
+                            {
+                              "key": "areaCode",
+                              "value": "3042",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "name",
+                              "value": "Instituto"
+                            },
+                            {
+                              "key": "",
+                              "value": null,
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByName?name=Hà Giang 1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByName"
+                          ],
+                          "query": [
+                            {
+                              "key": "name",
+                              "value": "Hà Giang 1"
+                            },
+                            {
+                              "key": "",
+                              "value": "",
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by address",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByAddress?address=7 Barby Point",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByAddress"
+                          ],
+                          "query": [
+                            {
+                              "key": "address",
+                              "value": "7 Barby Point",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "",
+                              "value": null,
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by areaCode",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/organizations/search/findByAreaCode?areaCode=3042",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "search",
+                            "findByAreaCode"
+                          ],
+                          "query": [
+                            {
+                              "key": "areaCode",
+                              "value": "3042",
+                              "description": "entity atrribute"
+                            },
+                            {
+                              "key": "",
+                              "value": null,
+                              "disabled": true
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete Organization",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Instituto Piaget (updated)\",\r\n    \"address\": \"7 Barby Point\",\r\n    \"areaCode\": \"3042\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/organizations/9",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "9"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create Organization",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Hà Giang 1\",\r\n    \"address\": \"Tỉnh Hà Giang\",\r\n    \"code\": \"HG1\",\r\n    \"areaCode\": \"MB\",\r\n    \"classes\": {\r\n        \"1\": [\r\n            \"1A1\"\r\n        ],\r\n        \"2\": [\r\n            \"2A1\",\r\n            \"2A2\"\r\n        ],\r\n        \"3\": [\r\n            \"3A1\",\r\n            \"3A2\",\r\n            \"3A3\"\r\n        ],\r\n        \"4\": [\r\n            \"4A1\",\r\n            \"4A2\"\r\n        ],\r\n        \"5\": [\r\n            \"5A1\",\r\n            \"5A2\"\r\n        ]\r\n    }\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/organizations",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update Organization",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"name\": \"Instituto Piaget (updated)\",\r\n    \"address\": \"7 Barby Point\",\r\n    \"areaCode\": \"3042\",\r\n    \"classes\": {\r\n        \"1\": [\r\n            \"1A1\"\r\n        ],\r\n        \"2\": [\r\n            \"2A1\",\r\n            \"2A2\"\r\n        ],\r\n        \"3\": [\r\n            \"3A1\",\r\n            \"3A2\",\r\n            \"3A3\"\r\n        ],\r\n        \"4\": [\r\n            \"4A1\",\r\n            \"4A2\"\r\n        ],\r\n        \"5\": [\r\n            \"5A1\",\r\n            \"5A2\"\r\n        ]\r\n    }\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/organizations/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "organizations",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE Dentist",
+                  "item": [
+                    {
+                      "name": "create Dentist",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"userId\": 6,\r\n    \"title\": \"Dentist - Title 6\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/dentists",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "general",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/dentists",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by userId, title",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/dentists/search/findByUserIdAndTitle?userId=3&title=Dentist - Title 3",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists",
+                            "search",
+                            "findByUserIdAndTitle"
+                          ],
+                          "query": [
+                            {
+                              "key": "userId",
+                              "value": "3"
+                            },
+                            {
+                              "key": "title",
+                              "value": "Dentist - Title 3"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by userId",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/dentists/search/findByUserId?userId=3",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists",
+                            "search",
+                            "findByUserId"
+                          ],
+                          "query": [
+                            {
+                              "key": "userId",
+                              "value": "3"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by title",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/dentists/search/findByTitle?title=Dentist - Title 3",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists",
+                            "search",
+                            "findByTitle"
+                          ],
+                          "query": [
+                            {
+                              "key": "title",
+                              "value": "Dentist - Title 3"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update Dentist",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"userId\": 12,\r\n    \"title\": \"title (updated)\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/dentists/13",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists",
+                            "13"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete Dentist",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/dentists/13",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "dentists",
+                            "13"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE Patient",
+                  "item": [
+                    {
+                      "name": "get all Patients",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients?page&size",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients"
+                          ],
+                          "query": [
+                            {
+                              "key": "page",
+                              "value": null
+                            },
+                            {
+                              "key": "size",
+                              "value": null
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get all Patients (có organization)",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patient/all?areaCode=29683&page=0&size=20",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patient",
+                            "all"
+                          ],
+                          "query": [
+                            {
+                              "key": "searchText",
+                              "value": "",
+                              "disabled": true
+                            },
+                            {
+                              "key": "organizationName",
+                              "value": null,
+                              "disabled": true
+                            },
+                            {
+                              "key": "areaCode",
+                              "value": "29683"
+                            },
+                            {
+                              "key": "schoolClass",
+                              "value": "6",
+                              "disabled": true
+                            },
+                            {
+                              "key": "page",
+                              "value": "0"
+                            },
+                            {
+                              "key": "size",
+                              "value": "20"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get Patient by id",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patient/100",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patient",
+                            "100"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by condition",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/search/getByCondition?searchText=Phan Huy Khang&organizationName&schoolClass=6",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "search",
+                            "getByCondition"
+                          ],
+                          "query": [
+                            {
+                              "key": "searchText",
+                              "value": "Phan Huy Khang"
+                            },
+                            {
+                              "key": "organizationName",
+                              "value": null
+                            },
+                            {
+                              "key": "schoolClass",
+                              "value": "6"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create Patient",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"fullName\": \"Phan Huy Khang\",\r\n    \"healthInsuranceNumber\": \"healthInsuranceNumber 6\",\r\n    \"gender\": 1,\r\n    \"birthDate\": \"2000-01-01\",\r\n    \"ethnic\": \"ethnic 1\",\r\n    \"areaType\": \"areaType\",\r\n    \"addressLine\": \"280 Cách Mạng Tháng 8, Phường 12, Quận 10, TP.HCM\",\r\n    \"phoneNumber\": \"09090901234\",\r\n    \"organization\": {\r\n        \"id\": 1\r\n    },\r\n    \"schoolClass\": \"5\",\r\n    \"chronicConditions\": [\r\n        {\r\n        \"id\": 6,\r\n        \"code\": \"X6\",\r\n        \"name\": \"Bệnh dạ dày\"\r\n        },\r\n        {\r\n            \"id\": 7,\r\n            \"code\": \"X7\",\r\n            \"name\": \"Viêm khớp dạng thấp\"\r\n        }\r\n        // OR chi su dung ID\r\n        // {\r\n        //     \"id\": 1\r\n        // },\r\n        // {\r\n        //     \"id\": 5\r\n        // }\r\n    ],\r\n    \"nationalIdNum\": \"079000123456\",\r\n    \"careTaker\": \"Phan Khang Huy\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patient",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patient"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create Patient Copy",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"fullName\": \"Phan Huy Khang\",\r\n    \"healthInsuranceNumber\": \"healthInsuranceNumber 6\",\r\n    \"gender\": 1,\r\n    \"birthDate\": \"2000-01-01\",\r\n    \"ethnic\": \"ethnic 1\",\r\n    \"areaType\": \"areaType\",\r\n    \"addressLine\": \"280 Cách Mạng Tháng 8, Phường 12, Quận 10, TP.HCM\",\r\n    \"phoneNumber\": \"09090901234\",\r\n    \"organization\": {\r\n        \"id\": 1\r\n    },\r\n    \"schoolClass\": \"5\",\r\n    \"chronicConditions\": null,\r\n    // [\r\n        // OR chi su dung ID\r\n        // {\r\n        //     \"id\": 1\r\n        // },\r\n        // {\r\n        //     \"id\": 5\r\n        // }\r\n    // ],\r\n    \"nationalIdNum\": \"079000123456\",\r\n    \"careTaker\": \"Phan Khang Huy\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patient",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patient"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update Patient",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"fullName\": \"Phan Huy Khang\",\r\n    \"healthInsuranceNumber\": \"healthInsuranceNumber 6\",\r\n    \"gender\": 1,\r\n    \"birthDate\": \"2000-01-01\",\r\n    \"ethnic\": \"ethnic 1\",\r\n    \"areaType\": \"areaType\",\r\n    \"phoneNumber\": \"09090901234\",\r\n    \"addressLine\": \"280 Cách Mạng Tháng 8, Phường 12, Quận 10, TP.HCM\",\r\n    \"schoolClass\": \"8\",\r\n    \"nationalIdNum\": \"079000000000\",\r\n    \"careTaker\": \"Phan Khang Huyy\",\r\n    \"chronicConditions\": [\r\n        {\r\n            \"id\": 5,\r\n            \"code\": \"99\",\r\n            \"name\": \"99\"\r\n        },\r\n        {\r\n            \"id\": 7,\r\n            \"code\": \"X7\",\r\n            \"name\": \"Viêm khớp dạng thấp\"\r\n        }\r\n    ],\r\n    \"organization\": {\r\n        \"id\": 1,\r\n        \"name\": \"Instituto Piaget\",\r\n        \"address\": \"7 Barby Point\",\r\n        \"areaCode\": 3042\r\n    }\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patient/105",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patient",
+                            "105"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete Patient",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/11",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "11"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE Medication",
+                  "item": [
+                    {
+                      "name": "get medications",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/medications",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create medications",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"code\": \"13\",\r\n    \"name\": \"Vôi trám răng\",\r\n    \"unit\": \"Tuýp\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/medications",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update medication",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"code\": \"1\",\r\n    \"name\": \"Fuji 123\",\r\n    \"unit\": \"Hộp\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/medications/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete medications",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/medications/13",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "13"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by code",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/medications/search/findByCode?code=02",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "search",
+                            "findByCode"
+                          ],
+                          "query": [
+                            {
+                              "key": "code",
+                              "value": "02"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name containing",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/medications/search/findByNameContaining?name=Fuji",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "search",
+                            "findByNameContaining"
+                          ],
+                          "query": [
+                            {
+                              "key": "name",
+                              "value": "Fuji"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by name containing and unit",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/medications/search/findByNameContainingAndUnit?name=Fuji&unit=Hộp",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "search",
+                            "findByNameContainingAndUnit"
+                          ],
+                          "query": [
+                            {
+                              "key": "name",
+                              "value": "Fuji"
+                            },
+                            {
+                              "key": "unit",
+                              "value": "Hộp"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "by unit",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/medications/search/findByUnit?unit=Hộp",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "medications",
+                            "search",
+                            "findByUnit"
+                          ],
+                          "query": [
+                            {
+                              "key": "unit",
+                              "value": "Hộp"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE PlaqueRecord",
+                  "item": [
+                    {
+                      "name": "Get Plaque record by patient and exam",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/plaqueRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "plaqueRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Upsert Plaque Record",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"17-16n\": \"2\",\n    \"11n\": \"2\",\n    \"26-27n\": \"2\",\n    \"47-46t\": \"2\",\n    \"31n\": \"2\",\n    \"36-37t\": \"2\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/2/exams/2/plaqueRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "2",
+                            "exams",
+                            "2",
+                            "plaqueRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "general",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/plaqueRecords",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "plaqueRecords"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create PlaqueRecord",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"_17_16n\": \"2\",\r\n    \"_11n\": \"2\",\r\n    \"_26_27n\": \"2\",\r\n    \"_47_46t\": \"2\",\r\n    \"_31n\": \"2\",\r\n    \"_36_37t\": \"2\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/plaqueRecords",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "plaqueRecords"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update PlagueRecord",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"_17_16n\": \"0\",\r\n    \"_11n\": \"4\",\r\n    \"_26_27n\": \"4\",\r\n    \"_47_46t\": \"4\",\r\n    \"_31n\": \"4\",\r\n    \"_36_37t\": \"4\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/plaqueRecords/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "plaqueRecords",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete PlagueRecord",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/plagueRecords/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "plagueRecords",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE TartarRecord",
+                  "item": [
+                    {
+                      "name": "Upsert Tartar Record",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"17-16n\": \"1\",\n    \"11n\": \"2\",\n    \"26-27n\": \"1\",\n    \"47-46t\": \"1\",\n    \"31n\": \"2\",\n    \"36-37t\": \"2\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/2/exams/2/tartarRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "2",
+                            "exams",
+                            "2",
+                            "tartarRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get tartar record by patient and exam",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/2/exams/2/tartarRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "2",
+                            "exams",
+                            "2",
+                            "tartarRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "general",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/tartarRecords",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "tartarRecords"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create tartar records",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"_17_16n\": \"0\",\n    \"_11n\": \"X\",\n    \"_26_27n\": \"X\",\n    \"_47_46t\": \"X\",\n    \"_31n\": \"X\",\n    \"_36_37t\": \"X\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/tartarRecords",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "tartarRecords"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update Tartar",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"_17_16n\": \"0\",\r\n    \"_11n\": \"X\",\r\n    \"_26_27n\": \"X\",\r\n    \"_47_46t\": \"X\",\r\n    \"_31n\": \"X\",\r\n    \"_36_37t\": \"X\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/tartarRecords/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "tartarRecords",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete TartarRecord",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{server}}/api/tartarRecords/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "tartarRecords",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE TreatmentRecord",
+                  "item": [
+                    {
+                      "name": "Upsert Treatment Record",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"treatmentList\": [\n        {\n            \"dentistName\": \"Nguyễn Văn A\",\n            \"diagnosis\": \"OK\",\n            \"teeth\": [\"52\", \"54\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"3\",\n                    \"quantity\": 1\n                },\n                {\n                    \"medicationCode\": \"1\",\n                    \"quantity\": 4\n                }\n            ]\n        },\n        {\n            \"dentistName\": \"Nguyễn Thị HH\",\n            \"diagnosis\": \"NOT OK\",\n            \"teeth\": [\"32\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"2\",\n                    \"quantity\": 1\n                }\n            ]\n        }\n    ]\n}\n\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "treatmentRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get treatment record by patient and exam",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "treatmentRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE TeethRecord",
+                  "item": [
+                    {
+                      "name": "get teeth record /patients/{id}/exams/{id}/teethRecord",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/teethRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "teethRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get teethRecord",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/teethRecord/104",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "teethRecord",
+                            "104"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Upsert Teeth Record",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"treatmentList\": [\n        {\n            \"dentistName\": \"Nguyễn Văn A\",\n            \"diagnosis\": \"OK\",\n            \"teeth\": [\"52\", \"54\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"3\",\n                    \"quantity\": 1\n                },\n                {\n                    \"medicationCode\": \"1\",\n                    \"quantity\": 4\n                }\n            ]\n        },\n        {\n            \"dentistName\": \"Nguyễn Thị HH\",\n            \"diagnosis\": \"NOT OK\",\n            \"teeth\": [\"32\"],\n            \"prescription\": [\n                {\n                    \"medicationCode\": \"2\",\n                    \"quantity\": 1\n                }\n            ]\n        }\n    ]\n}\n\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/treatmentRecord",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "treatmentRecord"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Exam",
+                  "item": [
+                    {
+                      "name": "get Exams list by patient id",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get exam by id",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/2/exams/2",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "2",
+                            "exams",
+                            "2"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create exam with patient id",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \n    \"dentistId\": 2,\n    \"organizationId\": 1,\n    \"schoolClass\": \"1A\",\n    \"year\": \"2023\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get prescription",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/101/prescription",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "101",
+                            "prescription"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update prescription",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "[\n    {\n        \"medicationCode\": 1,\n        \"quantity\": 1\n    },\n    {\n        \"medicationCode\": 2,\n        \"quantity\": 20\n    }\n]",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/prescription",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "prescription"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get chronic conditions",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/chronicConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "chronicConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update chronic conditions",
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "[\n    \"X1\",\n    \"X2\",\n    \"X3\",\n    \"X4\"\n]",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/patients/1/exams/1/chronicConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "patients",
+                            "1",
+                            "exams",
+                            "1",
+                            "chronicConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get Exam",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/exams",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "exams"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get Exam by id",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/exams/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "exams",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create Exam",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"patient\": 1,\r\n    \"dentist\": 1,\r\n    \"organization\": 1,\r\n    \"schoolClass\": \"schoolClass 3\",\r\n    \"year\": \"year\",\r\n    \"profileNumber\": 100,\r\n    \"date\": \"2017-01-13\",\r\n    \"plagueRecord\": 1,\r\n    \"tartarRecord\": 1\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/exams",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "exams"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete exam",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/api/exams/13",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "exams",
+                            "13"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "CHANGED TartarCondition",
+                  "item": [
+                    {
+                      "name": "get TatarConditiion",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/tartarConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "tartarConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create TatarConditiion",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"id\": 3,\r\n    \"label\": \"label 1\",\r\n    \"description\": \"description 1\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update TatarConditiion",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"label\": \"label 1\",\r\n    \"description\": \"description 1\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete TatarConditiion",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions/3",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions",
+                            "3"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "CHANGED PlagueCondition",
+                  "item": [
+                    {
+                      "name": "get PlagueConditions",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/plagueConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "create PlagueConditions",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"id\": 3,\r\n    \"label\": \"label 1\",\r\n    \"description\": \"description 1\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "update PlagueConditions",
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"label\": \"label 1\",\r\n    \"description\": \"description 1\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions/1",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions",
+                            "1"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "delete PlagueConditions",
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "default"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{server}}/plagueConditions/3",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "plagueConditions",
+                            "3"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "DONE Disease",
+                  "item": [
+                    {
+                      "name": "Get all disease",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/diseases",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "diseases"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Get Enum",
+                  "item": [
+                    {
+                      "name": "Get ethnics",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/ethnics",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "ethnics"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get tooth side",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/toothSide",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "toothSide"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get plaque condition",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/plaqueCondition",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "plaqueCondition"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get tooth tartar conditions",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/tartarCondition",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "tartarCondition"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get tooth problem",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/toothProblem",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "toothProblem"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Get tooth treatment",
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "{{server}}/api/toothTreatment",
+                          "host": [
+                            "{{server}}"
+                          ],
+                          "path": [
+                            "api",
+                            "toothTreatment"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "update Exam",
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"patient\": 1,\r\n    \"dentist\": 1,\r\n    \"organization\": 1,\r\n    \"schoolClass\": \"schoolClass 3123\",\r\n    \"year\": \"year\",\r\n    \"profileNumber\": 100,\r\n    \"date\": \"2017-03-13\",\r\n    \"plagueRecord\": 1,\r\n    \"tartarRecord\": 1\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{server}}/api/exams/1",
+                      "host": [
+                        "{{server}}"
+                      ],
+                      "path": [
+                        "api",
+                        "exams",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "common",
+          "item": [
+            {
+              "name": "Get Provinces",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{server}}/api/areas/lookup?region=north",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "api",
+                    "areas",
+                    "lookup"
+                  ],
+                  "query": [
+                    {
+                      "key": "region",
+                      "value": "north"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Province By Code",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{server}}/api/areas/23685",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "api",
+                    "areas",
+                    "23685"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Precincts By Province Code And District Code",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{server}}/api/areas/lookup/23836/454",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "api",
+                    "areas",
+                    "lookup",
+                    "23836",
+                    "454"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Districts By Province Code Copy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{server}}/api/areas/lookup?region=north",
+                  "host": [
+                    "{{server}}"
+                  ],
+                  "path": [
+                    "api",
+                    "areas",
+                    "lookup"
+                  ],
+                  "query": [
+                    {
+                      "key": "region",
+                      "value": "north"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "server",
+      "value": "https://nhahocduong.gpmn.net",
+      "type": "string"
+    },
+    {
+      "key": "server",
+      "value": "http://localhost:8081",
+      "type": "default",
+      "disabled": true
+    }
+  ]
+}
