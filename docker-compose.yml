@@ -64,6 +64,7 @@ services:
     volumes:
       - nhd-db-data:/var/lib/postgresql/data
       - ./db-scripts:/nhahocduong
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     networks:
       - nhd
 
