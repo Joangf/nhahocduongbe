@@ -13,7 +13,8 @@ CREATE TABLE USER_USER
     created_date timestamp default now(),
     updated_date timestamp,
     created_by   varchar,
-    updated_by   varchar
+    updated_by   varchar, 
+    status       boolean default true
 );
 
 DROP TABLE if exists NHAHOCDUONG_DENTIST CASCADE;
