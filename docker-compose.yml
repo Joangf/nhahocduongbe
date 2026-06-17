@@ -9,7 +9,7 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - c:/docker/log:/var/log
+      - ./log:/var/log
     environment:
       - "SPRING_PROFILES_ACTIVE=prod-docker"
       - "DB_URL=jdbc:postgresql://db:5432/nhahocduong"
@@ -47,7 +47,7 @@ services:
     image: grafana/promtail
     container_name: promtail
     volumes:
-      - c:/docker/log:/var/log/
+      - ./log:/var/log/
       - ./metric-tools-config/promtail.yml:/etc/promtail/promtail.yml
     command: -config.file=/etc/promtail/promtail.yml
     networks:
