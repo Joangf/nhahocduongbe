@@ -23,6 +23,7 @@ public class UserAuthDetails implements UserDetails, CredentialsContainer {
   private boolean accountNonLocked;
   private boolean credentialsNonExpired;
   private boolean enabled;
+  private Boolean registerStatus;
   private String password;
 
   public UserAuthDetails(

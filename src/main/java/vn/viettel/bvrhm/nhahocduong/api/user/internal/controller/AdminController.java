@@ -10,9 +10,9 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminUserController {
+public class AdminController {
 
-  private final Logger log = LoggerFactory.getLogger(AdminUserController.class);
+  private final Logger log = LoggerFactory.getLogger(AdminController.class);
 
   @Autowired 
   private UserService userService;

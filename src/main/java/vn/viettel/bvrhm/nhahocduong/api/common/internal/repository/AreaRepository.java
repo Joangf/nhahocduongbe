@@ -66,7 +66,7 @@ public interface AreaRepository extends JpaRepository<Area, Integer> {
         AND (
           :region IS NULL
           OR (
-            :region= 'south' AND CAST(province.code as int) >= :splitProvinceCode
+            :region = 'south' AND CAST(province.code as int) >= :splitProvinceCode
             OR :region = 'north' AND CAST(province.code as int) < :splitProvinceCode
           )
         )

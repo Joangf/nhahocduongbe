@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.management.relation.Role;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -59,6 +59,6 @@ public class User extends BaseEntity {
   @JoinColumn(name = "organization")
   private Organization organization;
 
-  @Column(name = "REGISTER_STATUS")
-  private String REGISTER_STATUS;
+  @Column(name = "register_status")
+  private Boolean registerStatus;
 }
