@@ -14,4 +14,5 @@ public record UserDTO(
     String phoneNumber,
     LocalDate birthDate,
     List<RoleDTO> roleList,
-    OrganizationDTO organization) {}
+    OrganizationDTO organization,
+    String REGISTER_STATUS) {}

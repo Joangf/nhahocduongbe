@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class UserService {
 
     newUser.setId(null);
     newUser.setPassword(hashedPassword);
+    newUser.setRegistrationStatus("WAITING");
 
     User createdUser = userRepository.save(newUser);
     UserDTO createdUserDTO = userMapper.userDTOFromUser(createdUser);
@@ -72,6 +74,12 @@ public class UserService {
       return false;
     }
     return passwordEncoder.matches(inputPassword, user.getPassword());
+  }
+
+  public List<UserDTO> getWaitingUsers() {
+    return userRepository.findByRegistrationStatus("FALSE").stream()
+        .map(userMapper::userDTOFromUser)
+        .toList();
   }
 
   //  UserDTO saveUser(UserDTO userDTO) {
