@@ -3,6 +3,9 @@ package vn.viettel.bvrhm.nhahocduong.api.user.internal.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+
+import javax.management.relation.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,4 +58,7 @@ public class User extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "organization")
   private Organization organization;
+
+  @Column(name = "REGISTER_STATUS")
+  private String REGISTER_STATUS;
 }
