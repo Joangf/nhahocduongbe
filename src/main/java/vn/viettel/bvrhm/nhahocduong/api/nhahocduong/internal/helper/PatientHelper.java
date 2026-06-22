@@ -4,11 +4,14 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,7 +58,15 @@ public class PatientHelper {
         patientRepository.findFirstByOrganizationCodeOrderByCodeDesc(organization.getCode());
     int patientOrderNumber;
     if (nonNull(latestPatient) && !"N/A".equals(latestPatient.getCode())) {
-      patientOrderNumber = Integer.parseInt(latestPatient.getCode().substring(6, 9));
+      Pattern codePattern =
+          Pattern.compile("^" + Pattern.quote(organization.getCode()) + "(\\d+)");
+      Matcher matcher = codePattern.matcher(latestPatient.getCode());
+      if (!matcher.find()) {
+        throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Invalid latest patient code: " + latestPatient.getCode());
+      }
+      patientOrderNumber = Integer.parseInt(matcher.group(1));
     } else {
       patientOrderNumber = 0;
     }
@@ -125,35 +136,38 @@ public class PatientHelper {
         continue;
       }
 
-      Iterator<Cell> cellIterator = row.cellIterator();
+      boolean rowHasData = false;
+      for (ImportPatientExcelColumn column : ImportPatientExcelColumn.values()) {
+        Cell cell = row.getCell(column.getIndex(), Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        Object value = nonNull(cell) ? ExcelUtil.getCellValue(cell) : null;
+        if (nonNull(value) && !String.valueOf(value).isBlank()) {
+          rowHasData = true;
+          break;
+        }
+      }
+      if (!rowHasData) {
+        continue;
+      }
 
       // Read cells and set value for object
       PatientExcelData.PatientExcelDataBuilder patientExcelDataBuilder = PatientExcelData.builder();
-      while (cellIterator.hasNext()) {
-        // Read cell
-        Cell cell = cellIterator.next();
+      for (ImportPatientExcelColumn column : ImportPatientExcelColumn.values()) {
+        Cell cell = row.getCell(column.getIndex(), Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        Object rawCellValue = nonNull(cell) ? ExcelUtil.getCellValue(cell) : null;
         String cellValue = null;
-        if (nonNull(ExcelUtil.getCellValue(cell))) {
-          cellValue = String.valueOf(ExcelUtil.getCellValue(cell));
-        }
-
-        // Indicate Column
-        int columnIndex = cell.getColumnIndex();
-        ImportPatientExcelColumn column = ImportPatientExcelColumn.getByIndex(columnIndex);
-        if (Objects.isNull(column)) {
-          continue;
+        if (nonNull(rawCellValue)) {
+          cellValue = String.valueOf(rawCellValue);
         }
 
         // Check cell
-        if (cellValue == null || cellValue.isEmpty()) {
+        if (cellValue == null || cellValue.isBlank()) {
           if (column.isRequired()) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "Required field '"
                     + column.getHeader()
                     + "' of row "
-                    + row.getRowNum()
-                    + 1
+                    + (row.getRowNum() + 1)
                     + " is missing");
           }
           continue;
@@ -161,10 +175,25 @@ public class PatientHelper {
 
         // Set value for object based on column
         switch (column) {
+          case INDEX -> {
+            // Cột số thứ tự, bỏ qua không cần xử lý
+          }
           case FULL_NAME -> patientExcelDataBuilder.fullName(cellValue);
           case BIRTHDAY -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z yyyy");
-            LocalDate date = LocalDate.parse(cellValue, formatter);
+            LocalDate date;
+            if (rawCellValue instanceof Date javaDate) {
+              // Cell dạng NUMERIC (Date) — Apache POI trả về java.util.Date
+              date = javaDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            } else {
+              // Cell dạng STRING — parse theo nhiều định dạng phổ biến
+              DateTimeFormatter formatter;
+              if (cellValue.contains("/")) {
+                formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+              } else {
+                formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+              }
+              date = LocalDate.parse(cellValue, formatter);
+            }
             patientExcelDataBuilder.birthDate(date);
           }
           case GENDER -> patientExcelDataBuilder.gender(

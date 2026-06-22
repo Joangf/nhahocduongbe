@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ImportPatientExcelColumn {
-  INDEX("Số thứ tự", 0, true),
+  INDEX("Số thứ tự", 0, false),
   FULL_NAME("Họ và tên", 1, true),
   BIRTHDAY("Ngày sinh", 2, true),
   GENDER("Giới tính", 3, true),
