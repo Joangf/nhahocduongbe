@@ -1,6 +1,5 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.validator;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**

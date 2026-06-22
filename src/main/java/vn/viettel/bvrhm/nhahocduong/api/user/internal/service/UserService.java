@@ -1,9 +1,9 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.transaction.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
@@ -42,6 +44,13 @@ public class UserService {
     newUser.setId(null);
     newUser.setPassword(hashedPassword);
     newUser.setRegisterStatus(false);
+
+    // Check for duplicate phone number
+    if (newUser.getPhoneNumber() != null
+        && userRepository.findByPhoneNumber(newUser.getPhoneNumber()).isPresent()) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT, ResponseMessage.USER_DUPLICATE_PHONE_NUMBER);
+    }
 
     User createdUser = userRepository.save(newUser);
     UserDTO createdUserDTO = userMapper.userDTOFromUser(createdUser);
