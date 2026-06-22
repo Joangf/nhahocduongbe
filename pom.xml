@@ -15,7 +15,7 @@
     <description>API for Nha Hoc Duong program - BVRHM</description>
     <properties>
         <java.version>17</java.version>
-        <lombok.version>1.18.46</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <jjwt.version>0.11.5</jjwt.version>
 
@@ -79,11 +79,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.5.0</version>
         </dependency>
         <!--		<dependency>-->
         <!--			<groupId>org.liquibase</groupId>-->
@@ -176,11 +171,14 @@
             <version>5.2.3</version>
         </dependency>
 
-        <!--   Metrics     -->
+        <!-- SpringDoc OpenAPI (Swagger UI) -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
         </dependency>
+
+        <!--   Duplicate actuator removed - already declared at line 57   -->
         <!-- https://mvnrepository.com/artifact/io.micrometer/micrometer-registry-prometheus -->
         <dependency>
             <groupId>io.micrometer</groupId>
