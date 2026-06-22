@@ -13,5 +13,6 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 public interface UserAuthDetailsMapper {
 
   @Mapping(source = "id", target = "userId")
+  @Mapping(source = "registerStatus", target = "registerStatus")
   UserAuthDetails userAuthDetailsFromUserDTO(UserDTO userDTO);
 }

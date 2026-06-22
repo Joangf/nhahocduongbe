@@ -45,6 +45,11 @@ public class AuthenticationService implements UserDetailsService {
       throw new InvalidCredentialException();
     }
 
+    // Check register status (tài khoản phải được admin duyệt)
+    if (userAuthDetails.getRegisterStatus() == null || !userAuthDetails.getRegisterStatus()) {
+      throw new InvalidCredentialException();
+    }
+
     // Verify password
     String password = loginRequest.password();
     if (!userService.checkValidUserIdPassword(userAuthDetails.getUserId(), password)) {
