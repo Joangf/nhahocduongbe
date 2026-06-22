@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class UserService {
 
     newUser.setId(null);
     newUser.setPassword(hashedPassword);
+    newUser.setRegisterStatus(false);
 
     User createdUser = userRepository.save(newUser);
     UserDTO createdUserDTO = userMapper.userDTOFromUser(createdUser);
@@ -72,6 +74,25 @@ public class UserService {
       return false;
     }
     return passwordEncoder.matches(inputPassword, user.getPassword());
+  }
+
+  public List<UserDTO> getWaitingUsers() {
+    return userRepository.findByRegisterStatus(false).stream()
+        .map(userMapper::userDTOFromUser)
+        .toList();
+  }
+
+  @Transactional
+  public UserDTO approveUser(Long userId) {
+    User user = userRepository.getReferenceById(userId);
+    user.setRegisterStatus(true);
+    User savedUser = userRepository.save(user);
+    return userMapper.userDTOFromUser(savedUser);
+  }
+
+  @Transactional
+  public void rejectUser(Long userId) {
+    userRepository.deleteById(userId);
   }
 
   //  UserDTO saveUser(UserDTO userDTO) {

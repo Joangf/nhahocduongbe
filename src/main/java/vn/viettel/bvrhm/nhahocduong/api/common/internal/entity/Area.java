@@ -13,7 +13,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "common_area", schema = "nhahocduong")
+@Table(name = "common_area")
 @Getter
 @Setter
 // @JsonIgnoreProperties(ignoreUnknown = true)
