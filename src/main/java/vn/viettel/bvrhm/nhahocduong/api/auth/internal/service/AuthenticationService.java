@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import vn.viettel.bvrhm.nhahocduong.api.auth.LoginRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.LoginResponse;
 import vn.viettel.bvrhm.nhahocduong.api.auth.exception.InvalidCredentialException;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.constants.enums.Status;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.mapper.UserAuthDetailsMapper;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.UserAuthDetails;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.repository.UserPasswordRepository;
@@ -22,6 +23,7 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.RoleService;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.repository.LoginLogRepository;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -33,6 +35,9 @@ public class AuthenticationService implements UserDetailsService {
   private UserPasswordRepository userPasswordRepository;
   private PasswordEncoder passwordEncoder;
 
+  @Autowired private LoginLogRepository loginLogRepository;
+  @Autowired private jakarta.servlet.http.HttpServletRequest request;
+
   public LoginResponse authenticate(LoginRequest loginRequest) throws InvalidCredentialException {
     String username = loginRequest.username();
     // TODO expand logic to allow login with email, phoneNumber, security key, etc...
@@ -41,18 +46,30 @@ public class AuthenticationService implements UserDetailsService {
     UserAuthDetails userAuthDetails;
     try {
       userAuthDetails = loadUserByUsername(username);
+      if (userAuthDetails == null) {
+        throw new InvalidCredentialException();
+      }
     } catch (Exception e) {
+      logFailedLogin(username);
+      throw new InvalidCredentialException();
+    }
+
+    // Check status (tài khoản không bị khóa)
+    if (!userAuthDetails.isEnabled()) {
+      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
     // Check register status (tài khoản phải được admin duyệt)
     if (userAuthDetails.getRegisterStatus() == null || !userAuthDetails.getRegisterStatus()) {
+      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
     // Verify password
     String password = loginRequest.password();
     if (!userService.checkValidUserIdPassword(userAuthDetails.getUserId(), password)) {
+      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
@@ -71,17 +88,7 @@ public class AuthenticationService implements UserDetailsService {
 
     String token = jwtService.makeToken(userAuthDetails.getUserId(), claims);
 
-    return new LoginResponse(token);
-  }
-
-  public LoginResponse guestLogin() {
-    Map<String, Object> claims = new LinkedHashMap<>();
-    claims.put("roles", List.of(new RoleDTO("0", "GUEST", "Guest User", true, "Guest Access Role")));
-    claims.put("username", "guest");
-
-    String token = jwtService.makeToken(0L, claims);
-
-    logSuccessLogin("guest");
+    logSuccessLogin(username);
     return new LoginResponse(token);
   }
 
@@ -90,9 +97,8 @@ public class AuthenticationService implements UserDetailsService {
           String ip = request.getRemoteAddr();
           loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
               .username(username)
-              .ipAddress(ip)
               .loginTime(java.time.LocalDateTime.now())
-              .status("FAILED")
+              .status(Status.FAILED.getValue())
               .build());
       } catch (Exception e) {
           // ignore
@@ -100,17 +106,11 @@ public class AuthenticationService implements UserDetailsService {
   }
 
   private void logSuccessLogin(String username) {
-      try {
-          String ip = request.getRemoteAddr();
-          loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
-              .username(username)
-              .ipAddress(ip)
-              .loginTime(java.time.LocalDateTime.now())
-              .status("SUCCESS")
-              .build());
-      } catch (Exception e) {
-          // ignore
-      }
+        loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
+            .username(username)
+            .loginTime(java.time.LocalDateTime.now())
+            .status(Status.SUCCESS.getValue())
+            .build());
   }
 
   @Override

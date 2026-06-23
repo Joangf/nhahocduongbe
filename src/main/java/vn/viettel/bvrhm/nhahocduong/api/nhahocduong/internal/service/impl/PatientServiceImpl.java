@@ -167,7 +167,19 @@ public class PatientServiceImpl implements PatientService {
   @Override
   @Transactional
   public List<PatientDTO> importPatientsFromExcel(MultipartFile file) throws IOException {
-    Sheet sheet = ExcelUtil.getSheetFromExcel(file.getInputStream(), 0);
+    String fileName = file.getOriginalFilename();
+    if (file.isEmpty() || fileName == null || !fileName.toLowerCase(Locale.ROOT).endsWith(".xlsx")) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Only non-empty Excel .xlsx files are supported");
+    }
+
+    final Sheet sheet;
+    try {
+      sheet = ExcelUtil.getSheetFromExcel(file.getInputStream(), 0);
+    } catch (IllegalArgumentException e) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "The uploaded file is not a valid Excel .xlsx file", e);
+    }
 
     List<PatientExcelData> patientExcelData = patientHelper.extractPatientDataFromSheet(sheet);
     return patientExcelData.stream().map(patientMapper::toDto).map(this::createPatient).toList();
@@ -183,7 +195,7 @@ public class PatientServiceImpl implements PatientService {
       patientHelper.populateOrganizationCategorySheet(workbook);
 
       // Setup response header and write file's data
-      response.setContentType(MediaType.APPLICATION_XML_VALUE);
+      response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       workbook.write(outputStream);
@@ -206,7 +218,7 @@ public class PatientServiceImpl implements PatientService {
       patientHelper.populatePatientsSheet(workbook);
 
       // Setup response header and write file's data
-      response.setContentType(MediaType.APPLICATION_XML_VALUE);
+      response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
       response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       workbook.write(outputStream);

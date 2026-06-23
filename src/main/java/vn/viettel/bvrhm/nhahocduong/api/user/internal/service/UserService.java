@@ -42,6 +42,7 @@ public class UserService {
     newUser.setId(null);
     newUser.setPassword(hashedPassword);
     newUser.setRegisterStatus(false);
+    newUser.setStatus(true); // Default to unlocked
 
     User createdUser = userRepository.save(newUser);
     UserDTO createdUserDTO = userMapper.userDTOFromUser(createdUser);
@@ -86,6 +87,7 @@ public class UserService {
   public UserDTO approveUser(Long userId) {
     User user = userRepository.getReferenceById(userId);
     user.setRegisterStatus(true);
+    user.setStatus(true); // Ensure account is unlocked when approved
     User savedUser = userRepository.save(user);
     return userMapper.userDTOFromUser(savedUser);
   }
@@ -93,6 +95,26 @@ public class UserService {
   @Transactional
   public void rejectUser(Long userId) {
     userRepository.deleteById(userId);
+  }
+
+  public List<UserDTO> getAllUsers() {
+    return userRepository.findAll().stream()
+        .map(userMapper::userDTOFromUser)
+        .toList();
+  }
+
+  @Transactional
+  public void lockUser(Long userId) {
+    User user = userRepository.getReferenceById(userId);
+    user.setStatus(false);
+    userRepository.save(user);
+  }
+
+  @Transactional
+  public void unlockUser(Long userId) {
+    User user = userRepository.getReferenceById(userId);
+    user.setStatus(true);
+    userRepository.save(user);
   }
 
   //  UserDTO saveUser(UserDTO userDTO) {

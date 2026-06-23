@@ -17,4 +17,5 @@ public record UserDTO(
     List<RoleDTO> roleList,
     OrganizationDTO organization,
     Boolean registerStatus,
+    Boolean status,
     LocalDateTime createdDate) {}

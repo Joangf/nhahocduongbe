@@ -14,5 +14,6 @@ public interface UserAuthDetailsMapper {
 
   @Mapping(source = "id", target = "userId")
   @Mapping(source = "registerStatus", target = "registerStatus")
+  @Mapping(source = "status", target = "enabled")
   UserAuthDetails userAuthDetailsFromUserDTO(UserDTO userDTO);
 }

@@ -17,9 +17,33 @@ public class AdminController {
   @Autowired 
   private UserService userService;
 
+  @Autowired
+  private vn.viettel.bvrhm.nhahocduong.api.auth.internal.repository.LoginLogRepository loginLogRepository;
+
   @GetMapping("/waiting")
   public List<UserDTO> getWaitingUsers() {
     log.info("REST request to get waiting users");
     return userService.getWaitingUsers();
+  }
+
+  @GetMapping("/users")
+  public List<UserDTO> getAllUsers() {
+    return userService.getAllUsers();
+  }
+
+  @PutMapping("/users/{id}/lock")
+  public void lockUser(@org.springframework.web.bind.annotation.PathVariable Long id) {
+    userService.lockUser(id);
+  }
+
+  @PutMapping("/users/{id}/unlock")
+  public void unlockUser(@org.springframework.web.bind.annotation.PathVariable Long id) {
+    userService.unlockUser(id);
+  }
+
+  @GetMapping("/login-logs")
+  public org.springframework.http.ResponseEntity<?> getLoginLogs() {
+      log.info("REST request to get login logs");
+      return org.springframework.http.ResponseEntity.ok(loginLogRepository.findAllByOrderByLoginTimeDesc());
   }
 }

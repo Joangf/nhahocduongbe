@@ -40,5 +40,9 @@ target
 secrets.yml
 .gradletasknamecache
 .sts4-cache
-
-/log
+.env
+!.env.example
+# Log files
+*.log
+*.err.log
+*.out.log
