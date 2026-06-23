@@ -52,6 +52,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     username = jwtService.extractUsername(jwtString);
 
     // User not existed
+    if ("guest".equals(username)) {
+      List<RoleDTO> authorityStrList = jwtService.extractRoles(jwtString);
+      List<Authority> authorityList =
+          authorityStrList.stream().map(role -> Authority.fromName(role.code())).toList();
+
+      Authentication authentication = new AuthenticationToken(userId, null, authorityList);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     UserAuthDetails userAuthDetails = authenticationService.loadUserByUsername(username);
     if (isNull(userAuthDetails)) {
       filterChain.doFilter(request, response);

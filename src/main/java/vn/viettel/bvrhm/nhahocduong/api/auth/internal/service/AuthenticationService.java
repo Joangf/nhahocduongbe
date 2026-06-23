@@ -74,6 +74,45 @@ public class AuthenticationService implements UserDetailsService {
     return new LoginResponse(token);
   }
 
+  public LoginResponse guestLogin() {
+    Map<String, Object> claims = new LinkedHashMap<>();
+    claims.put("roles", List.of(new RoleDTO("0", "GUEST", "Guest User", true, "Guest Access Role")));
+    claims.put("username", "guest");
+
+    String token = jwtService.makeToken(0L, claims);
+
+    logSuccessLogin("guest");
+    return new LoginResponse(token);
+  }
+
+  private void logFailedLogin(String username) {
+      try {
+          String ip = request.getRemoteAddr();
+          loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
+              .username(username)
+              .ipAddress(ip)
+              .loginTime(java.time.LocalDateTime.now())
+              .status("FAILED")
+              .build());
+      } catch (Exception e) {
+          // ignore
+      }
+  }
+
+  private void logSuccessLogin(String username) {
+      try {
+          String ip = request.getRemoteAddr();
+          loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
+              .username(username)
+              .ipAddress(ip)
+              .loginTime(java.time.LocalDateTime.now())
+              .status("SUCCESS")
+              .build());
+      } catch (Exception e) {
+          // ignore
+      }
+  }
+
   @Override
   @Transactional()
   public UserAuthDetails loadUserByUsername(String username) throws UsernameNotFoundException {

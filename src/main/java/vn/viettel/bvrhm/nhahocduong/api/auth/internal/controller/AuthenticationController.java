@@ -27,4 +27,9 @@ public class AuthenticationController {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
   }
+
+  @PostMapping("/guest-login")
+  public LoginResponse guestLogin() {
+    return authenticationService.guestLogin();
+  }
 }

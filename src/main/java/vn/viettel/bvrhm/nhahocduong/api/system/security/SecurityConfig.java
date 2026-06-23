@@ -64,6 +64,8 @@ public class SecurityConfig {
                   .permitAll()
                   .requestMatchers("/api/auth/login")
                   .permitAll()
+                  .requestMatchers("/api/auth/guest-login")
+                  .permitAll()
                   .requestMatchers("/api/user/register")
                   .permitAll()
                   .requestMatchers("/api/user/hello")
