@@ -27,9 +27,6 @@ public class SecurityConfig {
   @Autowired 
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  @Value("${app.cors.allowed-origins}")
-  private List<String> allowedOrigins;
-
   @Bean
   public static PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
