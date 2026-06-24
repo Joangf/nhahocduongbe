@@ -17,63 +17,58 @@ import vn.viettel.bvrhm.nhahocduong.api.auth.exception.InvalidCredentialExceptio
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.constants.enums.Status;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.mapper.UserAuthDetailsMapper;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.object.UserAuthDetails;
-import vn.viettel.bvrhm.nhahocduong.api.auth.internal.repository.UserPasswordRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
-import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.RoleService;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.repository.LoginLogRepository;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
   @Autowired private UserService userService;
-  @Autowired private RoleService roleService;
   @Autowired private JwtService jwtService;
   @Autowired private UserAuthDetailsMapper userAuthDetailsMapper;
-
-  private UserPasswordRepository userPasswordRepository;
-  private PasswordEncoder passwordEncoder;
-
+  @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private LoginLogRepository loginLogRepository;
-  @Autowired private jakarta.servlet.http.HttpServletRequest request;
 
   public LoginResponse authenticate(LoginRequest loginRequest) throws InvalidCredentialException {
     String username = loginRequest.username();
-    // TODO expand logic to allow login with email, phoneNumber, security key, etc...
 
-    // Check username
-    UserAuthDetails userAuthDetails;
+    // Query 1: load user once — includes roles, organization, password, phoneNumber
+    UserDTO userDTO;
     try {
-      userAuthDetails = loadUserByUsername(username);
-      if (userAuthDetails == null) {
+      userDTO = userService.getUserByUsername(username);
+      if (userDTO == null) {
         throw new InvalidCredentialException();
       }
     } catch (Exception e) {
       throw new InvalidCredentialException();
     }
 
-    // Check status (tài khoản không bị khóa)
+    UserAuthDetails userAuthDetails = userAuthDetailsMapper.userAuthDetailsFromUserDTO(userDTO);
+
+    // Check status (tài khoản không bị khóa) — no DB
     if (!userAuthDetails.isEnabled()) {
       throw new InvalidCredentialException();
     }
 
-    // Check register status (tài khoản phải được admin duyệt)
+    // Check register status (tài khoản phải được admin duyệt) — no DB
     if (userAuthDetails.getRegisterStatus() == null || !userAuthDetails.getRegisterStatus()) {
       throw new InvalidCredentialException();
     }
 
-    // Verify password
-    String password = loginRequest.password();
-    if (!userService.checkValidUserIdPassword(userAuthDetails.getUserId(), password)) {
+    // Verify password — requires DB query for password hash (not in DTO)
+    if (!userService.checkValidUserIdPassword(userDTO.id(), loginRequest.password())) {
       throw new InvalidCredentialException();
     }
 
-    // Get role
-    List<RoleDTO> userRoles = roleService.getActiveRoleByUsername(username);
+    // Get roles from DTO — already fetched, filter in memory
+    List<RoleDTO> userRoles = userDTO.roleList() != null
+        ? userDTO.roleList().stream().filter(RoleDTO::status).toList()
+        : List.of();
 
-    // Get organization
-    OrganizationDTO organization = userService.getUserByUsername(username).organization();
+    // Get organization from DTO — already fetched
+    OrganizationDTO organization = userDTO.organization();
 
     Map<String, Object> claims = new LinkedHashMap<>();
     claims.put("roles", userRoles);
@@ -84,7 +79,8 @@ public class AuthenticationService implements UserDetailsService {
 
     String token = jwtService.makeToken(userAuthDetails.getUserId(), claims);
 
-    logSuccessLogin(username);
+    // Query 2: insert login log — pass phoneNumber from DTO, no extra query
+    logSuccessLogin(username, userDTO.phoneNumber());
     return new LoginResponse(token);
   }
 
@@ -98,22 +94,13 @@ public class AuthenticationService implements UserDetailsService {
     return new LoginResponse(token);
   }
 
-  private String getPhoneNumberByUsername(String username) {
-      try {
-          UserDTO user = userService.getUserByUsername(username);
-          return user != null ? user.phoneNumber() : null;
-      } catch (Exception e) {
-          return null;
-      }
-  }
-
-  private void logSuccessLogin(String username) {
+  private void logSuccessLogin(String username, String phoneNumber) {
       try {
           loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
               .username(username)
               .loginTime(java.time.LocalDateTime.now())
               .status(Status.SUCCESS.getValue())
-              .phoneNumber(getPhoneNumberByUsername(username))
+              .phoneNumber(phoneNumber)
               .build());
       } catch (Exception e) {
           // ignore — không để lỗi ghi log làm hỏng login
@@ -123,10 +110,12 @@ public class AuthenticationService implements UserDetailsService {
   public void logout(String username) {
       List<vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog> activeLogins =
           loginLogRepository.findByUsernameAndLogoutTimeIsNullOrderByLoginTimeDesc(username);
+      java.time.LocalDateTime now = java.time.LocalDateTime.now();
+      for (vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog loginLog : activeLogins) {
+          loginLog.setLogoutTime(now);
+      }
       if (!activeLogins.isEmpty()) {
-          vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog loginLog = activeLogins.get(0);
-          loginLog.setLogoutTime(java.time.LocalDateTime.now());
-          loginLogRepository.save(loginLog);
+          loginLogRepository.saveAll(activeLogins);
       }
   }
 
