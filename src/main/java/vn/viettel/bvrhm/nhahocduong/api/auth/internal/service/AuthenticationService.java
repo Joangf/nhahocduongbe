@@ -50,26 +50,22 @@ public class AuthenticationService implements UserDetailsService {
         throw new InvalidCredentialException();
       }
     } catch (Exception e) {
-      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
     // Check status (tài khoản không bị khóa)
     if (!userAuthDetails.isEnabled()) {
-      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
     // Check register status (tài khoản phải được admin duyệt)
     if (userAuthDetails.getRegisterStatus() == null || !userAuthDetails.getRegisterStatus()) {
-      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
     // Verify password
     String password = loginRequest.password();
     if (!userService.checkValidUserIdPassword(userAuthDetails.getUserId(), password)) {
-      logFailedLogin(username);
       throw new InvalidCredentialException();
     }
 
@@ -99,29 +95,39 @@ public class AuthenticationService implements UserDetailsService {
 
     String token = jwtService.makeToken(0L, claims);
 
-    logSuccessLogin("guest");
     return new LoginResponse(token);
   }
 
-  private void logFailedLogin(String username) {
+  private String getPhoneNumberByUsername(String username) {
       try {
-          String ip = request.getRemoteAddr();
-          loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
-              .username(username)
-              .loginTime(java.time.LocalDateTime.now())
-              .status(Status.FAILED.getValue())
-              .build());
+          UserDTO user = userService.getUserByUsername(username);
+          return user != null ? user.phoneNumber() : null;
       } catch (Exception e) {
-          // ignore
+          return null;
       }
   }
 
   private void logSuccessLogin(String username) {
-        loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
-            .username(username)
-            .loginTime(java.time.LocalDateTime.now())
-            .status(Status.SUCCESS.getValue())
-            .build());
+      try {
+          loginLogRepository.save(vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog.builder()
+              .username(username)
+              .loginTime(java.time.LocalDateTime.now())
+              .status(Status.SUCCESS.getValue())
+              .phoneNumber(getPhoneNumberByUsername(username))
+              .build());
+      } catch (Exception e) {
+          // ignore — không để lỗi ghi log làm hỏng login
+      }
+  }
+
+  public void logout(String username) {
+      List<vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog> activeLogins =
+          loginLogRepository.findByUsernameAndLogoutTimeIsNullOrderByLoginTimeDesc(username);
+      if (!activeLogins.isEmpty()) {
+          vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.LoginLog loginLog = activeLogins.get(0);
+          loginLog.setLogoutTime(java.time.LocalDateTime.now());
+          loginLogRepository.save(loginLog);
+      }
   }
 
   @Override

@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface LoginLogRepository extends JpaRepository<LoginLog, Long> {
     List<LoginLog> findAllByOrderByLoginTimeDesc();
+
+    List<LoginLog> findByUsernameNotOrderByLoginTimeDesc(String username);
+
+    List<LoginLog> findByUsernameAndLogoutTimeIsNullOrderByLoginTimeDesc(String username);
 }

@@ -32,6 +32,10 @@ public class LoginLog {
 
   @Column(name = "status")
   private Boolean status; // SUCCESS or FAILED
+
+  @Column(name = "logout_time")
+  private LocalDateTime logoutTime;
+
   @Column(name = "phone_number")
   private String phoneNumber;
 }

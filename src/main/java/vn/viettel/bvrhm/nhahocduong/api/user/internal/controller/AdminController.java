@@ -44,6 +44,6 @@ public class AdminController {
   @GetMapping("/login-logs")
   public org.springframework.http.ResponseEntity<?> getLoginLogs() {
       log.info("REST request to get login logs");
-      return org.springframework.http.ResponseEntity.ok(loginLogRepository.findAllByOrderByLoginTimeDesc());
+      return org.springframework.http.ResponseEntity.ok(loginLogRepository.findByUsernameNotOrderByLoginTimeDesc("guest"));
   }
 }

@@ -124,6 +124,7 @@
 
 package vn.viettel.bvrhm.nhahocduong.api.auth.internal.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -135,12 +136,15 @@ import vn.viettel.bvrhm.nhahocduong.api.auth.LoginRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.LoginResponse;
 import vn.viettel.bvrhm.nhahocduong.api.auth.exception.InvalidCredentialException;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthenticationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.JwtService;
 
 @RestController
 @RequestMapping(path = "/api/auth")
 public class AuthenticationController {
 
   @Autowired AuthenticationService authenticationService;
+  @Autowired JwtService jwtService;
+  @Autowired HttpServletRequest request;
 
   @PostMapping("/login")
   public LoginResponse login(@RequestBody LoginRequest loginRequest) {
@@ -155,5 +159,18 @@ public class AuthenticationController {
   @PostMapping("/guest-login")
   public LoginResponse guestLogin() {
     return authenticationService.guestLogin();
+  }
+
+  @PostMapping("/logout")
+  public org.springframework.http.ResponseEntity<?> logout() {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String token = authHeader.substring(7);
+      if (jwtService.isTokenValid(token)) {
+        String username = jwtService.extractUsername(token);
+        authenticationService.logout(username);
+      }
+    }
+    return org.springframework.http.ResponseEntity.ok().build();
   }
 }
