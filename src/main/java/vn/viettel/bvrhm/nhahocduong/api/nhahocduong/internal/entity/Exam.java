@@ -45,6 +45,16 @@ public class Exam extends BaseEntity {
   //  @Column(name = "exam_place")
   //  private ExamPlace examPlace;
 
+  @ManyToOne
+  @JoinColumn(name = "campaign_id")
+  private ExamCampaign campaign;
+
+  @Column(name = "re_exam_date")
+  private LocalDate reExamDate;
+
+  @Column(name = "re_exam_note")
+  private String reExamNote;
+
   @Column(name = "date")
   private LocalDate date;
 

@@ -71,4 +71,14 @@ public class ExamController {
     searchCriteria.setPatientId(patientId);
     return examService.search(searchCriteria, pageable);
   }
+
+  @GetMapping("/exams/re-exams")
+  public List<ExamDTO> getReExams() {
+    return examService.getReExams();
+  }
+
+  @GetMapping("/dashboard/campaign-stats")
+  public vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getCampaignStats() {
+    return examService.getDashboardStats();
+  }
 }

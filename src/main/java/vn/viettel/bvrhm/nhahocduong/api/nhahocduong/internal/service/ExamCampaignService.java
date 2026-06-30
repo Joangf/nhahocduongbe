@@ -9,4 +9,6 @@ public interface ExamCampaignService {
   ExamCampaignDTO createCampaign(ExamCampaignDTO dto);
   ExamCampaignDTO updateCampaign(Long id, ExamCampaignDTO dto);
   boolean deleteCampaign(Long id);
+  List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> getStudentsByCampaignId(Long campaignId);
+  void notifyDentists(Long campaignId);
 }

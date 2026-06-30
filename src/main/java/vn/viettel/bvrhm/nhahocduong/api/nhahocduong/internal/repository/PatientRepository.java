@@ -58,4 +58,18 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
   List<Patient> findAllByOrganization_IdAndSchoolClassIn(Long id, List<String> schoolClass);
 
   Patient findFirstByOrganizationCodeOrderByCodeDesc(String organizationCode);
+
+  @Query("""
+    SELECT DISTINCT new vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO(
+      p.id, p.fullName, p.code, p.schoolClass, p.phoneNumber,
+      e.id, e.date, 
+      CASE WHEN e.id IS NOT NULL THEN 'EXAMINED' ELSE 'NOT_EXAMINED' END
+    )
+    FROM Patient p
+    JOIN ExamSchedule s ON s.organization.id = p.organization.id AND s.schoolClass = p.schoolClass
+    LEFT JOIN Exam e ON e.patient.id = p.id AND e.campaign.id = :campaignId
+    WHERE s.campaign.id = :campaignId
+      AND p.status = true
+  """)
+  List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> findStudentExamStatusByCampaignId(@org.springframework.data.repository.query.Param("campaignId") Long campaignId);
 }

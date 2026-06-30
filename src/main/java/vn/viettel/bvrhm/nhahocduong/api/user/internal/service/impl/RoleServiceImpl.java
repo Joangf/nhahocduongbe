@@ -30,6 +30,6 @@ public class RoleServiceImpl implements RoleService {
 
   @Override
   public List<RoleDTO> getAllRoles() {
-    return roleMapper.toListDto(roleRepository.findAll());
+    return roleMapper.toDtoList(roleRepository.findAll());
   }
 }

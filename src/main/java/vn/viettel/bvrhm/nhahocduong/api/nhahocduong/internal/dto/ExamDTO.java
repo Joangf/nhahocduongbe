@@ -26,6 +26,10 @@ public class ExamDTO {
   private Long plaqueRecordId;
   private Long tartarRecordId;
   private List<TreatmentRecordDTO> treatmentRecords;
+
+  private Long campaignId;
+  private LocalDate reExamDate;
+  private String reExamNote;
   @JsonIgnore private Boolean status = true;
   //  ExamPlace examPlace;
   //  List<PrescriptionItem> prescription;

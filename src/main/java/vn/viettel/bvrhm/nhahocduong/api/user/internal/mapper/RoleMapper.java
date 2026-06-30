@@ -13,6 +13,8 @@ public interface RoleMapper {
 
   RoleDTO toDto(Role role);
 
+  List<RoleDTO> toDtoList(List<Role> roleList);
+
   List<RoleDTO> toListDto(List<Role> roles);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
