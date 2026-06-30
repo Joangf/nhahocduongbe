@@ -9,4 +9,6 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
  */
 public interface RoleService {
   List<RoleDTO> getActiveRoleByUsername(String username);
+
+  List<RoleDTO> getAllRoles();
 }

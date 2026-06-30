@@ -127,9 +127,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   public Page<OrganizationDTO> search(
       OrganizationSearchCriteria searchCriteria, Pageable pageable) {
-    AuthorizationService.AuthorizationData authData = authorizationService.authorize();
-    if (authData.getAreaCode() != null) {
-      searchCriteria.setAreaCode(authData.getAreaCode());
+    Long organizationId = null;
+    try {
+      AuthorizationService.AuthorizationData authData = authorizationService.authorize();
+      if (authData.getAreaCode() != null) {
+        searchCriteria.setAreaCode(authData.getAreaCode());
+      }
+      organizationId = authData.getOrganizationId();
+    } catch (Exception e) {
+      // Không có auth (public page) — trả về tất cả trường không giới hạn
     }
 
     if (searchCriteria.getAreaCode() != null) {
@@ -141,7 +147,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
     Page<Organization> organizations =
         organizationRepository.findByCriteria(
-            areaCodesInside, searchCriteria, authData.getOrganizationId(), pageable);
+            areaCodesInside, searchCriteria, organizationId, pageable);
 
     return organizations.map(organizationMapper::toDto);
   }
