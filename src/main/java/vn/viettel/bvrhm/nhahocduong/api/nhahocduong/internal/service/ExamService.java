@@ -33,4 +33,8 @@ public interface ExamService {
   ExamDTO updateExam(ExamDTO examDTO);
 
   Page<ExamDTO> search(ExamSearchCriteria searchCriteria, Pageable pageable);
+
+  List<ExamDTO> getReExams();
+
+  vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getDashboardStats();
 }

@@ -13,6 +13,18 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamCampaign
 )
 public interface ExamCampaignMapper {
   ExamCampaign toEntity(ExamCampaignDTO dto);
+
+  /**
+   * Explicit Long → ExamCampaign converter so that ExamMapper (which uses ExamCampaignMapper)
+   * can map campaignId (Long) → campaign (ExamCampaign) via ReferenceMapper.
+   */
+  default ExamCampaign toEntity(Long id) {
+    if (id == null) return null;
+    ExamCampaign c = new ExamCampaign();
+    c.setId(id);
+    return c;
+  }
+
   ExamCampaignDTO toDto(ExamCampaign entity);
   List<ExamCampaignDTO> toDtoList(List<ExamCampaign> entityList);
 

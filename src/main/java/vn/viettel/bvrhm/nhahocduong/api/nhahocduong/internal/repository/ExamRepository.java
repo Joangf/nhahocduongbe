@@ -40,4 +40,10 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
       AND e.status = :#{#searchCriteria.isStatus()}
   """)
   Page<Exam> search(ExamSearchCriteria searchCriteria, Pageable pageable);
+
+  @Query("SELECT e FROM Exam e WHERE e.reExamDate IS NOT NULL AND e.reExamDate >= CURRENT_DATE ORDER BY e.reExamDate ASC")
+  List<Exam> findUpcomingReExams();
+
+  @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true")
+  Long countTotalExamined();
 }

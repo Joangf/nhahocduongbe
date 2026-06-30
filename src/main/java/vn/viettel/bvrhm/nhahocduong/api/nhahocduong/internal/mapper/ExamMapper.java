@@ -13,13 +13,15 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
       ReferenceMapper.class,
       OrganizationMapper.class,
       PatientMapper.class,
-      DentistMapper.class
+      DentistMapper.class,
+      ExamCampaignMapper.class
     })
 public interface ExamMapper {
   @Mappings({
     @Mapping(target = "organization", source = "organizationId"),
     @Mapping(target = "patient", source = "patientId"),
     @Mapping(target = "dentist", source = "dentistId"),
+    @Mapping(target = "campaign", source = "campaignId")
   })
   Exam toEntity(ExamDTO examDTO);
 
@@ -34,6 +36,7 @@ public interface ExamMapper {
     @Mapping(target = "dentistName", source = "dentist.title"),
     @Mapping(target = "organizationId", source = "organization.id"),
     @Mapping(target = "organizationName", source = "organization.name"),
+    @Mapping(target = "campaignId", source = "campaign.id")
   })
   ExamDTO toDto(Exam exam);
 

@@ -21,9 +21,14 @@ public class AuthorizationService {
     // TODO: Optimize author
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String userId = (String) authentication.getPrincipal();
+    
+    AuthorizationData data = new AuthorizationData();
+    if ("anonymousUser".equals(userId)) {
+      return data;
+    }
+
     User user = userRepository.getReferenceById(Long.parseLong(userId));
 
-    AuthorizationData data = new AuthorizationData();
     if (user.getOrganization() != null) {
       switch (user.getOrganization().getType()) {
         case SCHOOL -> data.setOrganizationId(user.getOrganization().getId());

@@ -56,4 +56,14 @@ public class ExamCampaignController {
       @PathVariable Long campaignId, @PathVariable Long scheduleId) {
     return examScheduleService.deleteSchedule(campaignId, scheduleId);
   }
+
+  @GetMapping("/{campaignId}/students")
+  public List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> getStudentsByCampaignId(@PathVariable Long campaignId) {
+    return examCampaignService.getStudentsByCampaignId(campaignId);
+  }
+
+  @PostMapping("/{campaignId}/notify")
+  public void notifyDentists(@PathVariable Long campaignId) {
+    examCampaignService.notifyDentists(campaignId);
+  }
 }

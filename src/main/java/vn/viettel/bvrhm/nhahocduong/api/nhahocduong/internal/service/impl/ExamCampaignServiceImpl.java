@@ -62,4 +62,19 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
     }
     return false;
   }
+
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository patientRepository;
+
+  @Override
+  public List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> getStudentsByCampaignId(Long campaignId) {
+    return patientRepository.findStudentExamStatusByCampaignId(campaignId);
+  }
+
+  @Override
+  public void notifyDentists(Long campaignId) {
+    ExamCampaign campaign = examCampaignRepository.findById(campaignId).orElse(null);
+    if (campaign == null) return;
+    
+    System.out.println("Mock Email sent to dentists for campaign: " + campaign.getName());
+  }
 }

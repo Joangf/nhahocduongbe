@@ -204,4 +204,29 @@ public class ExamServiceImpl implements ExamService {
     List<ExamDTO> examDTOList = exams.getContent().stream().map(examMapper::toDto).toList();
     return new PageImpl<>(examDTOList, pageable, exams.getTotalElements());
   }
+
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCampaignRepository examCampaignRepository;
+
+  @Override
+  public List<ExamDTO> getReExams() {
+    List<Exam> exams = examRepository.findUpcomingReExams();
+    return examMapper.toDtoList(exams);
+  }
+
+  @Override
+  public vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getDashboardStats() {
+    vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO stats = new vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO();
+    
+    long totalCampaigns = examCampaignRepository.count();
+    long activeCampaigns = examCampaignRepository.findAllByStatusOrderByIdDesc(true).size();
+    long totalStudents = patientRepository.count();
+    long totalExamined = examRepository.countTotalExamined();
+    
+    stats.setTotalCampaigns(totalCampaigns);
+    stats.setActiveCampaigns(activeCampaigns);
+    stats.setTotalStudents(totalStudents);
+    stats.setTotalExamined(totalExamined);
+    
+    return stats;
+  }
 }
