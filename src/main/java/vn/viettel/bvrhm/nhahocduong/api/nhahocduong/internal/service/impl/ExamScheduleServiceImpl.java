@@ -1,5 +1,6 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamScheduleDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Dentist;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamCampaign;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamSchedule;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamScheduleMapper;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.DentistRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCampaignRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamScheduleRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.OrganizationRepository;
@@ -23,9 +26,11 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
   @Autowired private ExamScheduleRepository examScheduleRepository;
   @Autowired private ExamCampaignRepository examCampaignRepository;
   @Autowired private OrganizationRepository organizationRepository;
+  @Autowired private DentistRepository dentistRepository;
   @Autowired private ExamScheduleMapper examScheduleMapper;
 
   @Override
+  @Transactional(readOnly = true)
   public List<ExamScheduleDTO> getSchedulesByCampaignId(Long campaignId) {
     examCampaignRepository.findByIdAndStatus(campaignId, true)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Campaign not found with id: " + campaignId));
@@ -66,6 +71,14 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
       schedule.setSchoolClass(dto.getSchoolClass());
       schedule.setExamDate(dto.getExamDate());
       schedule.setStatus(true);
+    }
+
+    // Xử lý danh sách bác sĩ
+    if (dto.getDentistIds() != null && !dto.getDentistIds().isEmpty()) {
+      List<Dentist> dentists = dentistRepository.findAllById(dto.getDentistIds());
+      schedule.setDentists(new HashSet<>(dentists));
+    } else {
+      schedule.setDentists(new HashSet<>());
     }
 
     ExamSchedule saved = examScheduleRepository.save(schedule);
