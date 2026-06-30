@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,6 @@ public class ExamScheduleDTO implements Serializable {
   private String schoolClass;
   private LocalDate examDate;
   private Boolean status = true;
+  private List<Long> dentistIds;
+  private List<String> dentistNames;
 }
