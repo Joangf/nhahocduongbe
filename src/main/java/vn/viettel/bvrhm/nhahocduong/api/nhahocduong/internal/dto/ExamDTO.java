@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
@@ -30,6 +31,19 @@ public class ExamDTO {
   private Long campaignId;
   private LocalDate reExamDate;
   private String reExamNote;
+
+  // ── Mục 4: Đánh giá mức độ bệnh lý ──
+  private String pathologyAssessment;
+
+  // ── Mục 5: Ghi chú điều trị ──
+  private String treatmentNote;
+
+  // ── Mục 6: Ảnh thực tế trước & sau điều trị ──
+  private String imageBeforeUrl;
+  private LocalDateTime imageBeforeTime;
+  private String imageAfterUrl;
+  private LocalDateTime imageAfterTime;
+
   @JsonIgnore private Boolean status = true;
   //  ExamPlace examPlace;
   //  List<PrescriptionItem> prescription;

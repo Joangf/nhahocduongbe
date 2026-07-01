@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.AssessmentUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ImageUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TreatmentRecordMapper;
@@ -228,5 +230,46 @@ public class ExamServiceImpl implements ExamService {
     stats.setTotalExamined(totalExamined);
     
     return stats;
+  }
+
+  @Override
+  @Transactional
+  public ExamDTO updateAssessment(Long examId, AssessmentUpdateDTO dto) {
+    Exam exam = examRepository
+        .findById(examId)
+        .orElseThrow(() ->
+            new ResponseStatusException(
+                HttpStatus.NOT_FOUND, ResponseMessage.EXAM_NOT_FOUND_WITH_ID + examId));
+
+    if (dto.getPathologyAssessment() != null) {
+      exam.setPathologyAssessment(dto.getPathologyAssessment());
+    }
+    if (dto.getTreatmentNote() != null) {
+      exam.setTreatmentNote(dto.getTreatmentNote());
+    }
+
+    Exam saved = examRepository.save(exam);
+    return examMapper.toDto(saved);
+  }
+
+  @Override
+  @Transactional
+  public ExamDTO updateImages(Long examId, ImageUpdateDTO dto) {
+    Exam exam = examRepository
+        .findById(examId)
+        .orElseThrow(() ->
+            new ResponseStatusException(
+                HttpStatus.NOT_FOUND, ResponseMessage.EXAM_NOT_FOUND_WITH_ID + examId));
+
+    // Before image: null url = xóa ảnh
+    exam.setImageBeforeUrl(dto.getImageBeforeUrl());
+    exam.setImageBeforeTime(dto.getImageBeforeTime());
+
+    // After image: null url = xóa ảnh
+    exam.setImageAfterUrl(dto.getImageAfterUrl());
+    exam.setImageAfterTime(dto.getImageAfterTime());
+
+    Exam saved = examRepository.save(exam);
+    return examMapper.toDto(saved);
   }
 }
