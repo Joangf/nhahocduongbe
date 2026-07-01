@@ -211,8 +211,32 @@ public class ExamServiceImpl implements ExamService {
 
   @Override
   public List<ExamDTO> getReExams() {
-    List<Exam> exams = examRepository.findUpcomingReExams();
-    return examMapper.toDtoList(exams);
+    // Tìm tất cả exam đang active, kiểm tra nếu có răng sâu (CARIES) thì cần tái khám
+    List<Exam> allExams = examRepository.findAll().stream()
+        .filter(e -> e.getStatus() == null || e.getStatus())
+        .collect(Collectors.toList());
+
+    List<ExamDTO> reExams = new ArrayList<>();
+    for (Exam exam : allExams) {
+      TeethRecord tr = exam.getTeethRecord();
+      if (tr != null && tr.getRecord() != null) {
+        boolean hasCaries = tr.getRecord().values().stream()
+            .anyMatch(cond -> cond != null
+                && cond.getProblem() == vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem.CARIES);
+        if (hasCaries) {
+          ExamDTO dto = examMapper.toDto(exam);
+          // Tính ngày tái khám dự kiến = ngày khám + 6 tháng
+          if (exam.getDate() != null) {
+            dto.setReExamDate(exam.getDate().plusMonths(6));
+          } else {
+            dto.setReExamDate(java.time.LocalDate.now().plusMonths(6));
+          }
+          dto.setReExamNote("Cần tái khám điều trị sâu răng");
+          reExams.add(dto);
+        }
+      }
+    }
+    return reExams;
   }
 
   @Override
