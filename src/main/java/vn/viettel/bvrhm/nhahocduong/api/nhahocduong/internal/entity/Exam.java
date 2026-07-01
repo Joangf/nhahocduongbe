@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Data;
 import org.hibernate.annotations.Where;
@@ -83,6 +84,27 @@ public class Exam extends BaseEntity {
   @OneToMany(mappedBy = "exam")
   @Where(clause = "status = true")
   private List<TreatmentRecord> treatmentRecords;
+
+  // ── Mục 4: Đánh giá mức độ bệnh lý ──
+  @Column(name = "pathology_assessment", columnDefinition = "TEXT")
+  private String pathologyAssessment;
+
+  // ── Mục 5: Ghi chú điều trị ──
+  @Column(name = "treatment_note", columnDefinition = "TEXT")
+  private String treatmentNote;
+
+  // ── Mục 6: Ảnh thực tế trước & sau điều trị ──
+  @Column(name = "image_before_url")
+  private String imageBeforeUrl;
+
+  @Column(name = "image_before_time")
+  private LocalDateTime imageBeforeTime;
+
+  @Column(name = "image_after_url")
+  private String imageAfterUrl;
+
+  @Column(name = "image_after_time")
+  private LocalDateTime imageAfterTime;
 
   //  @SuppressWarnings("JpaAttributeTypeInspection")
   //  @JdbcTypeCode(SqlTypes.JSON)
