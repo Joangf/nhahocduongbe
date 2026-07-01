@@ -10,7 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.AssessmentUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ImageUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
@@ -119,5 +121,19 @@ public class ExamController {
   @GetMapping("/dashboard/campaign-stats")
   public vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getCampaignStats() {
     return examService.getDashboardStats();
+  }
+
+  /** PATCH: Cập nhật đánh giá bệnh lý & ghi chú điều trị (mục 4 & 5) */
+  @PatchMapping("/exams/{examId}/assessment")
+  public ExamDTO updateAssessment(
+      @PathVariable Long examId, @RequestBody AssessmentUpdateDTO dto) {
+    return examService.updateAssessment(examId, dto);
+  }
+
+  /** PATCH: Cập nhật hoặc xóa ảnh trước/sau điều trị (mục 6) */
+  @PatchMapping("/exams/{examId}/images")
+  public ExamDTO updateImages(
+      @PathVariable Long examId, @RequestBody ImageUpdateDTO dto) {
+    return examService.updateImages(examId, dto);
   }
 }
