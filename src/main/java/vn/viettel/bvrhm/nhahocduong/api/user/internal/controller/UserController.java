@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.service.UserService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -21,6 +23,12 @@ public class UserController {
 
   private final Logger log = LoggerFactory.getLogger(UserController.class);
   @Autowired UserService userService;
+
+  @GetMapping("/{id}")
+  public UserDTO getUserById(@PathVariable Long id) {
+      return this.userService.getUserById(id);
+  }
+  
 
   @PostMapping("/register")
   UserDTO createUser(@RequestBody UserDTO newUserDTO) throws Exception {
