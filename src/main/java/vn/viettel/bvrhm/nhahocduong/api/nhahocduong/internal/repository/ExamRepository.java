@@ -46,4 +46,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 
   @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true")
   Long countTotalExamined();
+
+  Exam findTopByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);
 }

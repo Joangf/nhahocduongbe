@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamCampaignDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamCampaign;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamCampaignMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCampaignRepository;
@@ -69,7 +70,18 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
 
   @Override
   public List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> getStudentsByCampaignId(Long campaignId) {
-    return patientRepository.findStudentExamStatusByCampaignId(campaignId);
+    List<Object[]> rows = patientRepository.findStudentExamStatusByCampaignId(campaignId);
+    return rows.stream().map(r -> new StudentExamStatusDTO(
+        ((Number) r[0]).longValue(),
+        (String) r[1],
+        (String) r[2],
+        (String) r[3],
+        (String) r[4],
+        r[5] != null ? ((Number) r[5]).longValue() : null,
+        r[6] != null ? ((java.sql.Date) r[6]).toLocalDate() : null,
+        (String) r[7],
+        (String) r[8]
+    )).toList();
   }
 
   @Override

@@ -59,17 +59,28 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   Patient findFirstByOrganizationCodeOrderByCodeDesc(String organizationCode);
 
-  @Query("""
-    SELECT DISTINCT new vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO(
-      p.id, p.fullName, p.code, p.schoolClass, p.phoneNumber,
-      e.id, e.date, 
-      CASE WHEN e.id IS NOT NULL THEN 'EXAMINED' ELSE 'NOT_EXAMINED' END
-    )
-    FROM Patient p
-    JOIN ExamSchedule s ON s.organization.id = p.organization.id AND s.schoolClass = p.schoolClass
-    LEFT JOIN Exam e ON e.patient.id = p.id AND e.campaign.id = :campaignId
-    WHERE s.campaign.id = :campaignId
+  @Query(value = """
+    SELECT DISTINCT p.id, p.full_name, p.code, p.school_class, p.phone_number,
+      e.id AS exam_id, e.date AS exam_date, org.name AS exam_place,
+      CASE WHEN e.id IS NOT NULL THEN 'EXAMINED' ELSE 'NOT_EXAMINED' END AS status
+    FROM nhahocduong_patient p
+    JOIN nhahocduong_exam_schedule s ON s.organization_id = p.organization AND s.school_class = p.school_class
+    LEFT JOIN nhahocduong_exam e ON e.patient_id = p.id AND e.campaign_id = :campaignId
+    LEFT JOIN nhahocduong_organization org ON e.organization_id = org.id
+    WHERE s.campaign_id = :campaignId
       AND p.status = true
-  """)
-  List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> findStudentExamStatusByCampaignId(@org.springframework.data.repository.query.Param("campaignId") Long campaignId);
+  """, nativeQuery = true)
+  List<Object[]> findStudentExamStatusByCampaignId(@org.springframework.data.repository.query.Param("campaignId") Long campaignId);
+
+  @Query(value = """
+    SELECT p.id, p.full_name, p.code, p.school_class, p.phone_number,
+      e.id AS exam_id, e.date AS exam_date, org.name AS exam_place,
+      CASE WHEN e.id IS NOT NULL THEN 'EXAMINED' ELSE 'NOT_EXAMINED' END AS status
+    FROM nhahocduong_patient p
+    LEFT JOIN nhahocduong_exam e ON e.patient_id = p.id AND e.status = true
+    LEFT JOIN nhahocduong_organization org ON e.organization_id = org.id
+    WHERE p.organization = :schoolId AND p.status = true
+    ORDER BY p.school_class, p.full_name
+  """, nativeQuery = true)
+  List<Object[]> findStudentsWithExamStatusBySchoolId(@org.springframework.data.repository.query.Param("schoolId") Long schoolId);
 }
