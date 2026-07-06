@@ -14,8 +14,9 @@ public class StudentExamStatusDTO {
   private String code;
   private String schoolClass;
   private String phoneNumber;
-  
+
   private Long examId;
   private LocalDate examDate;
+  private String examPlace;
   private String status; // "EXAMINED" or "NOT_EXAMINED"
 }

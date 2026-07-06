@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
+import java.io.Serializable;
 
 /** A DTO for the {@link Exam} entity */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExamDTO {
+public class ExamDTO implements Serializable {
+  private static final long serialVersionUID = 1L;
   private Long id;
   private Long patientId;
   private String patientName;

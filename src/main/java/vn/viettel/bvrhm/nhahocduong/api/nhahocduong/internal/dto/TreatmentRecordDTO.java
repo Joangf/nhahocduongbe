@@ -11,6 +11,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.TreatmentRec
 /** A DTO for the {@link TreatmentRecord} entity */
 @Data
 public class TreatmentRecordDTO implements Serializable {
+  private static final long serialVersionUID = 1L;
   Long id;
   ToothTreatment service;
   String dentistName;

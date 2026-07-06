@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.user.internal.service;
 
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -12,9 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.NotificationService;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.UserDTO;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.Role;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.mapper.UserMapper;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.RoleRepository;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.validator.UserValidator;
 
@@ -26,6 +31,8 @@ public class UserService {
   @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private UserRepository userRepository;
   @Autowired private UserMapper userMapper;
+  @Autowired private RoleRepository roleRepository;
+  @Autowired private NotificationService notificationService;
 
   @Transactional
   public UserDTO createUser(UserDTO newUserDTO) throws Exception {
@@ -36,6 +43,18 @@ public class UserService {
     }
 
     User newUser = userMapper.userFromUserDTO(newUserDTO);
+
+    // MapStruct không tự động map RoleDTO -> Role entity,
+    // nên cần thực hiện thủ công để gán role cho user.
+    if (newUserDTO.roleList() != null && !newUserDTO.roleList().isEmpty()) {
+      List<Role> roles = new ArrayList<>();
+      for (RoleDTO roleDTO : newUserDTO.roleList()) {
+        Long roleId = Long.valueOf(roleDTO.id());
+        Role role = roleRepository.getReferenceById(roleId);
+        roles.add(role);
+      }
+      newUser.setRoleList(roles);
+    }
 
     String inputPassword = newUserDTO.password();
     boolean isValidPassword = UserValidator.validatePasswordStrength(inputPassword);
@@ -52,6 +71,26 @@ public class UserService {
 
     User createdUser = userRepository.save(newUser);
     UserDTO createdUserDTO = userMapper.userDTOFromUser(createdUser);
+
+    // Gửi thông báo cho tất cả admin về tài khoản mới cần duyệt
+    try {
+      List<User> admins = userRepository.findUsersByRoleCode("ADMIN");
+      if (!admins.isEmpty()) {
+        String fullName = (createdUser.getLastName() != null ? createdUser.getLastName() : "")
+            + " " + (createdUser.getFirstName() != null ? createdUser.getFirstName() : "");
+        String notificationTitle = "Tài khoản mới cần duyệt";
+        String notificationMessage = "Người dùng \"" + createdUser.getUsername()
+            + "\" (" + fullName.trim() + ") vừa đăng ký tài khoản và đang chờ được duyệt.";
+        for (User admin : admins) {
+          List<String> details = new ArrayList<>();
+          details.add(notificationMessage);
+          notificationService.createNotificationForDentist(
+              admin.getId(), null, notificationTitle, details);
+        }
+      }
+    } catch (Exception e) {
+      log.error("Không thể gửi thông báo cho admin về tài khoản mới", e);
+    }
 
     return createdUserDTO;
   }
