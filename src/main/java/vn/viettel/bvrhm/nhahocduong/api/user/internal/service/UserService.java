@@ -129,6 +129,19 @@ public class UserService {
   //    User savedUser = userRepository.save(user);
   //    UserDTO savedUserDTO = userMapper.userDTOFromUser(savedUser);
   //    return savedUserDTO;
-  //  }
+  //  @Transactional
+  public void resetPassword(String email, String newPassword) throws Exception {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy user với email này."));
+
+    boolean isValidPassword = UserValidator.validatePasswordStrength(newPassword);
+    if (!isValidPassword) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.USER_WEAK_PASSWORD);
+    }
+
+    String hashedPassword = passwordEncoder.encode(newPassword);
+    user.setPassword(hashedPassword);
+    userRepository.save(user);
+  }
 
 }
