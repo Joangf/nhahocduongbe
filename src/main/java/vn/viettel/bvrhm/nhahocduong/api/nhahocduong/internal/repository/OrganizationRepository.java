@@ -52,4 +52,19 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
       Pageable pageable);
 
   Organization findByCode(String code);
+
+  @Query(value = """
+    SELECT o.id, o.name,
+      COUNT(DISTINCT p.id) AS total_students,
+      COUNT(DISTINCT e.id) AS examined,
+      CASE WHEN COUNT(DISTINCT p.id) = 0 THEN 0
+           ELSE ROUND(COUNT(DISTINCT e.id) * 1.0 / COUNT(DISTINCT p.id), 3) END AS rate
+    FROM nhahocduong_organization o
+    LEFT JOIN nhahocduong_patient p ON p.organization = o.id AND p.status = true
+    LEFT JOIN nhahocduong_exam e ON e.patient_id = p.id AND e.status = true
+    WHERE o.status = true
+    GROUP BY o.id, o.name
+    ORDER BY o.name
+  """, nativeQuery = true)
+  List<Object[]> findSchoolStatsRaw();
 }
