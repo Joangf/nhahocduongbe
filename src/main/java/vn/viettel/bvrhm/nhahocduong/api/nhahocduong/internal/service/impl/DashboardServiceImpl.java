@@ -2,6 +2,8 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import org.springframework.cache.annotation.Cacheable;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.DashboardService;
@@ -43,6 +45,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Cacheable(value = "dashboardStats")
     public Map<String, Object> getStats() {
         Map<String, Object> campaignStats = getCampaignStats();
         
