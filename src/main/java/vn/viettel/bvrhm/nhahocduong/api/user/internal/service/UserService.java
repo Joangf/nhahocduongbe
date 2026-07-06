@@ -29,6 +29,12 @@ public class UserService {
 
   @Transactional
   public UserDTO createUser(UserDTO newUserDTO) throws Exception {
+    // Kiểm tra username đã tồn tại chưa
+    String inputUsername = newUserDTO.username();
+    if (userRepository.getByUsername(inputUsername).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ResponseMessage.USER_USERNAME_ALREADY_EXIST);
+    }
+
     User newUser = userMapper.userFromUserDTO(newUserDTO);
 
     String inputPassword = newUserDTO.password();

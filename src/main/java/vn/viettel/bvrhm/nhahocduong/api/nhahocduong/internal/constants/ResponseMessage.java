@@ -33,4 +33,5 @@ public final class ResponseMessage {
 
   // User
   public static final String USER_WEAK_PASSWORD = "Weak password";
+  public static final String USER_USERNAME_ALREADY_EXIST = "Tên đăng nhập đã được sử dụng";
 }
