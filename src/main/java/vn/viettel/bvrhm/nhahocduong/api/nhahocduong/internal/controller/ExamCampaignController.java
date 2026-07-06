@@ -63,7 +63,8 @@ public class ExamCampaignController {
   }
 
   @PostMapping("/{campaignId}/notify")
-  public void notifyDentists(@PathVariable Long campaignId) {
-    examCampaignService.notifyDentists(campaignId);
+  public java.util.Map<String, Object> notifyDentists(@PathVariable Long campaignId) {
+    int count = examCampaignService.notifyDentists(campaignId);
+    return java.util.Map.of("notifiedCount", count, "message", "Đã gửi thông báo cho " + count + " bác sĩ");
   }
 }

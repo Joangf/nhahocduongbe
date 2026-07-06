@@ -65,6 +65,8 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
   }
 
   @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository patientRepository;
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamScheduleRepository examScheduleRepository;
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.NotificationService notificationService;
 
   @Override
   public List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO> getStudentsByCampaignId(Long campaignId) {
@@ -83,10 +85,56 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
   }
 
   @Override
-  public void notifyDentists(Long campaignId) {
-    ExamCampaign campaign = examCampaignRepository.findById(campaignId).orElse(null);
-    if (campaign == null) return;
-    
-    System.out.println("Mock Email sent to dentists for campaign: " + campaign.getName());
+  @Transactional
+  public int notifyDentists(Long campaignId) {
+    ExamCampaign campaign = examCampaignRepository.findByIdAndStatus(campaignId, true)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "Campaign not found with id: " + campaignId));
+
+    List<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamSchedule> schedules =
+        examScheduleRepository.findByCampaignIdAndStatus(campaignId, true);
+
+    if (schedules.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Không có lịch khám nào trong đợt này");
+    }
+
+    // Gom nhóm lịch khám theo bác sĩ (theo userId)
+    java.util.Map<Long, java.util.List<String>> dentistScheduleMap = new java.util.LinkedHashMap<>();
+
+    for (vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamSchedule schedule : schedules) {
+      if (schedule.getDentists() == null || schedule.getDentists().isEmpty()) {
+        continue;
+      }
+      String schoolName = schedule.getOrganization() != null
+          ? schedule.getOrganization().getName()
+          : "N/A";
+      String detail = schoolName + " - Lớp " + schedule.getSchoolClass()
+          + " - Ngày " + schedule.getExamDate();
+
+      for (vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Dentist dentist : schedule.getDentists()) {
+        Long userId = dentist.getUserId();
+        if (userId != null) {
+          dentistScheduleMap.computeIfAbsent(userId, k -> new java.util.ArrayList<>()).add(detail);
+        }
+      }
+    }
+
+    if (dentistScheduleMap.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Không có bác sĩ nào được phân công trong đợt này");
+    }
+
+    // Tạo thông báo cho từng bác sĩ
+    int notifiedCount = 0;
+    for (java.util.Map.Entry<Long, java.util.List<String>> entry : dentistScheduleMap.entrySet()) {
+      Long userId = entry.getKey();
+      java.util.List<String> scheduleDetails = entry.getValue();
+      notificationService.createNotificationForDentist(
+          userId, campaignId, campaign.getName(), scheduleDetails);
+      notifiedCount++;
+    }
+
+    return notifiedCount;
   }
 }

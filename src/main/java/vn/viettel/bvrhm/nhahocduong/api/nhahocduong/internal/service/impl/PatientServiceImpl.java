@@ -13,6 +13,7 @@ import java.util.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -116,6 +117,7 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
+  @Cacheable(value = "patients") //TODO: no authentication, cacheable for testing only
   public Page<PatientDTO> getPatientsByCondition(
       PatientSearchCriteria searchCriteria, Pageable pageable) {
     AuthorizationData authData = authorizationService.authorize();
