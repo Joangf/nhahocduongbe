@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -210,6 +211,7 @@ public class ExamServiceImpl implements ExamService {
   @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCampaignRepository examCampaignRepository;
 
   @Override
+  @Cacheable(value = "reExams")
   public List<ExamDTO> getReExams() {
     // Tìm tất cả exam đang active, kiểm tra nếu có răng sâu (CARIES) thì cần tái khám
     List<Exam> allExams = examRepository.findAll().stream()
