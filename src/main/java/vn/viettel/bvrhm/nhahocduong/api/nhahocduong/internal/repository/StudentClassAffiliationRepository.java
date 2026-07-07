@@ -5,13 +5,14 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.AffiliationStatus;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.StudentClassAffiliation;
 
 public interface StudentClassAffiliationRepository extends JpaRepository<StudentClassAffiliation, Long> {
 
   List<StudentClassAffiliation> findByAcademicYearId(Long academicYearId);
 
-  List<StudentClassAffiliation> findByAcademicYearIdAndStatus(Long academicYearId, String status);
+  List<StudentClassAffiliation> findByAcademicYearIdAndStatus(Long academicYearId, AffiliationStatus status);
 
   Optional<StudentClassAffiliation> findByStudentIdAndAcademicYearId(Long studentId, Long academicYearId);
 

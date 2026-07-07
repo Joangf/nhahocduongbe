@@ -3,8 +3,11 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ public class AcademicYearServiceImpl implements vn.viettel.bvrhm.nhahocduong.api
   @Autowired private StudentClassAffiliationRepository affiliationRepository;
   @Autowired private ExamCampaignRepository campaignRepository;
   @Autowired private SystemLogRepository systemLogRepository;
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository patientRepository;
+  @Autowired private vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.OrganizationRepository organizationRepository;
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -167,7 +172,7 @@ public class AcademicYearServiceImpl implements vn.viettel.bvrhm.nhahocduong.api
           java.util.Map.of("name", oldYear.getName(), "status", oldYear.getStatus().name()));
       oldYear.setStatus(AcademicYearStatus.COMPLETED);
       oldYear.setUpdatedDate(LocalDateTime.now());
-      academicYearRepository.save(oldYear);
+      academicYearRepository.saveAndFlush(oldYear);
 
       systemLogRepository.save(buildLog(sessionId, "YEAR_TRANSITION", "ACADEMIC_YEAR",
           oldYear.getId(), oldYearJson,
@@ -216,7 +221,7 @@ public class AcademicYearServiceImpl implements vn.viettel.bvrhm.nhahocduong.api
 
     // Lấy tất cả học sinh đang học ở năm cũ
     List<StudentClassAffiliation> currentAffiliations =
-        affiliationRepository.findByAcademicYearIdAndStatus(oldYear.getId(), "STUDYING");
+        affiliationRepository.findByAcademicYearIdAndStatus(oldYear.getId(), AffiliationStatus.STUDYING);
 
     for (StudentClassAffiliation aff : currentAffiliations) {
       Class oldClass = aff.getStudentClass();
@@ -337,17 +342,18 @@ public class AcademicYearServiceImpl implements vn.viettel.bvrhm.nhahocduong.api
           });
     }
 
-    // 4. Trả năm cũ về CURRENT
+    // 4. Xóa năm mới trước (để giải phóng unique CURRENT constraint)
+    if (newYearId != null) {
+      academicYearRepository.deleteById(newYearId);
+      academicYearRepository.flush();
+    }
+
+    // 5. Trả năm cũ về CURRENT
     if (oldYearId != null) {
       academicYearRepository.findById(oldYearId).ifPresent(oldYear -> {
         oldYear.setStatus(AcademicYearStatus.CURRENT);
-        academicYearRepository.save(oldYear);
+        academicYearRepository.saveAndFlush(oldYear);
       });
-    }
-
-    // 5. Xóa năm mới
-    if (newYearId != null) {
-      academicYearRepository.deleteById(newYearId);
     }
 
     // 6. Xóa system_log của phiên này
@@ -355,6 +361,101 @@ public class AcademicYearServiceImpl implements vn.viettel.bvrhm.nhahocduong.api
 
     result.setSuccess(true);
     result.setMessage("Khôi phục thành công! Năm học cũ đã được trả về trạng thái Đang diễn ra.");
+    return result;
+  }
+
+  // ═══════════════════ HISTORY ═══════════════════
+
+  @Override
+  public List<Map<String, Object>> getTransitionHistory() {
+    List<SystemLog> logs = systemLogRepository.findAll();
+    Map<String, List<SystemLog>> grouped = logs.stream()
+        .collect(Collectors.groupingBy(SystemLog::getSessionId));
+
+    List<Map<String, Object>> result = new ArrayList<>();
+    for (var entry : grouped.entrySet()) {
+      Map<String, Object> session = new HashMap<>();
+      session.put("sessionId", entry.getKey());
+
+      SystemLog firstLog = entry.getValue().get(0);
+      session.put("action", "Chuyển năm học");
+      session.put("time", firstLog.getCreatedDate());
+
+      // Parse human-readable summary
+      List<String> summary = new ArrayList<>();
+      String oldYearName = null;
+      String newYearName = null;
+      List<String> promotedStudents = new ArrayList<>();
+      List<String> graduatedStudents = new ArrayList<>();
+
+      for (SystemLog log : entry.getValue()) {
+        if ("ACADEMIC_YEAR".equals(log.getEntityType())) {
+          // Old year: oldValue contains the year name, newValue = {"status":"COMPLETED"}
+          if (log.getOldValue() != null && log.getNewValue() != null && log.getNewValue().contains("COMPLETED")) {
+            try {
+              var node = objectMapper.readTree(log.getOldValue());
+              oldYearName = node.has("name") ? node.get("name").asText() : null;
+            } catch (Exception ignored) {}
+          }
+          // New year: oldValue is null, newValue contains name and status CURRENT
+          if (log.getOldValue() == null && log.getNewValue() != null && log.getNewValue().contains("CURRENT")) {
+            try {
+              var node = objectMapper.readTree(log.getNewValue());
+              newYearName = node.has("name") ? node.get("name").asText() : null;
+            } catch (Exception ignored) {}
+          }
+        }
+        if ("STUDENT_AFFILIATION".equals(log.getEntityType()) && log.getNewValue() != null) {
+          try {
+            var node = objectMapper.readTree(log.getNewValue());
+            if (node.has("student_id") && node.has("class_id")) {
+              long studentId = node.get("student_id").asLong();
+              long classId = node.get("class_id").asLong();
+
+              // Get student name
+              String studentName = patientRepository.findById(studentId)
+                  .map(p -> p.getFullName()).orElse("HS #" + studentId);
+
+              // Get class info
+              String classInfo = classRepository.findById(classId)
+                  .map(c -> c.getName() + " - " + c.getSchool().getName())
+                  .orElse("Lớp #" + classId);
+
+              promotedStudents.add(studentName + " lên " + classInfo);
+            }
+          } catch (Exception ignored) {}
+        }
+        if ("STUDENT_AFFILIATION".equals(log.getEntityType()) && log.getOldValue() != null
+            && log.getOldValue().contains("GRADUATED")) {
+          try {
+            var node = objectMapper.readTree(log.getOldValue());
+            if (node.has("student_id")) {
+              long studentId = node.get("student_id").asLong();
+              String studentName = patientRepository.findById(studentId)
+                  .map(p -> p.getFullName()).orElse("HS #" + studentId);
+              graduatedStudents.add(studentName + " đã tốt nghiệp");
+            }
+          } catch (Exception ignored) {}
+        }
+      }
+
+      if (oldYearName != null && newYearName != null) {
+        summary.add("Đóng năm học " + oldYearName + " → Đã kết thúc");
+        summary.add("Mở năm học mới " + newYearName + " → Đang diễn ra");
+      }
+      if (!promotedStudents.isEmpty()) {
+        summary.add(promotedStudents.size() + " học sinh được lên lớp:");
+        summary.addAll(promotedStudents);
+      }
+      if (!graduatedStudents.isEmpty()) {
+        summary.add(graduatedStudents.size() + " học sinh tốt nghiệp:");
+        summary.addAll(graduatedStudents);
+      }
+
+      session.put("summary", summary);
+      result.add(session);
+    }
+    result.sort((a, b) -> ((LocalDateTime) b.get("time")).compareTo((LocalDateTime) a.get("time")));
     return result;
   }
 

@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.controller;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +63,11 @@ public class AcademicYearController {
   @PostMapping("/rollback/{sessionId}")
   public ResponseEntity<TransitionResultDTO> rollback(@PathVariable String sessionId) {
     return ResponseEntity.ok(academicYearService.rollbackTransition(sessionId));
+  }
+
+  // ── Lịch sử chuyển năm ──
+  @GetMapping("/history")
+  public ResponseEntity<List<Map<String, Object>>> getTransitionHistory() {
+    return ResponseEntity.ok(academicYearService.getTransitionHistory());
   }
 }
