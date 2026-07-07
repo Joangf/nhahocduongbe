@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.cache.annotation.Cacheable;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentCountBySchoolDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.YearlyStudentCountDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.DashboardService;
@@ -24,6 +26,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
     private ExamRepository examRepository;
+
+    @Autowired
+    private StudentClassAffiliationRepository affiliationRepository;
 
     @Override
     public Map<String, Object> getCampaignStats() {
@@ -199,5 +204,28 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return tr.getRecord().values().stream()
                 .anyMatch(cond -> cond != null && cond.getProblem() == ToothProblem.CARIES);
+    }
+
+    // ── Mới: Thống kê sĩ số theo năm học ──
+
+    @Override
+    public List<StudentCountBySchoolDTO> getStudentCountByYear(Long academicYearId) {
+        List<Object[]> rows = affiliationRepository.countStudentsBySchoolAndGrade(academicYearId);
+        return rows.stream()
+            .map(r -> new StudentCountBySchoolDTO(
+                (String) r[0],
+                (String) r[1],
+                ((Number) r[2]).longValue()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<YearlyStudentCountDTO> getStudentCountHistory() {
+        List<Object[]> rows = affiliationRepository.countStudentsByYear();
+        return rows.stream()
+            .map(r -> new YearlyStudentCountDTO(
+                (String) r[0],
+                ((Number) r[1]).longValue()))
+            .collect(Collectors.toList());
     }
 }

@@ -1,0 +1,23 @@
+{
+  "name": "nhahocduongbe",
+  "version": "1.0.0",
+  "description": "**Phiên bản:** 1.0 (Reverse Engineering)\r **Ngày tạo:** 2024\r **Nguồn:** Phân tích từ source code `nhahocduongbe-master`\r **Tổ chức:** Bệnh viện Răng Hàm Mặt Trung ương TP. HCM (BVRHM)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joangf/nhahocduongbe.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Joangf/nhahocduongbe/issues"
+  },
+  "homepage": "https://github.com/Joangf/nhahocduongbe#readme",
+  "dependencies": {
+    "pg": "^8.22.0"
+  }
+}

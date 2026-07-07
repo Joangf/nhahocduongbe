@@ -212,15 +212,11 @@ class ExamCampaignServiceImplUnitTest {
     @Test
     @DisplayName("Trả về danh sách học sinh với đúng trạng thái")
     void shouldReturnStudentStatusList() {
-      StudentExamStatusDTO examined = new StudentExamStatusDTO(
-          1L, "Nguyễn Văn A", "HS001", "5A", "0909000001",
-          10L, LocalDate.of(2026, 6, 15), "EXAMINED");
-      StudentExamStatusDTO notExamined = new StudentExamStatusDTO(
-          2L, "Trần Thị B", "HS002", "5B", "0909000002",
-          null, null, "NOT_EXAMINED");
+      Object[] examinedRow = {1L, "Nguyễn Văn A", "HS001", "5A", "0909000001", 10L, java.sql.Date.valueOf(LocalDate.of(2026, 6, 15)), "Trường học", "EXAMINED"};
+      Object[] notExaminedRow = {2L, "Trần Thị B", "HS002", "5B", "0909000002", null, null, null, "NOT_EXAMINED"};
 
       when(patientRepository.findStudentExamStatusByCampaignId(1L))
-          .thenReturn(List.of(examined, notExamined));
+          .thenReturn(List.of(examinedRow, notExaminedRow));
 
       List<StudentExamStatusDTO> result = service.getStudentsByCampaignId(1L);
 
@@ -261,14 +257,10 @@ class ExamCampaignServiceImplUnitTest {
     @DisplayName("Chỉ gửi thông báo cho học sinh chưa khám")
     void shouldOnlyNotifyUnexaminedStudents() {
       ExamCampaign campaign = campaign(1L, "Đợt Q1");
-      StudentExamStatusDTO examined = new StudentExamStatusDTO(
-          1L, "Nguyễn Văn A", "HS001", "5A", "0909",
-          10L, LocalDate.now(), "EXAMINED");
-      StudentExamStatusDTO notExamined = new StudentExamStatusDTO(
-          2L, "Trần Thị B", "HS002", "5B", "0909",
-          null, null, "NOT_EXAMINED");
+      Object[] examinedRow = {1L, "Nguyễn Văn A", "HS001", "5A", "0909", 10L, java.sql.Date.valueOf(LocalDate.now()), "Trường học", "EXAMINED"};
+      Object[] notExaminedRow = {2L, "Trần Thị B", "HS002", "5B", "0909", null, null, null, "NOT_EXAMINED"};
 
-      when(patientRepository.findStudentExamStatusByCampaignId(1L)).thenReturn(List.of(examined, notExamined));
+      when(patientRepository.findStudentExamStatusByCampaignId(1L)).thenReturn(List.of(examinedRow, notExaminedRow));
       when(examCampaignRepository.findById(1L)).thenReturn(Optional.of(campaign));
 
       // Chạy không ném exception

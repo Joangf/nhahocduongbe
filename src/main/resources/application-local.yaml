@@ -1,0 +1,58 @@
+# Local development: PostgreSQL trên Docker (port 5433)
+# Sử dụng: ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
+# Hoặc: java -jar target/*.jar --spring.profiles.active=local
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.modulith.runtime.autoconfigure.SpringModulithRuntimeAutoConfiguration
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres?currentSchema=nhahocduong&TimeZone=Asia/Ho_Chi_Minh
+    username: postgres
+    password: local123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:password}
+  cache:
+    type: redis
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        "[format_sql]": true
+
+  security:
+    user:
+      name: app
+      password: app
+
+server:
+  error:
+    whitelabel:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  level:
+    org:
+      hibernate:
+        # SQL: DEBUG    # Bỏ comment để debug SQL
+        orm:
+          jdbc:
+            bind: TRACE
+        stat: DEBUG
+        SQL_SLOW: INFO
+        cache: DEBUG
