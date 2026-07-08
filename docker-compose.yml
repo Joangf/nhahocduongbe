@@ -1,4 +1,3 @@
-
 networks:
   nhd:
 
@@ -52,19 +51,18 @@ services:
   #   command: -config.file=/etc/promtail/promtail.yml
   #   networks:
   #     - nhd
-  # db:
-  #   image: postgres:17-alpine3.23
-  #   container_name: nhd-db
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     - POSTGRES_DB=nhahocduong
-  #     - POSTGRES_USER=nhahocduong
-  #     - POSTGRES_PASSWORD=nhahocduong
-  #   volumes:
-  #     - nhd-db-data:/var/lib/postgresql/data
-  #     - ./db-scripts:/nhahocduong
-  #     - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+  db:
+    image: postgres:17-alpine3.23
+    container_name: nhd-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=nhahocduong
+      - POSTGRES_USER=nhahocduong
+      - POSTGRES_PASSWORD=nhahocduong
+    volumes:
+      - nhd-db-data:/var/lib/postgresql/data
+      - ./backup_nhahocduong.sql:/docker-entrypoint-initdb.d/backup_nhahocduong.sql
   cache:
     image: redis:alpine
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-password}"]
@@ -72,7 +70,6 @@ services:
       - nhd
     ports:
       - "6379:6379"
-      
 
 volumes:
   nhd-db-data:
