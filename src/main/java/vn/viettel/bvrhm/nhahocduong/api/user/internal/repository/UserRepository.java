@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   Optional<User> findByPhoneNumber(String phoneNumber);
 
+  Optional<User> findByUsernameAndEmailAndPhoneNumber(String username, String email, String phoneNumber);
+
   List<User> findByRegisterStatus(Boolean registerStatus);
 
   @Query("SELECT DISTINCT u FROM User u JOIN u.roleList r WHERE r.code = :roleCode AND u.status = true")
