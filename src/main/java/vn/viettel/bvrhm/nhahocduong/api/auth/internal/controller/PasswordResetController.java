@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.viettel.bvrhm.nhahocduong.api.auth.ForgotPasswordRequest;
+import vn.viettel.bvrhm.nhahocduong.api.auth.RegisterSendOtpRequest;
+import vn.viettel.bvrhm.nhahocduong.api.auth.ChangePasswordSendOtpRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.ResetPasswordRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.VerifyOtpRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.OtpService;
@@ -28,6 +30,18 @@ public class PasswordResetController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         otpService.generateAndSendOtp(request.username(), request.email(), request.phoneNumber());
+        return ResponseEntity.ok(Map.of("message", "Mã xác thực OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư."));
+    }
+
+    @PostMapping("/register-send-otp")
+    public ResponseEntity<?> registerSendOtp(@Valid @RequestBody RegisterSendOtpRequest request) {
+        otpService.generateAndSendRegisterOtp(request.username(), request.email(), request.phoneNumber());
+        return ResponseEntity.ok(Map.of("message", "Mã xác thực OTP đã được gửi đến email đăng ký của bạn. Vui lòng kiểm tra hộp thư."));
+    }
+
+    @PostMapping("/change-password-send-otp")
+    public ResponseEntity<?> changePasswordSendOtp(@Valid @RequestBody ChangePasswordSendOtpRequest request) {
+        otpService.generateAndSendChangePasswordOtp(request.username(), request.email(), request.phoneNumber());
         return ResponseEntity.ok(Map.of("message", "Mã xác thực OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư."));
     }
 

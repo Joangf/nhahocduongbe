@@ -64,8 +64,79 @@ public class OtpService {
         otpTokenRepository.save(otpToken);
 
         // Gửi qua email (chạy async bất đồng bộ)
-        emailService.sendOtpEmail(email, otpCode, expirationMinutes);
+        emailService.sendOtpEmail(email, otpCode, expirationMinutes, "forgot-password");
     }
+
+    @Transactional
+    public void generateAndSendRegisterOtp(String username, String email, String phoneNumber) {
+        // Kiểm tra xem tên đăng nhập, email hoặc số điện thoại đã tồn tại chưa
+        if (userRepository.getByUsername(username).isPresent()) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Tên đăng nhập đã được sử dụng.");
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Email đã được sử dụng.");
+        }
+        if (userRepository.findByPhoneNumber(phoneNumber).isPresent()) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Số điện thoại đã được sử dụng.");
+        }
+
+        // Rate limiting: kiểm tra số lượng OTP gửi trong 1 giờ
+        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+        long otpCount = otpTokenRepository.countByEmailAndCreatedAtAfter(email, oneHourAgo);
+        if (otpCount >= maxAttemptsPerHour) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.TOO_MANY_REQUESTS, "Bạn đã vượt quá giới hạn gửi OTP (tối đa 5 lần/giờ). Vui lòng thử lại sau.");
+        }
+
+        // Generate 6-digit OTP code
+        String otpCode = String.format("%06d", random.nextInt(1000000));
+
+        OtpToken otpToken = OtpToken.builder()
+                .email(email)
+                .otpCode(otpCode)
+                .expiresAt(LocalDateTime.now().plusMinutes(expirationMinutes))
+                .verified(false)
+                .used(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        otpTokenRepository.save(otpToken);
+
+        // Gửi qua email (chạy async bất đồng bộ)
+        emailService.sendOtpEmail(email, otpCode, expirationMinutes, "register");
+    }
+
+    @Transactional
+    public void generateAndSendChangePasswordOtp(String username, String email, String phoneNumber) {
+        // Kiểm tra xem tài khoản khớp cả 3 thông tin có tồn tại không
+        if (userRepository.findByUsernameAndEmailAndPhoneNumber(username, email, phoneNumber).isEmpty()) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Thông tin tài khoản (Tên đăng nhập, Số điện thoại hoặc Email) không chính xác.");
+        }
+
+        // Rate limiting: kiểm tra số lượng OTP gửi trong 1 giờ
+        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+        long otpCount = otpTokenRepository.countByEmailAndCreatedAtAfter(email, oneHourAgo);
+        if (otpCount >= maxAttemptsPerHour) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.TOO_MANY_REQUESTS, "Bạn đã vượt quá giới hạn gửi OTP (tối đa 5 lần/giờ). Vui lòng thử lại sau.");
+        }
+
+        // Generate 6-digit OTP code
+        String otpCode = String.format("%06d", random.nextInt(1000000));
+
+        OtpToken otpToken = OtpToken.builder()
+                .email(email)
+                .otpCode(otpCode)
+                .expiresAt(LocalDateTime.now().plusMinutes(expirationMinutes))
+                .verified(false)
+                .used(false)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        otpTokenRepository.save(otpToken);
+
+        // Gửi qua email (chạy async bất đồng bộ)
+        emailService.sendOtpEmail(email, otpCode, expirationMinutes, "change-password");
+    }
+
 
     @Transactional
     public String verifyOtp(String email, String otpCode) {
