@@ -8,17 +8,26 @@ spring:
     password: ${DB_PASSWORD:nhahocduong}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 2
+      maximum-pool-size: 5       # Increased from 1 — was serializing all DB requests!
+      minimum-idle: 2
+      connection-timeout: 20000  # 20s
+      idle-timeout: 300000       # 5min
 
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:password}
+      username: default
+      ssl:
+        enabled: true
   cache:
     type: redis
+    redis:
+      time-to-live: 300000   # 5 minutes default TTL (ms)
+      cache-null-values: false
   jpa:
-    #open-in-view: false
+    open-in-view: false          # Safe now: chronicConditions fetched via JOIN FETCH
     hibernate:
       ddl-auto: none
     show-sql: false

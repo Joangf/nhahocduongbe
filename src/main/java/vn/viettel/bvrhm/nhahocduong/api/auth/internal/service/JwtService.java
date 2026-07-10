@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
@@ -17,17 +18,16 @@ import vn.viettel.bvrhm.nhahocduong.api.user.internal.dto.RoleDTO;
 @Service
 public class JwtService {
 
-  private static final String JWT_SIGNING_KEY =
-      "6A586E3272357538782F413F4428472D4B6150645367566B5970337336763979";
+  /** JWT signing key — must be set via JWT_SIGNING_KEY env var (Base64-encoded 32-byte secret). */
+  @Value("${JWT_SIGNING_KEY}")
+  private String jwtSigningKey;
 
-  // 1000 miliseconds x 60 seconds x 60 minutes x 24 hours
-  private static final long TOKEN_EXP_TIME_MILLIS = 1000L * 60 * 60 * 24 * 30;
-
-  // 1000 miliseconds x 60 seconds x 5 min
-  //  private static final long TOKEN_EXP_TIME_MILLIS = 1000L * 60 * 5;
+  /** Token expiry in milliseconds — set via JWT_EXPIRATION_MS env var. Default: 30 days. */
+  @Value("${JWT_EXPIRATION_MS:2592000000}")
+  private long tokenExpTimeMillis;
 
   private Key getJwtSigningKey() {
-    byte[] keyBytes = Decoders.BASE64.decode(JWT_SIGNING_KEY);
+    byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
@@ -58,7 +58,7 @@ public class JwtService {
         .setClaims(extraClaims)
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXP_TIME_MILLIS))
+        .setExpiration(new Date(System.currentTimeMillis() + tokenExpTimeMillis))
         .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
         .compact();
   }
@@ -66,54 +66,45 @@ public class JwtService {
   public String makeTokenWithUserIdAndRoles(Long userId, Collection<String> roles) {
     long currentEpoch = System.currentTimeMillis();
     Date currentDate = new Date(currentEpoch);
-    Date expDate = new Date(currentEpoch + TOKEN_EXP_TIME_MILLIS);
+    Date expDate = new Date(currentEpoch + tokenExpTimeMillis);
 
-    String token =
-        Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .setIssuedAt(currentDate)
-            .setNotBefore(currentDate)
-            .setExpiration(expDate)
-            .addClaims(Map.of("roles", String.join(",", roles)))
-            .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
-            .compact();
-
-    return token;
+    return Jwts.builder()
+        .setSubject(String.valueOf(userId))
+        .setIssuedAt(currentDate)
+        .setNotBefore(currentDate)
+        .setExpiration(expDate)
+        .addClaims(Map.of("roles", String.join(",", roles)))
+        .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
+        .compact();
   }
 
   public String makeToken(Long userId, Map<String, Object> extraClaims) {
     long currentEpoch = System.currentTimeMillis();
     Date currentDate = new Date(currentEpoch);
-    Date expDate = new Date(currentEpoch + TOKEN_EXP_TIME_MILLIS);
+    Date expDate = new Date(currentEpoch + tokenExpTimeMillis);
 
-    String token =
-        Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .setIssuedAt(currentDate)
-            .setNotBefore(currentDate)
-            .setExpiration(expDate)
-            .addClaims(extraClaims)
-            .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
-            .compact();
-
-    return token;
+    return Jwts.builder()
+        .setSubject(String.valueOf(userId))
+        .setIssuedAt(currentDate)
+        .setNotBefore(currentDate)
+        .setExpiration(expDate)
+        .addClaims(extraClaims)
+        .signWith(getJwtSigningKey(), SignatureAlgorithm.HS256)
+        .compact();
   }
 
   public boolean isTokenValid(String token) {
     try {
-      final String userId = extractUserId(token);
+      extractUserId(token);
       return !isTokenExpired(token);
     } catch (JwtException e) {
-      // Something is wrong with this token (invalid signature ...)
+      // Something is wrong with this token (invalid signature, expired, etc.)
       return false;
     }
   }
 
   private boolean isTokenExpired(String token) {
-    Date expirationDate = extractExpiration(token);
-    Date now = new Date();
-
-    return expirationDate.before(now);
+    return extractExpiration(token).before(new Date());
   }
 
   private Date extractExpiration(String token) {
@@ -121,8 +112,7 @@ public class JwtService {
   }
 
   public <T> T extractClaim(String token, Function<Claims, T> claimsSelector) {
-    final Claims claims = extractAllClaims(token);
-    return claimsSelector.apply(claims);
+    return claimsSelector.apply(extractAllClaims(token));
   }
 
   private Claims extractAllClaims(String token) {

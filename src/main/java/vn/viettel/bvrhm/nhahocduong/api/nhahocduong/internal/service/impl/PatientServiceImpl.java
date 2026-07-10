@@ -13,6 +13,7 @@ import java.util.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -70,6 +71,7 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "patients", allEntries = true)
   public PatientDTO createPatient(PatientDTO patientDTO) {
     // Check organization class and patient class
     OrganizationDTO organizationDTO =
@@ -98,6 +100,7 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "patients", allEntries = true)
   public PatientDTO updatePatient(PatientDTO patientDTO, Long id) {
     var entity = patientMapper.toEntity(patientDTO);
     entity.setId(id);
@@ -117,7 +120,16 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  @Cacheable(value = "patients") //TODO: no authentication, cacheable for testing only
+  @Cacheable(
+      value = "patients",
+      key = "T(String).valueOf(#searchCriteria.searchText).concat('|')"
+           + ".concat(T(String).valueOf(#searchCriteria.organizationName)).concat('|')"
+           + ".concat(T(String).valueOf(#searchCriteria.schoolClass)).concat('|')"
+           + ".concat(T(String).valueOf(#searchCriteria.areaCode)).concat('|')"
+           + ".concat(T(String).valueOf(#pageable.pageNumber)).concat('_')"
+           + ".concat(T(String).valueOf(#pageable.pageSize)).concat('_')"
+           + ".concat(T(String).valueOf(#pageable.sort))"
+  )
   public Page<PatientDTO> getPatientsByCondition(
       PatientSearchCriteria searchCriteria, Pageable pageable) {
     AuthorizationData authData = authorizationService.authorize();
@@ -130,7 +142,10 @@ public class PatientServiceImpl implements PatientService {
         return new PageImpl<>(Collections.emptyList(), pageable, 0);
       }
     }
-    List<String> areaCodesInside = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
+    // Skip expensive recursive CTE when no area filter — pass empty list to bypass IN clause
+    List<String> areaCodesInside = searchCriteria.getAreaCode() != null
+        ? areaService.getChildrenAreaCode(searchCriteria.getAreaCode())
+        : Collections.emptyList();
 
     Page<Patient> patients =
         patientRepository.findAllByCondition(
@@ -152,6 +167,7 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
+  @CacheEvict(value = "patients", allEntries = true)
   public boolean deletePatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElseThrow(NoSuchElementException::new);
     List<Exam> exams = examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(id, true);
