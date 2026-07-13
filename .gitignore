@@ -47,3 +47,7 @@ secrets.yml
 *.err.log
 *.out.log
 RUN.md
+# Scratch/debug files
+*_cols.txt
+current_schema.sql
+*.scratch.sql

@@ -51,7 +51,7 @@ public class Patient extends BaseEntity {
   @Column(name = "phone_number")
   private String phoneNumber;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
       name = "nhahocduong_patient_disease",
       joinColumns = {@JoinColumn(name = "patient_id")},

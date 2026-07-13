@@ -5,7 +5,9 @@
 - Using mvnw file:
 
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+$env:JAVA_HOME="C:\Users\Acer\Downloads\jdk-23_windows-x64_bin\jdk-23.0.1"
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev" "-Dmaven.test.skip=true"
+
 
 # If you use linux (fedora, ubuntu), u must run below first
 chmod +x mvnw

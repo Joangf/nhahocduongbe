@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.persistence.QueryHint;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
 
 @RepositoryRestResource
@@ -32,16 +34,37 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
       @RequestParam("schoolClass") List<String> schoolClass);
 
   @Query(
-      """
-          SELECT DISTINCT p FROM Patient p LEFT JOIN p.organization
-          WHERE (:searchText is null or (LOWER(p.fullName) like LOWER(CONCAT('%', :searchText, '%'))
-            or LOWER(p.healthInsuranceNumber) like LOWER(CONCAT('%', :searchText, '%'))))
-            and (:organizationId is null or p.organization.id = :organizationId)
-            and (:organizationId is not null or (:organizationName is null or LOWER(p.organization.name) like LOWER(CONCAT('%', :organizationName, '%'))))
-            and (:#{null eq #schoolClass} = true or LOWER(p.schoolClass) LIKE LOWER(CONCAT('%', :schoolClass, '%')))
-            AND (:#{#areaCodes.size()} = 0 OR  p.organization.areaCode IN :areaCodes)
+      value = """
+          SELECT DISTINCT p FROM Patient p
+          LEFT JOIN FETCH p.organization o
+          LEFT JOIN FETCH p.chronicConditions
+          WHERE (:searchText IS NULL OR
+                 LOWER(p.fullName) LIKE LOWER(CONCAT('%', :searchText, '%'))
+              OR LOWER(p.healthInsuranceNumber) LIKE LOWER(CONCAT('%', :searchText, '%')))
+            AND (:organizationId IS NULL OR o.id = :organizationId)
+            AND (:organizationId IS NOT NULL OR :organizationName IS NULL
+                 OR LOWER(o.name) LIKE LOWER(CONCAT('%', :organizationName, '%')))
+            AND (:schoolClass IS NULL OR LOWER(p.schoolClass) LIKE LOWER(CONCAT('%', :schoolClass, '%')))
+            AND (:#{#areaCodes == null || #areaCodes.isEmpty()} = TRUE OR o.areaCode IN :areaCodes)
+            AND p.status = :status
+          """,
+      countQuery = """
+          SELECT COUNT(DISTINCT p) FROM Patient p
+          LEFT JOIN p.organization o
+          WHERE (:searchText IS NULL OR
+                 LOWER(p.fullName) LIKE LOWER(CONCAT('%', :searchText, '%'))
+              OR LOWER(p.healthInsuranceNumber) LIKE LOWER(CONCAT('%', :searchText, '%')))
+            AND (:organizationId IS NULL OR o.id = :organizationId)
+            AND (:organizationId IS NOT NULL OR :organizationName IS NULL
+                 OR LOWER(o.name) LIKE LOWER(CONCAT('%', :organizationName, '%')))
+            AND (:schoolClass IS NULL OR LOWER(p.schoolClass) LIKE LOWER(CONCAT('%', :schoolClass, '%')))
+            AND (:#{#areaCodes == null || #areaCodes.isEmpty()} = TRUE OR o.areaCode IN :areaCodes)
             AND p.status = :status
           """)
+  @QueryHints(value = {
+      @QueryHint(name = "org.hibernate.readOnly", value = "true"),
+      @QueryHint(name = "jakarta.persistence.query.timeout", value = "10000")
+  })
   Page<Patient> findAllByCondition(
       @RequestParam("searchText") String searchText,
       @RequestParam("organizationName") String organizationName,
