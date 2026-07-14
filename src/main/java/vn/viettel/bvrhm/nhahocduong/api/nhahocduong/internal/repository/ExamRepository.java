@@ -53,7 +53,7 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
   """)
   List<Exam> findUpcomingReExams();
 
-  @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true")
+  @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true OR e.status IS NULL")
   Long countTotalExamined();
 
   Exam findTopByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);

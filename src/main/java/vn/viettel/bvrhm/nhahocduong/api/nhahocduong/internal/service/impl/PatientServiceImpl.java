@@ -71,7 +71,7 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional
-  @CacheEvict(value = "patients", allEntries = true)
+  @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
   public PatientDTO createPatient(PatientDTO patientDTO) {
     // Check organization class and patient class
     OrganizationDTO organizationDTO =
@@ -100,7 +100,7 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional
-  @CacheEvict(value = "patients", allEntries = true)
+  @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
   public PatientDTO updatePatient(PatientDTO patientDTO, Long id) {
     var entity = patientMapper.toEntity(patientDTO);
     entity.setId(id);
@@ -122,13 +122,13 @@ public class PatientServiceImpl implements PatientService {
   @Override
   @Cacheable(
       value = "patients",
-      key = "T(String).valueOf(#searchCriteria.searchText).concat('|')"
-           + ".concat(T(String).valueOf(#searchCriteria.organizationName)).concat('|')"
-           + ".concat(T(String).valueOf(#searchCriteria.schoolClass)).concat('|')"
-           + ".concat(T(String).valueOf(#searchCriteria.areaCode)).concat('|')"
-           + ".concat(T(String).valueOf(#pageable.pageNumber)).concat('_')"
-           + ".concat(T(String).valueOf(#pageable.pageSize)).concat('_')"
-           + ".concat(T(String).valueOf(#pageable.sort))"
+      key = "#searchCriteria.searchText + '|'"
+          + " + #searchCriteria.organizationName + '|'"
+          + " + #searchCriteria.schoolClass + '|'"
+          + " + #searchCriteria.areaCode + '|'"
+          + " + #pageable.pageNumber + '_'"
+          + " + #pageable.pageSize + '_'"
+          + " + #pageable.sort"
   )
   public Page<PatientDTO> getPatientsByCondition(
       PatientSearchCriteria searchCriteria, Pageable pageable) {
@@ -143,9 +143,13 @@ public class PatientServiceImpl implements PatientService {
       }
     }
     // Skip expensive recursive CTE when no area filter — pass empty list to bypass IN clause
-    List<String> areaCodesInside = searchCriteria.getAreaCode() != null
-        ? areaService.getChildrenAreaCode(searchCriteria.getAreaCode())
-        : Collections.emptyList();
+    List<String> areaCodesInside = Collections.emptyList();
+    if (searchCriteria.getAreaCode() != null) {
+      List<String> children = areaService.getChildrenAreaCode(searchCriteria.getAreaCode());
+      if (children != null) {
+        areaCodesInside = children;
+      }
+    }
 
     Page<Patient> patients =
         patientRepository.findAllByCondition(
@@ -167,7 +171,7 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  @CacheEvict(value = "patients", allEntries = true)
+  @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
   public boolean deletePatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElseThrow(NoSuchElementException::new);
     List<Exam> exams = examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(id, true);

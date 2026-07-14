@@ -10,4 +10,5 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamCampaign
 public interface ExamCampaignRepository extends JpaRepository<ExamCampaign, Long> {
   List<ExamCampaign> findAllByStatusOrderByIdDesc(Boolean status);
   Optional<ExamCampaign> findByIdAndStatus(Long id, Boolean status);
+  long countByStatus(Boolean status);
 }

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.repository.query.Param;
 import jakarta.persistence.QueryHint;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
 
@@ -29,9 +29,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
           + "and (:organizationName is null or LOWER(p.organization.name) like LOWER(CONCAT('%', :organizationName, '%'))) "
           + "and (:#{null eq #schoolClass} = true or p.schoolClass in :schoolClass)")
   List<Patient> findByCondition(
-      @RequestParam("searchText") String searchText,
-      @RequestParam("organizationName") String organizationName,
-      @RequestParam("schoolClass") List<String> schoolClass);
+      @Param("searchText") String searchText,
+      @Param("organizationName") String organizationName,
+      @Param("schoolClass") List<String> schoolClass);
 
   @Query(
       value = """
@@ -66,12 +66,12 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
       @QueryHint(name = "jakarta.persistence.query.timeout", value = "10000")
   })
   Page<Patient> findAllByCondition(
-      @RequestParam("searchText") String searchText,
-      @RequestParam("organizationName") String organizationName,
-      @RequestParam("organizationId") Long organizationId,
-      @RequestParam("areaCodes") List<String> areaCodes,
-      @RequestParam("schoolClass") String schoolClass,
-      @RequestParam("status") Boolean status,
+      @Param("searchText") String searchText,
+      @Param("organizationName") String organizationName,
+      @Param("organizationId") Long organizationId,
+      @Param("areaCodes") List<String> areaCodes,
+      @Param("schoolClass") String schoolClass,
+      @Param("status") Boolean status,
       Pageable pageable);
 
   List<Patient> findAllByStatus(boolean status);

@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "dashboardStats", allEntries = true)
   public ExamCampaignDTO createCampaign(ExamCampaignDTO dto) {
     ExamCampaign campaign = examCampaignMapper.toEntity(dto);
     campaign.setId(null);
@@ -44,6 +46,7 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "dashboardStats", allEntries = true)
   public ExamCampaignDTO updateCampaign(Long id, ExamCampaignDTO dto) {
     ExamCampaign campaign = examCampaignRepository.findByIdAndStatus(id, true)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Campaign not found with id: " + id));
@@ -54,6 +57,7 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "dashboardStats", allEntries = true)
   public boolean deleteCampaign(Long id) {
     ExamCampaign campaign = examCampaignRepository.findByIdAndStatus(id, true).orElse(null);
     if (campaign != null) {

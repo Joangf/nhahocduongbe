@@ -21,6 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   List<User> findByRegisterStatus(Boolean registerStatus);
 
+  @Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roleList LEFT JOIN FETCH u.organization WHERE u.registerStatus = :registerStatus")
+  List<User> findByRegisterStatusWithRolesAndOrganization(@Param("registerStatus") Boolean registerStatus);
+
+  @Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roleList LEFT JOIN FETCH u.organization")
+  List<User> findAllWithRolesAndOrganization();
+
   @Query("SELECT DISTINCT u FROM User u JOIN u.roleList r WHERE r.code = :roleCode AND u.status = true")
   List<User> findUsersByRoleCode(@Param("roleCode") String roleCode);
 

@@ -62,7 +62,7 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
-  @CacheEvict(value = "reExams", allEntries = true)
+  @CacheEvict(value = {"reExams", "dashboardStats"}, allEntries = true)
   public ExamDTO createExam(ExamDTO newExamDTO) {
     Exam newExam = examMapper.toEntity(newExamDTO);
     newExam.setId(null);
@@ -177,7 +177,7 @@ public class ExamServiceImpl implements ExamService {
 //  }
 
   @Override
-  @CacheEvict(value = "reExams", allEntries = true)
+  @CacheEvict(value = {"reExams", "dashboardStats"}, allEntries = true)
   public boolean delete(Long id) {
     Exam exam =
         examRepository
@@ -222,11 +222,12 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
+  @Cacheable(value = "dashboardStats")
   public vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getDashboardStats() {
     vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO stats = new vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO();
     
     long totalCampaigns = examCampaignRepository.count();
-    long activeCampaigns = examCampaignRepository.findAllByStatusOrderByIdDesc(true).size();
+    long activeCampaigns = examCampaignRepository.countByStatus(true);
     long totalStudents = patientRepository.count();
     long totalExamined = examRepository.countTotalExamined();
     

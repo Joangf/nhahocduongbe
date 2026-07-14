@@ -33,13 +33,9 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public Map<String, Object> getCampaignStats() {
         long totalCampaigns = campaignRepository.count();
-        long activeCampaigns = campaignRepository.findAllByStatusOrderByIdDesc(true).size();
+        long activeCampaigns = campaignRepository.countByStatus(true);
         long totalStudents = patientRepository.count();
-        
-        List<Exam> exams = examRepository.findAll();
-        long totalExamined = exams.stream()
-                .filter(e -> e.getStatus() == null || e.getStatus())
-                .count();
+        long totalExamined = examRepository.countTotalExamined();
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCampaigns", totalCampaigns);
@@ -54,9 +50,7 @@ public class DashboardServiceImpl implements DashboardService {
     public Map<String, Object> getStats() {
         Map<String, Object> campaignStats = getCampaignStats();
         
-        List<Exam> allExams = examRepository.findAll().stream()
-                .filter(e -> e.getStatus() == null || e.getStatus())
-                .collect(Collectors.toList());
+        List<Exam> allExams = examRepository.findAllActiveWithAssociations();
 
         // 1. Thống kê tỷ lệ sâu răng theo trường/lớp
         List<Map<String, Object>> cariesBySchoolClass = calculateCariesBySchoolClass(allExams);

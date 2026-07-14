@@ -123,7 +123,7 @@ public class UserService {
   }
 
   public List<UserDTO> getWaitingUsers() {
-    return userRepository.findByRegisterStatus(false).stream()
+    return userRepository.findByRegisterStatusWithRolesAndOrganization(false).stream()
         .map(userMapper::userDTOFromUser)
         .toList();
   }
@@ -143,7 +143,7 @@ public class UserService {
   }
 
   public List<UserDTO> getAllUsers() {
-    return userRepository.findAll().stream()
+    return userRepository.findAllWithRolesAndOrganization().stream()
         .map(userMapper::userDTOFromUser)
         .toList();
   }
