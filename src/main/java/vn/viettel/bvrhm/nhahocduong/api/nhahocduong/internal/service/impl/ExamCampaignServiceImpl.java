@@ -87,6 +87,9 @@ public class ExamCampaignServiceImpl implements ExamCampaignService {
         (String) r[8]
     )).toList();
   }
+  // public List<StudentExamStatusDTO> getStudentsByCampaignId(Long campaignId) {
+  //   return patientRepository.findStudentExamStatusByCampaignId(campaignId);
+  // }
 
   @Override
   @Transactional

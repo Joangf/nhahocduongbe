@@ -119,17 +119,24 @@ public class PatientServiceImpl implements PatientService {
     return patientMapper.toDto(entity);
   }
 
+  // @Override
+  // @Cacheable(
+  //     value = "patients",
+  //     key = "T(String).valueOf(#searchCriteria.searchText).concat('|')"
+  //          + ".concat(T(String).valueOf(#searchCriteria.organizationName)).concat('|')"
+  //          + ".concat(T(String).valueOf(#searchCriteria.schoolClass)).concat('|')"
+  //          + ".concat(T(String).valueOf(#searchCriteria.areaCode)).concat('|')"
+  //          + ".concat(T(String).valueOf(#pageable.pageNumber)).concat('_')"
+  //          + ".concat(T(String).valueOf(#pageable.pageSize)).concat('_')"
+  //          + ".concat(T(String).valueOf(#pageable.sort))"
+  // )
+
   @Override
   @Cacheable(
       value = "patients",
-      key = "#searchCriteria.searchText + '|'"
-          + " + #searchCriteria.organizationName + '|'"
-          + " + #searchCriteria.schoolClass + '|'"
-          + " + #searchCriteria.areaCode + '|'"
-          + " + #pageable.pageNumber + '_'"
-          + " + #pageable.pageSize + '_'"
-          + " + #pageable.sort"
+      key = "#searchCriteria.searchText + '|' + #searchCriteria.organizationName + '|' + #searchCriteria.schoolClass + '|' + #searchCriteria.areaCode + '|' + #pageable.pageNumber + '_' + #pageable.pageSize + '_' + #pageable.sort"
   )
+
   public Page<PatientDTO> getPatientsByCondition(
       PatientSearchCriteria searchCriteria, Pageable pageable) {
     AuthorizationData authData = authorizationService.authorize();
