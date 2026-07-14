@@ -1,8 +1,8 @@
 --
 -- PostgreSQL database dump
 --
-
-\restrict 5fcGj4jo3lsEDXIicOvr5lAyVa82xPtijhprrYxgqQlozaPJVKPNVK0w4OyEicO
+CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'nhahocduong';
+\restrict T1nXUTW9sXotjXAGgTSRXtxGXaKg2EYBNgRcV3DHt8TZyXYQJHyR9ZBEbverXAm
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.10
@@ -1509,6 +1509,9 @@ COPY nhahocduong.auth_otp_token (id, created_at, email, expires_at, otp_code, re
 12	2026-07-13 10:18:23.879549	nguyenhoang1362005@gmail.com	2026-07-13 10:28:23.879549	264240	931effee-358c-4b33-9403-4d8647c3d4a4	f	t
 13	2026-07-13 10:19:38.747042	nguyenhoang1362005@gmail.com	2026-07-13 10:29:38.747042	612879	\N	f	f
 14	2026-07-13 10:20:10.839177	nguyenhoang1362005@gmail.com	2026-07-13 10:30:10.839177	462383	cdf77032-9a8d-441a-a0d9-30c29dbcf308	t	t
+15	2026-07-14 09:50:48.125947	vansi@gmail.com	2026-07-14 09:55:48.125934	186764	\N	f	f
+16	2026-07-14 10:00:35.837963	dp1.1a7.si@gmail.com	2026-07-14 10:05:35.837957	398336	\N	f	f
+17	2026-07-14 10:03:25.006645	dp1.1a7.si@gmail.com	2026-07-14 10:13:25.006628	078870	20e1e0e5-de96-495c-a28e-5fb84f28dd42	t	t
 \.
 
 
@@ -1543,28 +1546,6 @@ COPY nhahocduong.class (id, name, grade, room, school_id, academic_year_id, stat
 --
 
 COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ancestor) FROM stdin;
-0	01	Thành phố Hà Nội	1	1	\N	\N
-1	02	Tỉnh Hà Giang	1	1	\N	\N
-2	04	Tỉnh Cao Bằng	1	1	\N	\N
-3	06	Tỉnh Bắc Kạn	1	1	\N	\N
-4	08	Tỉnh Tuyên Quang	1	1	\N	\N
-5	10	Tỉnh Lào Cai	1	1	\N	\N
-6	11	Tỉnh Điện Biên	1	1	\N	\N
-7	12	Tỉnh Lai Châu	1	1	\N	\N
-8	14	Tỉnh Sơn La	1	1	\N	\N
-9	15	Tỉnh Yên Bái	1	1	\N	\N
-10	17	Tỉnh Hoà Bình	1	1	\N	\N
-11	19	Tỉnh Thái Nguyên	1	1	\N	\N
-12	20	Tỉnh Lạng Sơn	1	1	\N	\N
-13	22	Tỉnh Quảng Ninh	1	1	\N	\N
-14	24	Tỉnh Bắc Giang	1	1	\N	\N
-15	25	Tỉnh Phú Thọ	1	1	\N	\N
-16	26	Tỉnh Vĩnh Phúc	1	1	\N	\N
-38	60	Tỉnh Bình Thuận	1	1	\N	\N
-39	62	Tỉnh Kon Tum	1	1	\N	\N
-40	64	Tỉnh Gia Lai	1	1	\N	\N
-41	66	Tỉnh Đắk Lắk	1	1	\N	\N
-42	67	Tỉnh Đắk Nông	1	1	\N	\N
 70	008	Quận Hoàng Mai	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
 71	009	Quận Thanh Xuân	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
 72	016	Huyện Sóc Sơn	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
@@ -1603,6 +1584,8 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 105	042	Huyện Bảo Lâm	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
 106	043	Huyện Bảo Lạc	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
 107	045	Huyện Hà Quảng	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
+0	01	Thành phố Hà Nội	1	0	\N	\N
+1	02	Tỉnh Hà Giang	1	0	\N	\N
 108	047	Huyện Trùng Khánh	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
 109	048	Huyện Hạ Lang	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
 110	049	Huyện Quảng Hòa	2	1	2	[{"id": 2, "code": "04", "name": "Tỉnh Cao Bằng", "type": 1}]
@@ -2372,7 +2355,6 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 8283	23695	Xã Nam Yang	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8284	23698	Xã K' Dang	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8285	23701	Xã H' Neng	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
-43	68	Tỉnh Lâm Đồng	1	1	\N	\N
 8286	23704	Xã Tân Bình	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8287	23707	Xã Glar	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8288	23710	Xã A Dơk	3	1	516	[{"id": 516, "code": "626", "name": "Huyện Đăk Đoa", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
@@ -2389,6 +2371,7 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 8299	23738	Xã Ia Kreng	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8300	23740	Xã Đăk Tơ Ver	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8301	23743	Xã Hòa Phú	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
+43	68	Tỉnh Lâm Đồng	1	0	\N	\N
 8302	23746	Xã Chư Đăng Ya	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8303	23749	Xã Ia Ka	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 8305	23755	Xã Nghĩa Hòa	3	1	517	[{"id": 517, "code": "627", "name": "Huyện Chư Păh", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
@@ -12542,25 +12525,6 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 3084	06337	Xã Đồng ý	3	1	202	[{"id": 202, "code": "185", "name": "Huyện Bắc Sơn", "type": 2, "parent_area_id": 12}, {"id": 12, "code": "20", "name": "Tỉnh Lạng Sơn", "type": 1}]
 8735	24862	Xã Lát	3	1	555	[{"id": 555, "code": "675", "name": "Huyện Lạc Dương", "type": 2, "parent_area_id": 43}, {"id": 43, "code": "68", "name": "Tỉnh Lâm Đồng", "type": 1}]
 8484	24207	Xã Ea Tir	3	1	531	[{"id": 531, "code": "645", "name": "Huyện Ea H'leo", "type": 2, "parent_area_id": 41}, {"id": 41, "code": "66", "name": "Tỉnh Đắk Lắk", "type": 1}]
-44	70	Tỉnh Bình Phước	1	1	\N	\N
-45	72	Tỉnh Tây Ninh	1	1	\N	\N
-46	74	Tỉnh Bình Dương	1	1	\N	\N
-47	75	Tỉnh Đồng Nai	1	1	\N	\N
-48	77	Tỉnh Bà Rịa - Vũng Tàu	1	1	\N	\N
-49	79	Thành phố Hồ Chí Minh	1	1	\N	\N
-50	80	Tỉnh Long An	1	1	\N	\N
-51	82	Tỉnh Tiền Giang	1	1	\N	\N
-52	83	Tỉnh Bến Tre	1	1	\N	\N
-53	84	Tỉnh Trà Vinh	1	1	\N	\N
-54	86	Tỉnh Vĩnh Long	1	1	\N	\N
-55	87	Tỉnh Đồng Tháp	1	1	\N	\N
-56	89	Tỉnh An Giang	1	1	\N	\N
-57	91	Tỉnh Kiên Giang	1	1	\N	\N
-58	92	Thành phố Cần Thơ	1	1	\N	\N
-59	93	Tỉnh Hậu Giang	1	1	\N	\N
-60	94	Tỉnh Sóc Trăng	1	1	\N	\N
-61	95	Tỉnh Bạc Liêu	1	1	\N	\N
-62	96	Tỉnh Cà Mau	1	1	\N	\N
 63	001	Quận Ba Đình	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
 64	002	Quận Hoàn Kiếm	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
 65	003	Quận Tây Hồ	2	1	0	[{"id": 0, "code": "01", "name": "Thành phố Hà Nội", "type": 1}]
@@ -12602,23 +12566,6 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 8240	23605	Xã Diên Phú	3	1	512	[{"id": 512, "code": "622", "name": "Thành phố Pleiku", "type": 2, "parent_area_id": 40}, {"id": 40, "code": "64", "name": "Tỉnh Gia Lai", "type": 1}]
 10810	30958	Xã Định Hòa	3	1	716	[{"id": 716, "code": "907", "name": "Huyện Gò Quao", "type": 2, "parent_area_id": 57}, {"id": 57, "code": "91", "name": "Tỉnh Kiên Giang", "type": 1}]
 8781	25007	Xã Tân Lâm	3	1	559	[{"id": 559, "code": "679", "name": "Huyện Di Linh", "type": 2, "parent_area_id": 43}, {"id": 43, "code": "68", "name": "Tỉnh Lâm Đồng", "type": 1}]
-17	27	Tỉnh Bắc Ninh	1	1	\N	\N
-18	30	Tỉnh Hải Dương	1	1	\N	\N
-19	31	Thành phố Hải Phòng	1	1	\N	\N
-20	33	Tỉnh Hưng Yên	1	1	\N	\N
-21	34	Tỉnh Thái Bình	1	1	\N	\N
-22	35	Tỉnh Hà Nam	1	1	\N	\N
-23	36	Tỉnh Nam Định	1	1	\N	\N
-24	37	Tỉnh Ninh Bình	1	1	\N	\N
-25	38	Tỉnh Thanh Hóa	1	1	\N	\N
-26	40	Tỉnh Nghệ An	1	1	\N	\N
-27	42	Tỉnh Hà Tĩnh	1	1	\N	\N
-28	44	Tỉnh Quảng Bình	1	1	\N	\N
-29	45	Tỉnh Quảng Trị	1	1	\N	\N
-30	46	Tỉnh Thừa Thiên Huế	1	1	\N	\N
-31	48	Thành phố Đà Nẵng	1	1	\N	\N
-32	49	Tỉnh Quảng Nam	1	1	\N	\N
-33	51	Tỉnh Quảng Ngãi	1	1	\N	\N
 9186	26137	Xã Phú Sơn	3	1	595	[{"id": 595, "code": "734", "name": "Huyện Tân Phú", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
 9187	26140	Xã Phú Thịnh	3	1	595	[{"id": 595, "code": "734", "name": "Huyện Tân Phú", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
 609	753	Huyện Đất Đỏ	2	1	48	[{"id": 48, "code": "77", "name": "Tỉnh Bà Rịa - Vũng Tàu", "type": 1}]
@@ -12628,6 +12575,7 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 650	816	Thị xã Gò Công	2	1	51	[{"id": 51, "code": "82", "name": "Tỉnh Tiền Giang", "type": 1}]
 9251	26332	Xã Xuân Quế	3	1	600	[{"id": 600, "code": "739", "name": "Huyện Cẩm Mỹ", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
 9252	26335	Xã Nhân Nghĩa	3	1	600	[{"id": 600, "code": "739", "name": "Huyện Cẩm Mỹ", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
+22	35	Tỉnh Hà Nam	1	0	\N	\N
 9253	26338	Xã Xuân Đường	3	1	600	[{"id": 600, "code": "739", "name": "Huyện Cẩm Mỹ", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
 9254	26341	Thị trấn Long Giao	3	1	600	[{"id": 600, "code": "739", "name": "Huyện Cẩm Mỹ", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
 9255	26344	Xã Xuân Mỹ	3	1	600	[{"id": 600, "code": "739", "name": "Huyện Cẩm Mỹ", "type": 2, "parent_area_id": 47}, {"id": 47, "code": "75", "name": "Tỉnh Đồng Nai", "type": 1}]
@@ -12678,10 +12626,6 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 10817	30979	Xã Vĩnh Tuy	3	1	716	[{"id": 716, "code": "907", "name": "Huyện Gò Quao", "type": 2, "parent_area_id": 57}, {"id": 57, "code": "91", "name": "Tỉnh Kiên Giang", "type": 1}]
 9870	28201	Xã Long Phụng	3	1	647	[{"id": 647, "code": "807", "name": "Huyện Cần Giuộc", "type": 2, "parent_area_id": 50}, {"id": 50, "code": "80", "name": "Tỉnh Long An", "type": 1}]
 10846	31075	Xã Vĩnh Phong	3	1	719	[{"id": 719, "code": "910", "name": "Huyện Vĩnh Thuận", "type": 2, "parent_area_id": 57}, {"id": 57, "code": "91", "name": "Tỉnh Kiên Giang", "type": 1}]
-34	52	Tỉnh Bình Định	1	1	\N	\N
-35	54	Tỉnh Phú Yên	1	1	\N	\N
-36	56	Tỉnh Khánh Hòa	1	1	\N	\N
-37	58	Tỉnh Ninh Thuận	1	1	\N	\N
 10179	29167	Xã Tân Thủy	3	1	666	[{"id": 666, "code": "836", "name": "Huyện Ba Tri", "type": 2, "parent_area_id": 52}, {"id": 52, "code": "83", "name": "Tỉnh Bến Tre", "type": 1}]
 331	382	Thành phố Sầm Sơn	2	1	25	[{"id": 25, "code": "38", "name": "Tỉnh Thanh Hóa", "type": 1}]
 332	384	Huyện Mường Lát	2	1	25	[{"id": 25, "code": "38", "name": "Tỉnh Thanh Hóa", "type": 1}]
@@ -12909,6 +12853,99 @@ COPY nhahocduong.common_area (id, code, name, type, active, parent_area_id, ance
 11300	32244	Thị trấn Rạch Gốc	3	1	767	[{"id": 767, "code": "973", "name": "Huyện Ngọc Hiển", "type": 2, "parent_area_id": 62}, {"id": 62, "code": "96", "name": "Tỉnh Cà Mau", "type": 1}]
 11301	32245	Xã Tân Ân	3	1	767	[{"id": 767, "code": "973", "name": "Huyện Ngọc Hiển", "type": 2, "parent_area_id": 62}, {"id": 62, "code": "96", "name": "Tỉnh Cà Mau", "type": 1}]
 11302	32248	Xã Đất Mũi	3	1	767	[{"id": 767, "code": "973", "name": "Huyện Ngọc Hiển", "type": 2, "parent_area_id": 62}, {"id": 62, "code": "96", "name": "Tỉnh Cà Mau", "type": 1}]
+200	01	Thành phố Hà Nội	1	1	\N	\N
+201	02	Tỉnh Hưng Yên	1	1	\N	\N
+202	03	Tỉnh Quảng Trị	1	1	\N	\N
+203	04	Thành phố Huế	1	1	\N	\N
+204	05	Thành phố Hải Phòng	1	1	\N	\N
+205	06	Tỉnh Phú Thọ	1	1	\N	\N
+206	07	Tỉnh Thanh Hoá	1	1	\N	\N
+207	08	Tỉnh Quảng Ninh	1	1	\N	\N
+208	09	Tỉnh Lào Cai	1	1	\N	\N
+209	10	Tỉnh Bắc Ninh	1	1	\N	\N
+210	11	Tỉnh Nghệ An	1	1	\N	\N
+211	12	Thành phố Đà Nẵng	1	1	\N	\N
+212	13	Tỉnh Ninh Bình	1	1	\N	\N
+213	14	Tỉnh Khánh Hoà	1	1	\N	\N
+214	15	Tỉnh Tây Ninh	1	1	\N	\N
+215	16	Tỉnh Đồng Tháp	1	1	\N	\N
+216	17	Tỉnh Hà Tĩnh	1	1	\N	\N
+217	18	Tỉnh An Giang	1	1	\N	\N
+218	19	Tỉnh Thái Nguyên	1	1	\N	\N
+219	20	Tỉnh Lạng Sơn	1	1	\N	\N
+220	21	Tỉnh Điện Biên	1	1	\N	\N
+221	22	Tỉnh Đồng Nai	1	1	\N	\N
+222	23	Tỉnh Quảng Ngãi	1	1	\N	\N
+223	24	Tỉnh Vĩnh Long	1	1	\N	\N
+224	25	Tỉnh Cao Bằng	1	1	\N	\N
+225	26	Tỉnh Lai Châu	1	1	\N	\N
+226	27	Tỉnh Đắk Lắk	1	1	\N	\N
+227	28	Tỉnh Gia Lai	1	1	\N	\N
+228	29	Tỉnh Lâm Đồng	1	1	\N	\N
+229	30	Thành phố Hồ Chí Minh	1	1	\N	\N
+230	31	Tỉnh Sơn La	1	1	\N	\N
+231	32	Thành phố Cần Thơ	1	1	\N	\N
+232	33	Tỉnh Cà Mau	1	1	\N	\N
+233	34	Tỉnh Tuyên Quang	1	1	\N	\N
+2	04	Tỉnh Cao Bằng	1	0	\N	\N
+3	06	Tỉnh Bắc Kạn	1	0	\N	\N
+4	08	Tỉnh Tuyên Quang	1	0	\N	\N
+5	10	Tỉnh Lào Cai	1	0	\N	\N
+6	11	Tỉnh Điện Biên	1	0	\N	\N
+7	12	Tỉnh Lai Châu	1	0	\N	\N
+8	14	Tỉnh Sơn La	1	0	\N	\N
+9	15	Tỉnh Yên Bái	1	0	\N	\N
+10	17	Tỉnh Hoà Bình	1	0	\N	\N
+11	19	Tỉnh Thái Nguyên	1	0	\N	\N
+12	20	Tỉnh Lạng Sơn	1	0	\N	\N
+13	22	Tỉnh Quảng Ninh	1	0	\N	\N
+14	24	Tỉnh Bắc Giang	1	0	\N	\N
+15	25	Tỉnh Phú Thọ	1	0	\N	\N
+16	26	Tỉnh Vĩnh Phúc	1	0	\N	\N
+38	60	Tỉnh Bình Thuận	1	0	\N	\N
+39	62	Tỉnh Kon Tum	1	0	\N	\N
+40	64	Tỉnh Gia Lai	1	0	\N	\N
+41	66	Tỉnh Đắk Lắk	1	0	\N	\N
+42	67	Tỉnh Đắk Nông	1	0	\N	\N
+44	70	Tỉnh Bình Phước	1	0	\N	\N
+45	72	Tỉnh Tây Ninh	1	0	\N	\N
+46	74	Tỉnh Bình Dương	1	0	\N	\N
+47	75	Tỉnh Đồng Nai	1	0	\N	\N
+48	77	Tỉnh Bà Rịa - Vũng Tàu	1	0	\N	\N
+49	79	Thành phố Hồ Chí Minh	1	0	\N	\N
+50	80	Tỉnh Long An	1	0	\N	\N
+51	82	Tỉnh Tiền Giang	1	0	\N	\N
+52	83	Tỉnh Bến Tre	1	0	\N	\N
+53	84	Tỉnh Trà Vinh	1	0	\N	\N
+54	86	Tỉnh Vĩnh Long	1	0	\N	\N
+55	87	Tỉnh Đồng Tháp	1	0	\N	\N
+56	89	Tỉnh An Giang	1	0	\N	\N
+57	91	Tỉnh Kiên Giang	1	0	\N	\N
+58	92	Thành phố Cần Thơ	1	0	\N	\N
+59	93	Tỉnh Hậu Giang	1	0	\N	\N
+60	94	Tỉnh Sóc Trăng	1	0	\N	\N
+61	95	Tỉnh Bạc Liêu	1	0	\N	\N
+62	96	Tỉnh Cà Mau	1	0	\N	\N
+17	27	Tỉnh Bắc Ninh	1	0	\N	\N
+18	30	Tỉnh Hải Dương	1	0	\N	\N
+19	31	Thành phố Hải Phòng	1	0	\N	\N
+20	33	Tỉnh Hưng Yên	1	0	\N	\N
+21	34	Tỉnh Thái Bình	1	0	\N	\N
+23	36	Tỉnh Nam Định	1	0	\N	\N
+24	37	Tỉnh Ninh Bình	1	0	\N	\N
+25	38	Tỉnh Thanh Hóa	1	0	\N	\N
+26	40	Tỉnh Nghệ An	1	0	\N	\N
+27	42	Tỉnh Hà Tĩnh	1	0	\N	\N
+28	44	Tỉnh Quảng Bình	1	0	\N	\N
+29	45	Tỉnh Quảng Trị	1	0	\N	\N
+30	46	Tỉnh Thừa Thiên Huế	1	0	\N	\N
+31	48	Thành phố Đà Nẵng	1	0	\N	\N
+32	49	Tỉnh Quảng Nam	1	0	\N	\N
+33	51	Tỉnh Quảng Ngãi	1	0	\N	\N
+34	52	Tỉnh Bình Định	1	0	\N	\N
+35	54	Tỉnh Phú Yên	1	0	\N	\N
+36	56	Tỉnh Khánh Hòa	1	0	\N	\N
+37	58	Tỉnh Ninh Thuận	1	0	\N	\N
 \.
 
 
@@ -13045,6 +13082,7 @@ COPY nhahocduong.login_log (id, username, login_time, status, phone_number, logo
 120	admin	2026-07-05 15:05:23.867842	t	\N	2026-07-06 08:13:02.66731
 119	admin	2026-07-05 15:05:10.892548	t	\N	2026-07-06 08:13:02.66731
 201	admin	2026-07-13 10:20:56.126777	t	\N	2026-07-13 10:40:46.985577
+205	admin	2026-07-13 13:44:29.01788	t	\N	2026-07-14 09:50:06.576756
 129	admin	2026-07-05 16:35:51.716891	t	\N	2026-07-06 08:13:02.66731
 128	admin	2026-07-05 16:34:37.085948	t	\N	2026-07-06 08:13:02.66731
 118	admin	2026-07-05 15:04:19.535434	t	\N	2026-07-06 08:13:02.66731
@@ -13122,7 +13160,6 @@ COPY nhahocduong.login_log (id, username, login_time, status, phone_number, logo
 162	svbk1037	2026-07-08 09:14:22.659026	t	0987654321	2026-07-08 09:43:19.319071
 180	admin	2026-07-09 14:35:23.17314	t	\N	2026-07-09 14:35:28.662567
 164	svbk1037	2026-07-09 08:36:16.633488	t	0987654321	2026-07-09 08:36:39.963315
-166	hades123	2026-07-09 08:38:09.405421	t	0987654322	2026-07-09 08:39:13.944252
 167	admin	2026-07-09 08:40:25.246152	t	\N	2026-07-09 09:31:49.857506
 171	admin	2026-07-09 10:28:02.615068	t	\N	2026-07-09 10:44:19.024572
 170	admin	2026-07-09 10:23:47.001715	t	\N	2026-07-09 10:44:19.024572
@@ -13130,9 +13167,6 @@ COPY nhahocduong.login_log (id, username, login_time, status, phone_number, logo
 174	admin	2026-07-09 13:35:41.172155	t	\N	2026-07-09 14:08:02.981338
 176	svbk1037	2026-07-09 14:08:55.918	t	0987654321	2026-07-09 14:14:26.788839
 199	admin	2026-07-13 09:33:38.636125	t	\N	2026-07-13 09:40:00.729737
-181	hades123	2026-07-09 14:35:40.990622	t	0987654322	2026-07-09 14:57:05.516593
-179	hades123	2026-07-09 14:29:41.929309	t	0987654322	2026-07-09 14:35:18.678771
-178	hades123	2026-07-09 14:29:17.766948	t	0987654322	2026-07-09 14:35:18.678771
 191	admin	2026-07-09 15:09:42.700419	t	\N	2026-07-09 15:12:18.415409
 182	admin	2026-07-09 14:39:53.744149	t	\N	2026-07-09 14:58:58.773475
 197	admin	2026-07-13 09:32:22.756029	t	\N	2026-07-13 09:32:29.846026
@@ -13143,8 +13177,8 @@ COPY nhahocduong.login_log (id, username, login_time, status, phone_number, logo
 193	admin	2026-07-09 15:14:12.204831	t	\N	2026-07-09 15:58:26.641771
 195	admin	2026-07-13 09:30:34.82376	t	\N	2026-07-13 09:30:41.955308
 202	admin	2026-07-13 10:22:47.549579	t	\N	2026-07-13 10:40:46.985577
-204	admin	2026-07-13 10:40:52.198364	t	\N	\N
 200	admin	2026-07-13 09:34:11.375745	t	\N	2026-07-13 09:40:00.729737
+204	admin	2026-07-13 10:40:52.198364	t	\N	2026-07-14 09:50:06.576756
 \.
 
 
@@ -13171,6 +13205,7 @@ COPY nhahocduong.nhahocduong_dentist (id, user_id, title, created_date, updated_
 16	52	Si Bac	\N	\N	\N
 17	57	Messi Rolnan	\N	\N	\N
 18	60	Bui Van	\N	\N	\N
+19	62	Sĩ Văn	\N	\N	\N
 \.
 
 
@@ -13197,9 +13232,29 @@ COPY nhahocduong.nhahocduong_disease (id, code, name) FROM stdin;
 COPY nhahocduong.nhahocduong_exam (id, patient_id, dentist_id, organization_id, class, year, profile_number, date, teeth_record_id, plaque_record_id, tartar_record_id, use_vecni_flour, status, created_date, updated_date, created_by, updated_by, re_exam_date, re_exam_note, campaign_id, pathology_assessment, treatment_note, image_before_url, image_before_time, image_after_url, image_after_time, image_lower_time, image_lower_url, image_upper_time, image_upper_url, academic_year_id) FROM stdin;
 103	1108	2	10070	55C	2026	\N	2026-07-09	109	109	\N	f	t	2026-07-09 15:22:39.41495	2026-07-09 15:22:56.582082	\N	\N	\N	\N	\N	Tien luong xau	GG MR BEAST!!!!!	\N	\N	\N	\N	2026-07-09 08:22:30.73	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/lower/c391e378-fcf6-4b13-acdd-12bc6f21a2a2.jpg	2026-07-09 08:22:23.221	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/upper/ce2ba8a9-183b-4902-84cb-c36fb355182d.png	\N
 101	1002	2	10000	1A	2026	\N	2026-07-01	104	104	104	f	t	2026-07-01 11:09:58.26671	2026-07-01 11:11:30.404516	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	100
-100	1000	2	10000	1A	2026	\N	2026-07-02	106	106	106	t	t	2026-05-26 12:13:28.661863	2026-07-02 12:30:38.856375	\N	\N	\N	\N	\N	Ronaldo	Messi	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/before/50def274-f693-4c10-847a-8a0f4835a813.jpg	2026-06-30 21:26:26.799+00	\N	\N	2026-07-02 05:30:17.308	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/lower/ea2a8a58-1ea7-4ab9-983d-c84eb9d48c7e.jfif	2026-07-02 05:30:10.159	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/upper/ffd34849-620f-4c9f-821d-fa9033c04b99.jpeg	100
 102	1000	2	10000	1A	2026	\N	2026-07-02	108	108	108	f	t	2026-07-02 10:33:32.130818	2026-07-02 13:36:15.70192	\N	\N	\N	\N	\N	test	test	\N	\N	\N	\N	\N	\N	\N	\N	100
 104	1000	2	10000	1A	2026	\N	2026-07-09	110	110	110	f	t	2026-07-09 15:38:20.114603	2026-07-09 15:38:24.427665	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900100	1002	3	10000	1A	2023	21100100	2023-03-01	900100	900100	900100	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900001	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900101	1263	1	10189	1A	2023	21100101	2023-10-25	900101	900101	900101	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900002	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900102	1116	2	10163	1A	2023	21100102	2023-10-04	900102	900102	900102	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2024-04-04	Cần tái khám điều trị sâu răng	900002	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900103	1068	2	10209	5B	2023	21100103	2023-10-29	900103	900103	900103	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2024-04-29	Cần tái khám điều trị sâu răng	900002	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900104	1131	2	10170	1A	2023	21100104	2023-10-15	900104	900104	900104	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900002	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900105	1274	1	10101	5A	2024	21100105	2024-10-09	900105	900105	900105	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900004	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900106	1028	1	10268	1A	2024	21100106	2024-10-24	900106	900106	900106	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-04-24	Cần tái khám điều trị sâu răng	900004	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900107	1065	3	10151	1C	2024	21100107	2024-10-29	900107	900107	900107	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-04-29	Cần tái khám điều trị sâu răng	900004	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900108	1143	3	10038	1B	2024	21100108	2024-11-07	900108	900108	900108	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-05-07	Cần tái khám điều trị sâu răng	900004	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900109	1079	3	10223	1A	2024	21100109	2024-10-20	900109	900109	900109	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-04-20	Cần tái khám điều trị sâu răng	900004	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900110	1097	3	10052	5B	2025	21100110	2025-06-01	900110	900110	900110	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-12-01	Cần tái khám điều trị sâu răng	900005	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900111	1186	1	10180	5C	2025	21100111	2025-05-16	900111	900111	900111	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900005	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900112	1166	2	10029	1C	2025	21100112	2025-06-02	900112	900112	900112	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-12-02	Cần tái khám điều trị sâu răng	900005	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900113	1188	3	10248	5B	2025	21100113	2025-05-25	900113	900113	900113	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-11-25	Cần tái khám điều trị sâu răng	900005	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900114	1193	1	1	1B	2025	21100114	2025-05-04	900114	900114	900114	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	2025-11-04	Cần tái khám điều trị sâu răng	900005	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900115	1117	3	10049	4C	2026	21100115	2026-03-25	900115	900115	900115	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900006	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900116	1176	3	10022	1A	2026	21100116	2026-04-09	900116	900116	900116	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900006	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900117	1279	1	10272	4C	2026	21100117	2026-04-12	900117	900117	900117	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900006	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900118	1182	2	10188	1A	2026	21100118	2026-03-29	900118	900118	900118	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900006	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+900119	1232	3	10255	1B	2026	21100119	2026-04-07	900119	900119	900119	f	t	2026-07-13 09:07:51.443847	\N	\N	\N	\N	\N	900006	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N
+100	1000	2	10000	1A	2026	\N	2026-07-14	111	106	111	t	t	2026-05-26 12:13:28.661863	2026-07-14 09:26:57.885418	\N	\N	2026-08-08	Troller	\N	Ronaldo	Messi	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/before/50def274-f693-4c10-847a-8a0f4835a813.jpg	2026-06-30 21:26:26.799+00	\N	\N	2026-07-02 05:30:17.308	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/lower/ea2a8a58-1ea7-4ab9-983d-c84eb9d48c7e.jfif	2026-07-02 05:30:10.159	https://pcddwfbyigcdhbhlzwer.supabase.co/storage/v1/object/public/exam-images/upper/ffd34849-620f-4c9f-821d-fa9033c04b99.jpeg	100
 \.
 
 
@@ -13212,6 +13267,13 @@ COPY nhahocduong.nhahocduong_exam_campaign (id, name, campaign_status, start_dat
 2	Winter	Sắp tới	2026-08-07	2026-09-30	Đói bụng	t	2026-07-02 08:25:59.960529	2026-07-02 08:25:59.960529	\N	\N	\N
 3	winterwinterwinter	Sắp tới	2026-07-03	2026-07-24	no déc 	t	2026-07-02 08:55:39.224316	2026-07-02 08:55:39.224316	\N	\N	\N
 4	mới	Sắp tới	2026-07-07	2026-07-09	test khám	t	2026-07-06 11:42:33.756872	2026-07-06 11:42:33.756872	\N	\N	\N
+900001	Khám nha học đường năm học 2023 - Đợt 1	Đã xong	2023-03-01	2023-04-15	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900002	Khám nha học đường năm học 2023 - Đợt 2	Đã xong	2023-10-01	2023-11-15	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900003	Khám nha học đường năm học 2024 - Đợt 1	Đã xong	2024-03-01	2024-04-15	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900004	Khám nha học đường năm học 2024 - Đợt 2	Đã xong	2024-10-01	2024-11-15	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900005	Khám nha học đường năm học 2025 - Toàn diện	Đã xong	2025-05-01	2025-06-15	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900006	Khám nha học đường năm học 2026 - Đợt 1	Đang diễn ra	2026-03-01	2026-04-30	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
+900007	Khám nha học đường năm học 2026 - Đợt 2	Sắp tới	2026-10-01	2026-11-30	Chiến dịch khám sức khỏe định kỳ cho học sinh	t	2026-07-13 09:07:51.443847	2026-07-13 09:07:51.443847	\N	\N	\N
 \.
 
 
@@ -13331,7 +13393,8 @@ COPY nhahocduong.nhahocduong_notification (id, campaign_id, created_date, is_rea
 30	4	2026-07-09 17:15:01.067356	f	Bạn được phân công khám trong đợt "mới":\n  • Trường TH số 1 - Lớp 12A - Ngày 2026-07-08	54	t	Lịch khám: mới	2026-07-09 17:15:01.067356
 31	4	2026-07-09 17:15:01.174734	f	Bạn được phân công khám trong đợt "mới":\n  • Trường TH số 1 - Lớp 12A - Ngày 2026-07-08	46	t	Lịch khám: mới	2026-07-09 17:15:01.174734
 32	4	2026-07-09 17:15:01.293932	f	Bạn được phân công khám trong đợt "mới":\n  • Trường TH số 1 - Lớp 12A - Ngày 2026-07-08	60	t	Lịch khám: mới	2026-07-09 17:15:01.293932
-33	\N	2026-07-13 10:21:04.491732	f	Bạn được phân công khám trong đợt "Tài khoản mới cần duyệt":\n  • Người dùng "abcdoremi2" (Nguyen Hoang) vừa đăng ký tài khoản và đang chờ được duyệt.	1	t	Lịch khám: Tài khoản mới cần duyệt	2026-07-13 10:21:04.491732
+33	\N	2026-07-13 10:21:04.491732	t	Bạn được phân công khám trong đợt "Tài khoản mới cần duyệt":\n  • Người dùng "abcdoremi2" (Nguyen Hoang) vừa đăng ký tài khoản và đang chờ được duyệt.	1	t	Lịch khám: Tài khoản mới cần duyệt	2026-07-14 08:29:23.954191
+34	\N	2026-07-14 10:03:45.947349	f	Bạn được phân công khám trong đợt "Tài khoản mới cần duyệt":\n  • Người dùng "hades1123" (Sĩ Văn) vừa đăng ký tài khoản và đang chờ được duyệt.	1	t	Lịch khám: Tài khoản mới cần duyệt	2026-07-14 10:03:45.947358
 \.
 
 
@@ -13340,300 +13403,300 @@ COPY nhahocduong.nhahocduong_notification (id, campaign_id, created_date, is_rea
 --
 
 COPY nhahocduong.nhahocduong_organization (id, name, code, address, area_code, head_member, parent, type, classes, status, created_date, updated_date, created_by, updated_by) FROM stdin;
-1	Bệnh viện Răng hàm mặt Trung ương	BVRHM	Thành phố Hồ Chí Minh	79	\N	\N	4	\N	t	\N	\N	\N	\N
-10009	Trường tiểu học Chu Văn An	VL010	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10010	Trường tiểu học Phạm Hùng	VL011	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10011	Trường tiểu học Nguyễn Hữu Huân	VL012	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10012	Trường tiểu học Nguyễn Trung Trực	VL013	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10013	Trường tiểu học Lê Hồng Phong	VL014	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10014	Trường tiểu học Lý Thường Kiệt	VL015	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10015	Trường tiểu học An Bình B	VL016	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10016	Trường tiểu học Bình Hòa Phước A	VL017	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10017	Trường tiểu học Trương Văn Ba	VL018	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10018	Trường tiểu học Đồng Phú A	VL019	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10021	Trường tiểu học Phước Hậu C	VL022	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10022	Trường tiểu học Tân Hạnh B	VL023	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10023	Trường tiểu học Tân Hạnh C	VL024	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10024	Trường tiểu học Lộc Hòa A	VL025	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10025	Trường tiểu học Lộc Hòa B	VL026	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10026	Trường tiểu học Hòa Phú A	VL027	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10027	Trường tiểu học Phú Quới A	VL028	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10028	Trường tiểu học Phú Quới C	VL029	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10029	Trường tiểu học Thạnh Quới A	VL030	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10030	Trường tiểu học Long An A	VL031	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10031	Trường tiểu học Phú Đức A	VL032	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10032	Trường tiểu học Phú Đức C	VL033	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10033	Trường tiểu học Thanh Đức B	VL034	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10034	Trường tiểu học Thanh Đức C	VL035	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10035	Trường tiểu học A Thị Trấn LH	VL036	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10036	Trường tiểu học Chánh An A	VL037	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10037	Trường tiểu học An Phước A	VL038	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10038	Trường tiểu học Bình Phước A	VL039	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10039	Trường tiểu học Bình Phước C	VL040	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10040	Trường tiểu học Hòa Tịnh A	VL041	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10041	Trường tiểu học Hòa Tịnh B	VL042	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10042	Trường tiểu học Long Mỹ	VL043	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10043	Trường tiểu học Mỹ An A	VL044	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10044	Trường tiểu học Mỹ An B	VL045	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10045	Trường tiểu học Mỹ Phước A	VL046	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10046	Trường tiểu học Nhơn Phú A	VL047	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10047	Trường tiểu học Nhơn Phú C	VL048	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10048	Trường tiểu học Tân Long Hội A	VL049	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10049	Trường tiểu học Thị Trấn Cái Nhum 	VL050	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10050	Trường tiểu học Chánh Hội A	VL051	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10051	Trường tiểu học Tân An Hội A	VL052	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10052	Trường tiểu học Tân Long A	VL053	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10053	Trường tiểu học Tân An Luông	VL054	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10054	Trường tiểu học Hiếu Phụng A	VL055	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10055	Trường tiểu học Huỳnh Văn Lời	VL056	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10056	Trường tiểu học Nguyễn Văn Quỳ	VL057	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10057	Trường tiểu học Hiếu Nhơn B	VL058	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10058	Trường tiểu học Hiếu Thành	VL059	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10059	Trường tiểu học Đỗ Quang Mười	VL060	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10060	Trường tiểu học Trung An A	VL061	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10061	Trường tiểu học Nguyễn Trung Kiên	VL062	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10062	Trường tiểu học Trung Thành A	VL063	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10063	Trường tiểu học Nguyễn Văn Thời	VL064	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10064	Trường tiểu học Đặng Thị Chính	VL065	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10065	Trường tiểu học Trung Thành Đông A	VL066	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10066	Trường tiểu học Thị trấn Vũng Liêm	VL067	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10067	Trường tiểu học Trung Thành Tây A	VL068	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10019	Trường tiểu học Long Phước B	VL020	Tỉnh Vĩnh Long	86	\N	\N	1	{"5": []}	t	\N	2026-06-22 09:47:20.386505	\N	\N
-10002	Trường tiểu học Nguyễn Huệ	VL003	Tỉnh Vĩnh Long	86	\N	\N	1	{"4": []}	t	\N	2026-06-22 09:53:49.517499	\N	\N
-10006	Trường tiểu học Trần Quốc Tuấn	VL007	Tỉnh Vĩnh Long	86	\N	\N	1	{"2": []}	t	\N	2026-06-22 09:56:10.234136	\N	\N
-10020	Trường tiểu học Phước Hậu A	VL021	Tỉnh Vĩnh Long	86	\N	\N	1	{"5": ["5A", "5B", "5C"]}	t	\N	2026-06-24 09:01:43.081701	\N	\N
-10008	Trường tiểu học Trương Định	VL009	Tỉnh Vĩnh Long	86	\N	\N	1	{"4": ["4C"]}	t	\N	2026-06-24 10:22:34.091562	\N	\N
-10005	Trường tiểu học Trần Đại Nghĩa	VL006	Tỉnh Vĩnh Long	86	\N	\N	1	{"5": ["5A"]}	t	\N	2026-06-25 08:41:18.626247	\N	\N
-10068	Trường tiểu học Trung Hiệp A	VL069	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10069	Trường tiểu học Trung Chánh A	VL070	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10070	Trường tiểu học Tân Quới Trung A	VL071	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10071	Trường tiểu học Nguyễn Văn Kết	VL072	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10072	Trường tiểu học Lê Văn Cư	VL073	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10073	Trường tiểu học Võ Ngọc Tốt	VL074	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10074	Trường tiểu học Thanh Bình B	VL075	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10075	Trường tiểu học  Lưu Văn Liệt	VL076	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10076	Trường tiểu học Tường Lộc A	VL077	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10077	Trường tiểu học Tường Lộc B	VL078	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10078	Trường tiểu học Mỹ Thạnh Trung A	VL079	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10079	Trường tiểu học Mỹ Thạnh Trung B	VL080	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10080	Trường tiểu học Hòa Lộc A	VL081	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10081	Trường tiểu học Hòa Lộc B	VL082	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10082	Trường tiểu học Hòa Hiệp	VL083	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10083	Trường tiểu học Hòa Thạnh	VL084	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10084	Trường tiểu học Hậu Lộc	VL085	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10085	Trường tiểu học Tân Lộc	VL086	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10086	Trường tiểu học Phú Lộc	VL087	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10087	Trường tiểu học Cái Ngang	VL088	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10088	Trường tiểu học Mỹ Lộc	VL089	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10089	Trường tiểu học Song Phú A	VL090	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10090	Trường tiểu học Song Phú B	VL091	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10091	Trường tiểu học Tô Hùng Vĩ	VL092	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10092	Trường tiểu học Long Phú	VL093	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10093	Trường tiểu học Phú Thịnh A	VL094	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10094	Trường tiểu học Phú Thịnh B	VL095	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10095	Trường tiểu học Bình Ninh	VL096	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10096	Trường tiểu học Ngãi Tứ A	VL097	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10097	Trường tiểu học Ngãi Tứ B	VL098	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10098	Trường tiểu học Loan Mỹ B	VL099	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10099	Trường tiểu học Thạch Thia	VL100	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10100	Trường tiểu học Hòa Bình A	VL101	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10101	Trường tiểu học Hòa Bình C	VL102	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10102	Trường tiểu học Hựu Thành A	VL103	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10103	Trường tiểu học Hựu Thành B	VL104	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10104	Trường tiểu học Lục Sĩ Thành A	VL105	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10105	Trường tiểu học Phú Thành	VL106	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10106	Trường tiểu học Tân Mỹ A	VL107	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10107	Trường tiểu học Tân Mỹ B	VL108	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10108	Trường tiểu học Trà Côn A	VL109	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10109	Trường tiểu học Trà Côn C	VL110	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10110	Trường tiểu học Thới Hòa A	VL111	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10111	Trường tiểu học Thới Hòa B	VL112	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10112	Trường tiểu học Thuận Thới A	VL113	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10113	Trường tiểu học Thuận Thới B	VL114	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10114	Trường tiểu học Tích Thiện A	VL115	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10115	Trường tiểu học Thiện Mỹ A	VL116	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10116	Trường tiểu học Vĩnh Xuân	VL117	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10117	Trường tiểu học Thị Trấn Trà Ôn	VL118	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10118	Trường tiểu học Nhơn Bình A	VL119	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10119	Trường tiểu học Nhơn Bình B	VL120	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10120	Trường tiểu học Xuân Hiệp A	VL121	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10121	Trường tiểu học Xuân Hiệp B	VL122	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10122	Trường tiểu học Lê Thánh Tông	VL123	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10123	Trường tiểu học Phan Bội Châu	VL124	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10124	Trường tiểu học Trần Bình Trọng	VL125	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10125	Trường tiểu học Mỹ Hòa C	VL126	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10126	Trường tiểu học Nguyễn Văn Trỗi	VL127	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10127	Trường tiểu học Lý Thường Kiệt	VL128	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10128	Trường tiểu học Võ Thị Sáu	VL129	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10129	Trường tiểu học Nguyễn Thị Minh Khai	VL130	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10130	Trường tiểu học Phù Ly	VL131	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10131	Trường tiểu học Phan Văn Năm	VL132	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10132	Trường tiểu học Thoại Ngọc Hầu	VL133	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10133	Trường tiểu học Phan Văn Đáng	VL134	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10134	Trường tiểu học Tân Hưng	VL135	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10135	Trường tiểu học Tân An Thạnh A	VL136	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10136	Trường tiểu học Tân An Thạnh B	VL137	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10137	Trường tiểu học Tân Lược	VL138	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10138	Trường tiểu học Tân Bình	VL139	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10139	Trường tiểu học Tân Thành A	VL140	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10140	Trường tiểu học Tân Quới A	VL141	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10141	Trường tiểu học Thành Đông A	VL142	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10142	Trường tiểu học Thành Lợi A	VL143	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10143	Trường tiểu học Thành Lợi C	VL144	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10144	Trường tiểu học Thành Trung A	VL145	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10145	Trường tiểu học Thành Trung B	VL146	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10146	Trường tiểu học Mỹ Thuận A	VL147	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10147	Trường tiểu học Mỹ Thuận B	VL148	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10148	Trường tiểu học Nguyễn Văn Thảnh A	VL149	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10149	Mầm non Vĩnh Xuân	VL150	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10150	Mầm Non Hựu Thành	VL151	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10151	Mầm Non Thới Hòa	VL152	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10152	Mầm non Trà Côn	VL153	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10153	Mầm non Thiện Mỹ	VL154	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10154	Mầm non Tích Thiện	VL155	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10155	Mầm Non Tuổi Thơ (Tân Quới)	VL156	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10156	Mẫu giáo Hoa Mai	VL157	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10157	Mẫu giáo Măng Non	VL158	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10158	Mầm non Mỹ Thuận	VL159	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10159	Mầm Non Nguyễn Văn Thảnh	VL160	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10160	Mầm non Hoa Phượng	VL161	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10161	Mẫu giáo Hướng Dương	VL162	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10162	Mầm non Tân Hưng	VL163	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10163	Mầm non Thành Trung	VL164	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10164	Mầm non Tân Thành	VL165	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10165	Mầm non Tuổi Thơ	VL166	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10166	Mầm non Sơn Ca (Tân Lược)	VL167	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10167	Mầm non Thực hành Măng non Phường 9	VL168	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10168	Mầm non Bé By Ngoan	VL169	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10169	Mầm non Hoa Sen Thành Phố Tỉnh Vĩnh Long	VL170	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10170	Nhà trẻ Trinh Vương	VL171	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10171	Nhóm trẻ Gia Bảo	VL172	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10172	Mầm non Phú Đức	VL173	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10173	Mầm Non Thanh Đức	VL174	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10174	Mầm non An Bình	VL175	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10175	Mầm non Họa Mi thị trấn Long Hồ	VL176	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10176	Mầm non Bình Hòa Phước	VL177	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10177	Mầm non Đồng Phú	VL178	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10178	Mầm non Long Phước	VL179	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10179	Mẫu giáo Hoa Hồng Lộc Hòa	VL180	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10180	Mẫu giáo Phú Quới	VL181	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10181	Mầm non Phước Hậu	VL182	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10182	Mầm non  Long An	VL183	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10183	Mầm Non Hòa Ninh	VL184	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10184	Mầm non Thạnh Quới	VL185	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10185	Mầm Non Thị trấn Long Hồ	VL186	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10186	Mầm non Lộc Hòa	VL187	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10187	Mầm non Tân Hạnh	VL188	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10188	Mầm non Hòa Phú	VL189	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10189	Mầm non khu công nghiệp Hòa Phú	VL190	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10190	Mầm non Hồng Ân	VL191	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10191	Mầm non Họa Mi Hòa Phú	VL192	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10192	Mẫu giáo Măng Non I (Mỹ Phước)	VL193	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10193	Mầm non Măng Non II	VL194	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10194	Mầm non Oanh Vũ I	VL195	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10195	Mầm Non Oanh Vũ II (Tân Long Hội)	VL196	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10196	Mầm non Sơn Ca I (Hòa Tịnh)	VL197	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10197	Mầm non Sơn Ca I (Bình Phước)	VL198	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10198	Mầm non Tuổi Thơ I	VL199	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10199	Mầm non Tuổi Thơ II (An Phước)	VL200	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10200	Mầm non Tuổi Thơ III (Nhơn Phú)	VL201	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10201	Mầm non Tuổi Thơ IV (Chánh An)	VL202	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10202	Mầm Non Sơn Ca III	VL203	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10203	Mầm Non Oanh Vũ III (Tân An Hội)	VL204	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10204	Mầm Non Thị Trấn Cái Nhum	VL205	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10205	Mầm Non Hiếu Phụng	VL206	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10206	Mầm non Hiếu Nhơn	VL207	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10207	Mẫu giáo Hiếu Thành	VL208	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10208	Mầm Non Trung Hiếu	VL209	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10209	Mẫu giáo Trung Thành	VL210	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10210	Mẫu giáo Trung Nghĩa	VL211	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10211	Mẫu giáo Trung Hiệp	VL212	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10212	Mẫu giáo Tân Quới Trung	VL213	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10213	Mầm non Quới An	VL214	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10214	Mẫu giáo Quới Thiện	VL215	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10215	Mầm Non Thanh Bình	VL216	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10216	Mầm non Trung An	VL217	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10217	Mầm non Trịnh Liên Hoa	VL218	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10218	Mầm Non Trung Thành Tây	VL219	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10219	Mẫu giáo Trung Chánh	VL220	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10220	Mầm Non Hiếu Nghĩa	VL221	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10221	Mầm non Tân An Luông	VL222	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10222	Mầm non Thị Trấn Vũng Liêm	VL223	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10223	Mầm non Sơn Ca	VL224	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10224	Mầm Non Mỹ Lộc	VL225	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10225	Mầm non Bông Sen	VL226	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10226	Mẫu giáo Hoa Đào	VL227	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10227	Mầm non Họa Mi	VL228	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10228	Mầm non Tuổi Xanh	VL229	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10229	Mầm non Hoa Hồng	VL230	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10230	Mầm non Hoa Sen	VL231	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10231	Mầm non Măng Non	VL232	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10232	Mầm non Tuổi Thơ	VL233	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10233	Mầm non Hoa Lan	VL234	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10234	Mầm non Vành Khuyên	VL235	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10235	Mầm non Hướng Dương	VL236	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10236	Mầm non Kim Đồng	VL237	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10237	Mầm non Sao Mai	VL238	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10238	Mầm non Hoa Mai	VL239	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10239	Mầm Non Rạng Đông	VL240	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10240	Mầm Non Cái Ngang	VL241	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10241	Mầm non Hoa Sen (Đ.Bình)	VL242	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10242	Mầm non Mỹ Hòa	VL243	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10243	Mầm Non Hoa Lan	VL244	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10244	Mầm Non Khai Trí	VL245	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10245	Mầm non Hoa Hồng	VL246	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10246	Mầm non Họa Mi (Thuận An)	VL247	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10247	Mầm non Hoa Hồng 2	VL248	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10248	Mầm non Sao Mai (Đông Thành)	VL249	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10249	Mầm non Sen Hồng	VL250	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10250	Mầm non Đông Thạnh	VL251	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10251	Mầm non Bình Minh	VL252	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10252	Mầm Non Hoàng Lam	VL253	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10253	Mầm Non Thuận Thới	VL254	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10254	Mầm Non Xuân Hiệp	VL255	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10255	Mầm Non Hòa Bình	VL256	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10256	Mầm Non Lục Sĩ Thành	VL257	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10257	Mầm non Tân Mỹ	VL258	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10258	Mầm Non Nhơn Bình	VL259	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10259	Mầm Non Phú Thành	VL260	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10260	Mầm non Ánh Dương Thị trấn Trà Ôn	VL261	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10261	Mầm non Vĩnh Xuân	VL262	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10262	Mầm Non Hựu Thành	VL263	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10263	Mầm Non Thới Hòa	VL264	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10264	Mầm non Trà Côn	VL265	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10265	Mầm non Thiện Mỹ	VL266	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10266	Mầm non Tích Thiện	VL267	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10267	Mầm Non Tuổi Thơ (Tân Quới)	VL268	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10268	Mẫu giáo Hoa Mai	VL269	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10269	Mẫu giáo Măng Non	VL270	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10270	Mầm non Mỹ Thuận	VL271	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10271	Mầm Non Nguyễn Văn Thảnh	VL272	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10272	Mầm non Hoa Phượng	VL273	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10273	Mẫu giáo Hướng Dương	VL274	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10274	Mầm non Tân Hưng	VL275	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10275	Mầm non Thành Trung	VL276	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10276	Mầm non Tân Thành	VL277	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10277	Mầm non Tuổi Thơ	VL278	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10278	Mầm non Sơn Ca (Tân Lược)	VL279	Tỉnh Vĩnh Long	86	\N	\N	1	\N	t	\N	\N	\N	\N
-10279	Trường TH Thị trấn Chợ Lách	083001	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10280	Trường TH Thị trấn Giồng Trôm	083002	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10281	Trường TH Chu Văn An	083003	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10282	Trường TH Trần Hoàn Vũ	083004	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10283	Trường TH Tân Bình	083005	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10284	Trường TH Tân Thạch A	083006	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10285	Trường TH An Thới	083007	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10286	Trường TH Thị trấn Thạnh Phú	083008	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10287	Trường TH An Bình Tây	083009	Tỉnh Bến Tre	83	\N	\N	1	\N	t	\N	\N	\N	\N
-10001	Trường tiểu học Hùng Vương	VL002	Tỉnh Vĩnh Long	86	\N	\N	1	{"1": []}	t	\N	2026-05-26 12:04:13.23733	\N	\N
-10290	TH Lạc Long Quân	054001	Tỉnh Phú Yên	54	\N	\N	1	{"5": []}	t	2026-06-18 16:49:33.922338	2026-06-18 16:49:33.922338	\N	\N
-10291	TH Lạc Long Quân	054002	Tỉnh Phú Yên	54	\N	\N	1	{"5": []}	t	2026-06-18 16:49:35.167037	2026-06-18 16:49:35.167037	\N	\N
-10292	Trường tiểu học Hùng Vương	060002	Tỉnh Bình Thuận	60	\N	\N	1	{}	t	2026-06-18 16:52:38.431162	2026-06-18 16:52:38.431162	\N	\N
-10004	Trường tiểu học Lê Lợi	VL005	Tỉnh Vĩnh Long	86	\N	\N	1	{"2": []}	t	\N	2026-06-18 16:56:54.303283	\N	\N
-10003	Trường tiểu học Sư phạm Thực hành	VL004	Tỉnh Vĩnh Long	86	\N	\N	1	{"3": []}	t	\N	2026-06-18 16:59:01.150724	\N	\N
-10007	Trường tiểu học Thiềng Đức	VL008	Tỉnh Vĩnh Long	86	\N	\N	1	{"1": ["1C", "1A"]}	t	\N	2026-06-24 09:33:38.44708	\N	\N
-10293	TH Âu Cơ	093001	Tỉnh Hậu Giang	93	\N	\N	1	{}	t	2026-06-24 10:16:47.977582	2026-06-24 10:16:47.977582	\N	\N
-10000	Trường tiểu học Nguyễn Du	VL001	Tỉnh Vĩnh Long	86	\N	\N	1	{"1": ["1A", "1B"]}	t	\N	2026-06-29 09:16:53.551238	\N	\N
-10289	Trường TH số 1	060001	Tỉnh Vĩnh Long	86	\N	\N	1	{"12": ["12A"]}	t	2026-05-15 19:03:21.634365	2026-06-29 09:37:45.644865	\N	\N
+10292	Trường tiểu học Hùng Vương	060002	Tỉnh Bình Thuận	29	\N	\N	1	{}	t	2026-06-18 16:52:38.431162	2026-06-18 16:52:38.431162	\N	\N
+10285	Trường TH An Thới	083007	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10286	Trường TH Thị trấn Thạnh Phú	083008	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10287	Trường TH An Bình Tây	083009	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10001	Trường tiểu học Hùng Vương	VL002	Tỉnh Vĩnh Long	09	\N	\N	1	{"1": []}	t	\N	2026-05-26 12:04:13.23733	\N	\N
+10004	Trường tiểu học Lê Lợi	VL005	Tỉnh Vĩnh Long	09	\N	\N	1	{"2": []}	t	\N	2026-06-18 16:56:54.303283	\N	\N
+10003	Trường tiểu học Sư phạm Thực hành	VL004	Tỉnh Vĩnh Long	09	\N	\N	1	{"3": []}	t	\N	2026-06-18 16:59:01.150724	\N	\N
+10007	Trường tiểu học Thiềng Đức	VL008	Tỉnh Vĩnh Long	09	\N	\N	1	{"1": ["1C", "1A"]}	t	\N	2026-06-24 09:33:38.44708	\N	\N
+10000	Trường tiểu học Nguyễn Du	VL001	Tỉnh Vĩnh Long	09	\N	\N	1	{"1": ["1A", "1B"]}	t	\N	2026-06-29 09:16:53.551238	\N	\N
+10289	Trường TH số 1	060001	Tỉnh Vĩnh Long	09	\N	\N	1	{"12": ["12A"]}	t	2026-05-15 19:03:21.634365	2026-06-29 09:37:45.644865	\N	\N
+10290	TH Lạc Long Quân	054001	Tỉnh Phú Yên	09	\N	\N	1	{"5": []}	t	2026-06-18 16:49:33.922338	2026-06-18 16:49:33.922338	\N	\N
+10291	TH Lạc Long Quân	054002	Tỉnh Phú Yên	09	\N	\N	1	{"5": []}	t	2026-06-18 16:49:35.167037	2026-06-18 16:49:35.167037	\N	\N
+10293	Trường TH Âu Cơ	093001	Tỉnh Hậu Giang	32	\N	\N	1	{}	t	2026-06-24 10:16:47.977582	2026-06-24 10:16:47.977582	\N	\N
+1	Bệnh viện Răng hàm mặt Trung ương	BVRHM	Thành phố Hồ Chí Minh	05	\N	\N	4	\N	t	\N	\N	\N	\N
+10009	Trường tiểu học Chu Văn An	VL010	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10010	Trường tiểu học Phạm Hùng	VL011	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10011	Trường tiểu học Nguyễn Hữu Huân	VL012	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10012	Trường tiểu học Nguyễn Trung Trực	VL013	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10013	Trường tiểu học Lê Hồng Phong	VL014	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10014	Trường tiểu học Lý Thường Kiệt	VL015	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10015	Trường tiểu học An Bình B	VL016	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10016	Trường tiểu học Bình Hòa Phước A	VL017	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10017	Trường tiểu học Trương Văn Ba	VL018	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10018	Trường tiểu học Đồng Phú A	VL019	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10021	Trường tiểu học Phước Hậu C	VL022	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10022	Trường tiểu học Tân Hạnh B	VL023	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10023	Trường tiểu học Tân Hạnh C	VL024	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10024	Trường tiểu học Lộc Hòa A	VL025	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10025	Trường tiểu học Lộc Hòa B	VL026	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10026	Trường tiểu học Hòa Phú A	VL027	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10027	Trường tiểu học Phú Quới A	VL028	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10028	Trường tiểu học Phú Quới C	VL029	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10029	Trường tiểu học Thạnh Quới A	VL030	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10030	Trường tiểu học Long An A	VL031	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10031	Trường tiểu học Phú Đức A	VL032	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10032	Trường tiểu học Phú Đức C	VL033	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10033	Trường tiểu học Thanh Đức B	VL034	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10034	Trường tiểu học Thanh Đức C	VL035	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10035	Trường tiểu học A Thị Trấn LH	VL036	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10036	Trường tiểu học Chánh An A	VL037	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10037	Trường tiểu học An Phước A	VL038	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10038	Trường tiểu học Bình Phước A	VL039	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10039	Trường tiểu học Bình Phước C	VL040	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10040	Trường tiểu học Hòa Tịnh A	VL041	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10041	Trường tiểu học Hòa Tịnh B	VL042	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10042	Trường tiểu học Long Mỹ	VL043	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10043	Trường tiểu học Mỹ An A	VL044	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10044	Trường tiểu học Mỹ An B	VL045	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10045	Trường tiểu học Mỹ Phước A	VL046	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10046	Trường tiểu học Nhơn Phú A	VL047	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10047	Trường tiểu học Nhơn Phú C	VL048	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10048	Trường tiểu học Tân Long Hội A	VL049	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10049	Trường tiểu học Thị Trấn Cái Nhum 	VL050	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10050	Trường tiểu học Chánh Hội A	VL051	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10051	Trường tiểu học Tân An Hội A	VL052	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10052	Trường tiểu học Tân Long A	VL053	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10053	Trường tiểu học Tân An Luông	VL054	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10054	Trường tiểu học Hiếu Phụng A	VL055	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10055	Trường tiểu học Huỳnh Văn Lời	VL056	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10056	Trường tiểu học Nguyễn Văn Quỳ	VL057	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10057	Trường tiểu học Hiếu Nhơn B	VL058	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10058	Trường tiểu học Hiếu Thành	VL059	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10059	Trường tiểu học Đỗ Quang Mười	VL060	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10060	Trường tiểu học Trung An A	VL061	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10061	Trường tiểu học Nguyễn Trung Kiên	VL062	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10062	Trường tiểu học Trung Thành A	VL063	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10063	Trường tiểu học Nguyễn Văn Thời	VL064	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10064	Trường tiểu học Đặng Thị Chính	VL065	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10065	Trường tiểu học Trung Thành Đông A	VL066	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10066	Trường tiểu học Thị trấn Vũng Liêm	VL067	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10067	Trường tiểu học Trung Thành Tây A	VL068	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10019	Trường tiểu học Long Phước B	VL020	Tỉnh Vĩnh Long	09	\N	\N	1	{"5": []}	t	\N	2026-06-22 09:47:20.386505	\N	\N
+10002	Trường tiểu học Nguyễn Huệ	VL003	Tỉnh Vĩnh Long	09	\N	\N	1	{"4": []}	t	\N	2026-06-22 09:53:49.517499	\N	\N
+10006	Trường tiểu học Trần Quốc Tuấn	VL007	Tỉnh Vĩnh Long	09	\N	\N	1	{"2": []}	t	\N	2026-06-22 09:56:10.234136	\N	\N
+10020	Trường tiểu học Phước Hậu A	VL021	Tỉnh Vĩnh Long	09	\N	\N	1	{"5": ["5A", "5B", "5C"]}	t	\N	2026-06-24 09:01:43.081701	\N	\N
+10008	Trường tiểu học Trương Định	VL009	Tỉnh Vĩnh Long	09	\N	\N	1	{"4": ["4C"]}	t	\N	2026-06-24 10:22:34.091562	\N	\N
+10005	Trường tiểu học Trần Đại Nghĩa	VL006	Tỉnh Vĩnh Long	09	\N	\N	1	{"5": ["5A"]}	t	\N	2026-06-25 08:41:18.626247	\N	\N
+10068	Trường tiểu học Trung Hiệp A	VL069	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10069	Trường tiểu học Trung Chánh A	VL070	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10070	Trường tiểu học Tân Quới Trung A	VL071	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10071	Trường tiểu học Nguyễn Văn Kết	VL072	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10072	Trường tiểu học Lê Văn Cư	VL073	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10073	Trường tiểu học Võ Ngọc Tốt	VL074	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10074	Trường tiểu học Thanh Bình B	VL075	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10075	Trường tiểu học  Lưu Văn Liệt	VL076	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10076	Trường tiểu học Tường Lộc A	VL077	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10077	Trường tiểu học Tường Lộc B	VL078	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10078	Trường tiểu học Mỹ Thạnh Trung A	VL079	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10079	Trường tiểu học Mỹ Thạnh Trung B	VL080	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10080	Trường tiểu học Hòa Lộc A	VL081	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10081	Trường tiểu học Hòa Lộc B	VL082	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10082	Trường tiểu học Hòa Hiệp	VL083	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10083	Trường tiểu học Hòa Thạnh	VL084	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10084	Trường tiểu học Hậu Lộc	VL085	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10085	Trường tiểu học Tân Lộc	VL086	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10086	Trường tiểu học Phú Lộc	VL087	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10087	Trường tiểu học Cái Ngang	VL088	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10088	Trường tiểu học Mỹ Lộc	VL089	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10089	Trường tiểu học Song Phú A	VL090	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10090	Trường tiểu học Song Phú B	VL091	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10091	Trường tiểu học Tô Hùng Vĩ	VL092	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10092	Trường tiểu học Long Phú	VL093	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10093	Trường tiểu học Phú Thịnh A	VL094	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10094	Trường tiểu học Phú Thịnh B	VL095	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10095	Trường tiểu học Bình Ninh	VL096	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10096	Trường tiểu học Ngãi Tứ A	VL097	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10097	Trường tiểu học Ngãi Tứ B	VL098	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10098	Trường tiểu học Loan Mỹ B	VL099	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10099	Trường tiểu học Thạch Thia	VL100	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10100	Trường tiểu học Hòa Bình A	VL101	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10101	Trường tiểu học Hòa Bình C	VL102	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10102	Trường tiểu học Hựu Thành A	VL103	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10103	Trường tiểu học Hựu Thành B	VL104	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10104	Trường tiểu học Lục Sĩ Thành A	VL105	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10105	Trường tiểu học Phú Thành	VL106	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10106	Trường tiểu học Tân Mỹ A	VL107	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10107	Trường tiểu học Tân Mỹ B	VL108	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10108	Trường tiểu học Trà Côn A	VL109	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10109	Trường tiểu học Trà Côn C	VL110	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10110	Trường tiểu học Thới Hòa A	VL111	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10111	Trường tiểu học Thới Hòa B	VL112	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10112	Trường tiểu học Thuận Thới A	VL113	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10113	Trường tiểu học Thuận Thới B	VL114	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10114	Trường tiểu học Tích Thiện A	VL115	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10115	Trường tiểu học Thiện Mỹ A	VL116	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10116	Trường tiểu học Vĩnh Xuân	VL117	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10117	Trường tiểu học Thị Trấn Trà Ôn	VL118	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10118	Trường tiểu học Nhơn Bình A	VL119	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10119	Trường tiểu học Nhơn Bình B	VL120	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10120	Trường tiểu học Xuân Hiệp A	VL121	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10121	Trường tiểu học Xuân Hiệp B	VL122	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10122	Trường tiểu học Lê Thánh Tông	VL123	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10123	Trường tiểu học Phan Bội Châu	VL124	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10124	Trường tiểu học Trần Bình Trọng	VL125	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10125	Trường tiểu học Mỹ Hòa C	VL126	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10126	Trường tiểu học Nguyễn Văn Trỗi	VL127	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10127	Trường tiểu học Lý Thường Kiệt	VL128	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10128	Trường tiểu học Võ Thị Sáu	VL129	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10129	Trường tiểu học Nguyễn Thị Minh Khai	VL130	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10130	Trường tiểu học Phù Ly	VL131	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10131	Trường tiểu học Phan Văn Năm	VL132	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10132	Trường tiểu học Thoại Ngọc Hầu	VL133	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10133	Trường tiểu học Phan Văn Đáng	VL134	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10134	Trường tiểu học Tân Hưng	VL135	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10135	Trường tiểu học Tân An Thạnh A	VL136	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10136	Trường tiểu học Tân An Thạnh B	VL137	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10137	Trường tiểu học Tân Lược	VL138	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10138	Trường tiểu học Tân Bình	VL139	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10139	Trường tiểu học Tân Thành A	VL140	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10140	Trường tiểu học Tân Quới A	VL141	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10141	Trường tiểu học Thành Đông A	VL142	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10142	Trường tiểu học Thành Lợi A	VL143	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10143	Trường tiểu học Thành Lợi C	VL144	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10144	Trường tiểu học Thành Trung A	VL145	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10145	Trường tiểu học Thành Trung B	VL146	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10146	Trường tiểu học Mỹ Thuận A	VL147	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10147	Trường tiểu học Mỹ Thuận B	VL148	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10148	Trường tiểu học Nguyễn Văn Thảnh A	VL149	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10149	Mầm non Vĩnh Xuân	VL150	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10150	Mầm Non Hựu Thành	VL151	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10151	Mầm Non Thới Hòa	VL152	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10152	Mầm non Trà Côn	VL153	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10153	Mầm non Thiện Mỹ	VL154	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10154	Mầm non Tích Thiện	VL155	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10155	Mầm Non Tuổi Thơ (Tân Quới)	VL156	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10156	Mẫu giáo Hoa Mai	VL157	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10157	Mẫu giáo Măng Non	VL158	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10158	Mầm non Mỹ Thuận	VL159	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10159	Mầm Non Nguyễn Văn Thảnh	VL160	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10160	Mầm non Hoa Phượng	VL161	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10161	Mẫu giáo Hướng Dương	VL162	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10162	Mầm non Tân Hưng	VL163	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10163	Mầm non Thành Trung	VL164	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10164	Mầm non Tân Thành	VL165	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10165	Mầm non Tuổi Thơ	VL166	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10166	Mầm non Sơn Ca (Tân Lược)	VL167	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10167	Mầm non Thực hành Măng non Phường 9	VL168	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10168	Mầm non Bé By Ngoan	VL169	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10169	Mầm non Hoa Sen Thành Phố Tỉnh Vĩnh Long	VL170	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10170	Nhà trẻ Trinh Vương	VL171	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10171	Nhóm trẻ Gia Bảo	VL172	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10172	Mầm non Phú Đức	VL173	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10173	Mầm Non Thanh Đức	VL174	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10174	Mầm non An Bình	VL175	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10175	Mầm non Họa Mi thị trấn Long Hồ	VL176	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10176	Mầm non Bình Hòa Phước	VL177	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10177	Mầm non Đồng Phú	VL178	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10178	Mầm non Long Phước	VL179	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10179	Mẫu giáo Hoa Hồng Lộc Hòa	VL180	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10180	Mẫu giáo Phú Quới	VL181	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10181	Mầm non Phước Hậu	VL182	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10182	Mầm non  Long An	VL183	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10183	Mầm Non Hòa Ninh	VL184	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10184	Mầm non Thạnh Quới	VL185	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10185	Mầm Non Thị trấn Long Hồ	VL186	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10186	Mầm non Lộc Hòa	VL187	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10187	Mầm non Tân Hạnh	VL188	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10188	Mầm non Hòa Phú	VL189	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10189	Mầm non khu công nghiệp Hòa Phú	VL190	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10190	Mầm non Hồng Ân	VL191	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10191	Mầm non Họa Mi Hòa Phú	VL192	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10192	Mẫu giáo Măng Non I (Mỹ Phước)	VL193	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10193	Mầm non Măng Non II	VL194	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10194	Mầm non Oanh Vũ I	VL195	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10195	Mầm Non Oanh Vũ II (Tân Long Hội)	VL196	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10196	Mầm non Sơn Ca I (Hòa Tịnh)	VL197	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10197	Mầm non Sơn Ca I (Bình Phước)	VL198	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10198	Mầm non Tuổi Thơ I	VL199	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10199	Mầm non Tuổi Thơ II (An Phước)	VL200	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10200	Mầm non Tuổi Thơ III (Nhơn Phú)	VL201	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10201	Mầm non Tuổi Thơ IV (Chánh An)	VL202	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10202	Mầm Non Sơn Ca III	VL203	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10203	Mầm Non Oanh Vũ III (Tân An Hội)	VL204	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10204	Mầm Non Thị Trấn Cái Nhum	VL205	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10205	Mầm Non Hiếu Phụng	VL206	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10206	Mầm non Hiếu Nhơn	VL207	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10207	Mẫu giáo Hiếu Thành	VL208	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10208	Mầm Non Trung Hiếu	VL209	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10209	Mẫu giáo Trung Thành	VL210	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10210	Mẫu giáo Trung Nghĩa	VL211	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10211	Mẫu giáo Trung Hiệp	VL212	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10212	Mẫu giáo Tân Quới Trung	VL213	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10213	Mầm non Quới An	VL214	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10214	Mẫu giáo Quới Thiện	VL215	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10215	Mầm Non Thanh Bình	VL216	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10216	Mầm non Trung An	VL217	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10217	Mầm non Trịnh Liên Hoa	VL218	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10218	Mầm Non Trung Thành Tây	VL219	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10219	Mẫu giáo Trung Chánh	VL220	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10220	Mầm Non Hiếu Nghĩa	VL221	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10221	Mầm non Tân An Luông	VL222	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10222	Mầm non Thị Trấn Vũng Liêm	VL223	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10223	Mầm non Sơn Ca	VL224	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10224	Mầm Non Mỹ Lộc	VL225	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10225	Mầm non Bông Sen	VL226	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10226	Mẫu giáo Hoa Đào	VL227	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10227	Mầm non Họa Mi	VL228	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10228	Mầm non Tuổi Xanh	VL229	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10229	Mầm non Hoa Hồng	VL230	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10230	Mầm non Hoa Sen	VL231	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10231	Mầm non Măng Non	VL232	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10232	Mầm non Tuổi Thơ	VL233	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10233	Mầm non Hoa Lan	VL234	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10234	Mầm non Vành Khuyên	VL235	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10235	Mầm non Hướng Dương	VL236	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10236	Mầm non Kim Đồng	VL237	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10237	Mầm non Sao Mai	VL238	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10238	Mầm non Hoa Mai	VL239	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10239	Mầm Non Rạng Đông	VL240	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10240	Mầm Non Cái Ngang	VL241	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10241	Mầm non Hoa Sen (Đ.Bình)	VL242	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10242	Mầm non Mỹ Hòa	VL243	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10243	Mầm Non Hoa Lan	VL244	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10244	Mầm Non Khai Trí	VL245	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10245	Mầm non Hoa Hồng	VL246	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10246	Mầm non Họa Mi (Thuận An)	VL247	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10247	Mầm non Hoa Hồng 2	VL248	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10248	Mầm non Sao Mai (Đông Thành)	VL249	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10249	Mầm non Sen Hồng	VL250	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10250	Mầm non Đông Thạnh	VL251	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10251	Mầm non Bình Minh	VL252	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10252	Mầm Non Hoàng Lam	VL253	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10253	Mầm Non Thuận Thới	VL254	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10254	Mầm Non Xuân Hiệp	VL255	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10255	Mầm Non Hòa Bình	VL256	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10256	Mầm Non Lục Sĩ Thành	VL257	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10257	Mầm non Tân Mỹ	VL258	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10258	Mầm Non Nhơn Bình	VL259	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10259	Mầm Non Phú Thành	VL260	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10260	Mầm non Ánh Dương Thị trấn Trà Ôn	VL261	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10261	Mầm non Vĩnh Xuân	VL262	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10262	Mầm Non Hựu Thành	VL263	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10263	Mầm Non Thới Hòa	VL264	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10264	Mầm non Trà Côn	VL265	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10265	Mầm non Thiện Mỹ	VL266	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10266	Mầm non Tích Thiện	VL267	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10267	Mầm Non Tuổi Thơ (Tân Quới)	VL268	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10268	Mẫu giáo Hoa Mai	VL269	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10269	Mẫu giáo Măng Non	VL270	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10270	Mầm non Mỹ Thuận	VL271	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10271	Mầm Non Nguyễn Văn Thảnh	VL272	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10272	Mầm non Hoa Phượng	VL273	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10273	Mẫu giáo Hướng Dương	VL274	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10274	Mầm non Tân Hưng	VL275	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10275	Mầm non Thành Trung	VL276	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10276	Mầm non Tân Thành	VL277	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10277	Mầm non Tuổi Thơ	VL278	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10278	Mầm non Sơn Ca (Tân Lược)	VL279	Tỉnh Vĩnh Long	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10279	Trường TH Thị trấn Chợ Lách	083001	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10280	Trường TH Thị trấn Giồng Trôm	083002	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10281	Trường TH Chu Văn An	083003	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10282	Trường TH Trần Hoàn Vũ	083004	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10283	Trường TH Tân Bình	083005	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
+10284	Trường TH Tân Thạch A	083006	Tỉnh Bến Tre	09	\N	\N	1	\N	t	\N	\N	\N	\N
 \.
 
 
@@ -13646,10 +13709,10 @@ COPY nhahocduong.nhahocduong_patient (id, full_name, health_insurance_number, ge
 1001	Ngggg	1111	1	2000-01-01	Kinh	VL001002	Nông thôn	\N	\N	1A	MOCK-2026-0001	PHD	10000	t	2026-06-22 09:22:15.416262	2026-06-22 09:22:15.416262	\N	\N
 1002	Bùi Tuấn Cường	\N	1	2005-07-07	Kinh	VL001003	Nông thôn	\N	\N	1A	0008548	Nice	10000	t	2026-06-22 10:23:23.198632	2026-06-22 10:23:23.198632	\N	\N
 1003	Bùi Tuấn Cường	34324234	1	2026-06-09	Kinh	VL021001	Thành thị	09090901234	Tỉnh Vĩnh Long	5A	13123124343	B	10020	t	2026-06-24 09:30:55.159697	2026-06-24 09:30:55.159697	\N	\N
-1004	Nguyễn Đăng Huy	987654321	1	2011-11-11	Tày	VL006001	Thành thị	09090901234	Tỉnh Bình Thuận	1A1	123456789	A	10289	t	2026-06-25 08:42:37.354178	2026-06-25 08:46:37.305605	\N	\N
 1005	xyz	fdsfdsf	1	2005-02-01	Kinh	VL001004	Thành thị	09090901234	Tỉnh Vĩnh Long	1B	030123123	tuan cuong	10000	t	2026-06-30 15:13:43.797727	2026-06-30 15:13:43.797727	\N	\N
 1006	Vnadfsidf	sfsfsfdsf 	1	2004-02-01	Tày	VL001005	Thành thị	09090901234		1A	fdsffsdfdsfsd	Tuấn Cường	10000	t	2026-06-30 15:18:15.454125	2026-06-30 15:20:19.755689	\N	\N
 1007	Vinh Phu Nguyen	1212	1	2005-03-18	Kinh	VL021002	Nông thôn	09090901234	Tỉnh Vĩnh Long	5C	123456	11111	10020	t	2026-06-30 15:36:53.080915	2026-06-30 15:36:53.080915	\N	\N
+1004	Nguyễn Đăng Huy	987654321	1	2011-11-11	Tày	VL006001	Thành thị	09090901234	Tỉnh Bình Thuận	1A1	123456789	A	10289	f	2026-06-25 08:42:37.354178	2026-07-13 16:29:35.106277	\N	\N
 1019	Võ Văn Trung	HS27106541970	1	2015-01-08	Kinh	HS001019	\N	0861668008	110 Trần Hưng Đạo, Quận 12, TP.HCM	5A	\N	Mẹ: Hồ Thu Hương	10203	t	2026-07-09 07:52:03.532789	\N	\N	\N
 1021	Đỗ Hoàng Minh	\N	1	2016-10-02	Tày	HS001021	\N	\N	114 Lê Lợi, Quận 1, TP.HCM	5A	\N	Mẹ: Võ Thùy Hà	10030	t	2026-07-09 07:52:03.532789	\N	\N	\N
 1060	Bùi Đức Bình	\N	1	2015-04-07	Kinh	HS001060	\N	0766675636	50 Hai Bà Trưng, Quận 9, TP.HCM	5A	\N	Mẹ: Hồ Quỳnh	10144	t	2026-07-09 07:52:03.532789	\N	\N	\N
@@ -13981,6 +14044,27 @@ COPY nhahocduong.nhahocduong_plaque_record (id, "17-16n", "11n", "26-27n", "47-4
 108	1	0	0	0	0	0
 109	2	0	0	1	0	0
 110	0	0	0	0	0	0
+900100	1	0	1	2	0	2
+900101	0	0	1	1	0	0
+900102	0	0	0	2	0	0
+900103	2	1	1	0	0	1
+900104	2	0	0	0	0	1
+900105	0	0	0	0	0	0
+900106	1	1	1	0	1	0
+900107	1	0	0	1	0	0
+900108	0	1	0	1	0	2
+900109	0	0	1	0	0	2
+900110	2	1	1	0	1	0
+900111	2	0	1	0	0	0
+900112	0	0	1	1	0	1
+900113	2	1	0	2	0	0
+900114	0	0	0	2	0	0
+900115	0	0	0	2	0	2
+900116	0	0	0	0	1	0
+900117	0	0	0	1	1	0
+900118	0	0	0	0	1	2
+900119	0	1	0	1	0	2
+111	0	1	0	0	0	0
 \.
 
 
@@ -14011,6 +14095,27 @@ COPY nhahocduong.nhahocduong_tartar_record (id, "17-16n", "11n", "26-27n", "47-4
 108	0	0	0	0	0	0
 109	2	0	1	4	3	0
 110	0	0	0	0	0	0
+900100	1	0	1	0	0	0
+900101	0	0	0	1	0	1
+900102	1	0	2	1	1	0
+900103	2	0	0	0	1	1
+900104	2	1	1	0	0	2
+900105	1	0	1	1	1	1
+900106	0	0	2	1	0	0
+900107	0	0	0	2	0	1
+900108	1	0	0	2	1	2
+900109	0	0	2	2	0	0
+900110	2	0	1	1	0	0
+900111	2	1	0	0	1	1
+900112	0	0	1	1	0	1
+900113	1	0	1	1	0	1
+900114	0	0	2	2	0	1
+900115	0	1	0	2	0	0
+900116	1	0	1	0	1	0
+900117	0	0	1	2	0	2
+900118	0	1	0	2	0	2
+900119	0	0	1	2	0	1
+111	0	0	0	0	2	2
 \.
 
 
@@ -14033,6 +14138,27 @@ COPY nhahocduong.nhahocduong_teeth_record (id, record) FROM stdin;
 108	{"11": {"problem": "1", "locations": ["T"], "treatment": null}, "55": {"problem": "0", "locations": [], "treatment": null}, "72": {"problem": "2", "locations": ["N"], "treatment": null}}
 109	{"43": {"problem": "1", "locations": [], "treatment": null}, "65": {"problem": "1", "locations": [], "treatment": null}}
 110	{"22": {"problem": "1", "locations": ["T"], "treatment": null}}
+900101	{"13": {"problem": "8", "locations": [], "treatment": null}, "47": {"problem": "3", "locations": [], "treatment": null}}
+900100	{"16": {"problem": "8", "locations": [], "treatment": null}, "23": {"problem": "3", "locations": [], "treatment": null}, "65": {"problem": "8", "locations": [], "treatment": null}, "74": {"problem": "8", "locations": [], "treatment": null}}
+111	{"11": {"problem": "0", "locations": null, "treatment": null}, "12": {"problem": "0", "locations": null, "treatment": null}, "13": {"problem": "0", "locations": null, "treatment": null}, "14": {"problem": "1", "locations": ["N", "T"], "treatment": null}, "15": {"problem": "0", "locations": null, "treatment": null}, "16": {"problem": "0", "locations": null, "treatment": null}, "17": {"problem": "0", "locations": null, "treatment": null}, "18": {"problem": "0", "locations": null, "treatment": null}, "21": {"problem": "0", "locations": null, "treatment": null}, "22": {"problem": "0", "locations": null, "treatment": null}, "23": {"problem": "0", "locations": null, "treatment": null}, "24": {"problem": "0", "locations": null, "treatment": null}, "25": {"problem": "0", "locations": null, "treatment": null}, "26": {"problem": "0", "locations": null, "treatment": null}, "27": {"problem": "0", "locations": null, "treatment": null}, "28": {"problem": "0", "locations": null, "treatment": null}, "31": {"problem": "0", "locations": null, "treatment": null}, "32": {"problem": "0", "locations": null, "treatment": null}, "33": {"problem": "4", "locations": [], "treatment": null}, "34": {"problem": "0", "locations": null, "treatment": null}, "35": {"problem": "0", "locations": null, "treatment": null}, "36": {"problem": "0", "locations": null, "treatment": null}, "37": {"problem": "0", "locations": null, "treatment": null}, "38": {"problem": "0", "locations": null, "treatment": null}, "41": {"problem": "0", "locations": null, "treatment": null}, "42": {"problem": "0", "locations": null, "treatment": null}, "43": {"problem": "0", "locations": null, "treatment": null}, "44": {"problem": "0", "locations": null, "treatment": null}, "45": {"problem": "0", "locations": null, "treatment": null}, "46": {"problem": "0", "locations": null, "treatment": null}, "47": {"problem": "0", "locations": null, "treatment": null}, "48": {"problem": "0", "locations": null, "treatment": null}, "51": {"problem": "0", "locations": null, "treatment": null}, "52": {"problem": "0", "locations": null, "treatment": null}, "53": {"problem": "0", "locations": null, "treatment": null}, "54": {"problem": "0", "locations": null, "treatment": null}, "55": {"problem": "0", "locations": null, "treatment": null}, "61": {"problem": "0", "locations": null, "treatment": null}, "62": {"problem": "0", "locations": null, "treatment": null}, "63": {"problem": "0", "locations": null, "treatment": null}, "64": {"problem": "0", "locations": null, "treatment": null}, "65": {"problem": "0", "locations": null, "treatment": null}, "71": {"problem": "0", "locations": null, "treatment": null}, "72": {"problem": "0", "locations": null, "treatment": null}, "73": {"problem": "0", "locations": null, "treatment": null}, "74": {"problem": "0", "locations": null, "treatment": null}, "75": {"problem": "0", "locations": null, "treatment": null}, "81": {"problem": "0", "locations": null, "treatment": null}, "82": {"problem": "0", "locations": null, "treatment": null}, "83": {"problem": "0", "locations": null, "treatment": null}, "84": {"problem": "0", "locations": null, "treatment": null}, "85": {"problem": "0", "locations": null, "treatment": null}}
+900102	{"11": {"problem": "2", "locations": ["T"], "treatment": "1"}, "12": {"problem": "3", "locations": [], "treatment": null}, "13": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "18": {"problem": "3", "locations": [], "treatment": null}, "31": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "33": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "35": {"problem": "8", "locations": [], "treatment": null}, "44": {"problem": "3", "locations": [], "treatment": null}, "51": {"problem": "8", "locations": [], "treatment": null}, "55": {"problem": "1", "locations": ["N"], "treatment": "2"}, "61": {"problem": "8", "locations": [], "treatment": null}, "72": {"problem": "1", "locations": ["Nh"], "treatment": "1"}, "75": {"problem": "8", "locations": [], "treatment": null}}
+900103	{"14": {"problem": "3", "locations": [], "treatment": null}, "27": {"problem": "2", "locations": ["T"], "treatment": "1"}, "31": {"problem": "3", "locations": [], "treatment": null}, "33": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "34": {"problem": "1", "locations": ["Nh"], "treatment": "3"}, "36": {"problem": "1", "locations": ["N"], "treatment": "6"}, "38": {"problem": "3", "locations": [], "treatment": null}, "43": {"problem": "2", "locations": ["T"], "treatment": "1"}, "45": {"problem": "3", "locations": [], "treatment": null}, "52": {"problem": "3", "locations": [], "treatment": null}, "54": {"problem": "8", "locations": [], "treatment": null}, "74": {"problem": "8", "locations": [], "treatment": null}, "83": {"problem": "3", "locations": [], "treatment": null}}
+900104	{"13": {"problem": "3", "locations": [], "treatment": null}, "31": {"problem": "3", "locations": [], "treatment": null}, "35": {"problem": "3", "locations": [], "treatment": null}, "82": {"problem": "8", "locations": [], "treatment": null}}
+900105	{"22": {"problem": "8", "locations": [], "treatment": null}, "37": {"problem": "8", "locations": [], "treatment": null}, "62": {"problem": "3", "locations": [], "treatment": null}, "63": {"problem": "3", "locations": [], "treatment": null}}
+900106	{"11": {"problem": "1", "locations": ["X"], "treatment": "6"}, "17": {"problem": "1", "locations": ["Nh"], "treatment": "6"}, "23": {"problem": "8", "locations": [], "treatment": null}, "27": {"problem": "1", "locations": ["Nh"], "treatment": "1"}, "31": {"problem": "3", "locations": [], "treatment": null}, "34": {"problem": "3", "locations": [], "treatment": null}, "42": {"problem": "8", "locations": [], "treatment": null}, "44": {"problem": "1", "locations": ["Nh"], "treatment": "6"}, "47": {"problem": "3", "locations": [], "treatment": null}, "54": {"problem": "2", "locations": ["T"], "treatment": "1"}, "55": {"problem": "3", "locations": [], "treatment": null}, "75": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "81": {"problem": "8", "locations": [], "treatment": null}}
+900107	{"12": {"problem": "3", "locations": [], "treatment": null}, "14": {"problem": "3", "locations": [], "treatment": null}, "22": {"problem": "3", "locations": [], "treatment": null}, "36": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "37": {"problem": "3", "locations": [], "treatment": null}, "41": {"problem": "8", "locations": [], "treatment": null}, "53": {"problem": "3", "locations": [], "treatment": null}, "64": {"problem": "8", "locations": [], "treatment": null}, "65": {"problem": "1", "locations": ["T"], "treatment": "1"}, "71": {"problem": "3", "locations": [], "treatment": null}}
+900108	{"14": {"problem": "8", "locations": [], "treatment": null}, "16": {"problem": "1", "locations": ["T"], "treatment": "6"}, "22": {"problem": "8", "locations": [], "treatment": null}, "31": {"problem": "2", "locations": ["T"], "treatment": "1"}, "33": {"problem": "8", "locations": [], "treatment": null}, "36": {"problem": "1", "locations": ["G"], "treatment": "6"}, "48": {"problem": "8", "locations": [], "treatment": null}, "51": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "53": {"problem": "2", "locations": ["T"], "treatment": "1"}, "54": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "64": {"problem": "8", "locations": [], "treatment": null}, "65": {"problem": "1", "locations": ["X"], "treatment": "3"}, "71": {"problem": "3", "locations": [], "treatment": null}, "74": {"problem": "1", "locations": ["Nh"], "treatment": "1"}}
+900109	{"12": {"problem": "3", "locations": [], "treatment": null}, "13": {"problem": "3", "locations": [], "treatment": null}, "24": {"problem": "1", "locations": ["G"], "treatment": "1"}, "26": {"problem": "1", "locations": ["N"], "treatment": "3"}, "33": {"problem": "3", "locations": [], "treatment": null}, "46": {"problem": "1", "locations": ["X"], "treatment": "2"}, "51": {"problem": "8", "locations": [], "treatment": null}, "65": {"problem": "8", "locations": [], "treatment": null}, "74": {"problem": "1", "locations": ["G"], "treatment": "3"}, "82": {"problem": "2", "locations": ["T"], "treatment": "1"}}
+900110	{"14": {"problem": "1", "locations": ["G"], "treatment": "1"}, "17": {"problem": "3", "locations": [], "treatment": null}, "21": {"problem": "2", "locations": ["T"], "treatment": "1"}, "23": {"problem": "3", "locations": [], "treatment": null}, "33": {"problem": "3", "locations": [], "treatment": null}, "34": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "45": {"problem": "1", "locations": ["N"], "treatment": "6"}, "52": {"problem": "3", "locations": [], "treatment": null}, "54": {"problem": "3", "locations": [], "treatment": null}, "64": {"problem": "1", "locations": ["T"], "treatment": "1"}, "75": {"problem": "1", "locations": ["T"], "treatment": "1"}, "81": {"problem": "2", "locations": ["T"], "treatment": "1"}, "83": {"problem": "3", "locations": [], "treatment": null}}
+900111	{"26": {"problem": "8", "locations": [], "treatment": null}, "34": {"problem": "3", "locations": [], "treatment": null}, "62": {"problem": "8", "locations": [], "treatment": null}}
+900112	{"11": {"problem": "8", "locations": [], "treatment": null}, "22": {"problem": "3", "locations": [], "treatment": null}, "31": {"problem": "3", "locations": [], "treatment": null}, "37": {"problem": "2", "locations": ["T"], "treatment": "1"}, "42": {"problem": "8", "locations": [], "treatment": null}, "45": {"problem": "1", "locations": ["X"], "treatment": "1"}, "47": {"problem": "1", "locations": ["G"], "treatment": "1"}, "51": {"problem": "8", "locations": [], "treatment": null}, "55": {"problem": "1", "locations": ["N"], "treatment": "1"}, "65": {"problem": "3", "locations": [], "treatment": null}, "83": {"problem": "8", "locations": [], "treatment": null}}
+900113	{"27": {"problem": "2", "locations": ["T"], "treatment": "1"}, "41": {"problem": "3", "locations": [], "treatment": null}, "45": {"problem": "1", "locations": ["Nh"], "treatment": "5"}, "47": {"problem": "1", "locations": ["X"], "treatment": "3"}, "48": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "61": {"problem": "8", "locations": [], "treatment": null}, "64": {"problem": "3", "locations": [], "treatment": null}, "75": {"problem": "3", "locations": [], "treatment": null}, "82": {"problem": "2", "locations": ["Nh"], "treatment": "1"}}
+900114	{"24": {"problem": "3", "locations": [], "treatment": null}, "25": {"problem": "2", "locations": ["T"], "treatment": "1"}, "27": {"problem": "1", "locations": ["X"], "treatment": "2"}, "28": {"problem": "2", "locations": ["Nh"], "treatment": "1"}, "36": {"problem": "1", "locations": ["T"], "treatment": "1"}, "45": {"problem": "3", "locations": [], "treatment": null}, "73": {"problem": "8", "locations": [], "treatment": null}, "74": {"problem": "1", "locations": ["Nh"], "treatment": "6"}, "82": {"problem": "8", "locations": [], "treatment": null}}
+900115	{"13": {"problem": "8", "locations": [], "treatment": null}, "34": {"problem": "8", "locations": [], "treatment": null}, "38": {"problem": "8", "locations": [], "treatment": null}}
+900116	{"15": {"problem": "8", "locations": [], "treatment": null}, "33": {"problem": "8", "locations": [], "treatment": null}, "44": {"problem": "8", "locations": [], "treatment": null}, "45": {"problem": "3", "locations": [], "treatment": null}, "73": {"problem": "3", "locations": [], "treatment": null}}
+900117	{"22": {"problem": "3", "locations": [], "treatment": null}, "28": {"problem": "8", "locations": [], "treatment": null}, "44": {"problem": "3", "locations": [], "treatment": null}, "72": {"problem": "3", "locations": [], "treatment": null}, "73": {"problem": "8", "locations": [], "treatment": null}}
+900118	{"21": {"problem": "3", "locations": [], "treatment": null}, "25": {"problem": "3", "locations": [], "treatment": null}, "33": {"problem": "8", "locations": [], "treatment": null}, "37": {"problem": "8", "locations": [], "treatment": null}, "43": {"problem": "8", "locations": [], "treatment": null}, "53": {"problem": "3", "locations": [], "treatment": null}, "65": {"problem": "3", "locations": [], "treatment": null}, "72": {"problem": "3", "locations": [], "treatment": null}}
+900119	{"12": {"problem": "8", "locations": [], "treatment": null}, "23": {"problem": "8", "locations": [], "treatment": null}, "26": {"problem": "3", "locations": [], "treatment": null}, "33": {"problem": "8", "locations": [], "treatment": null}, "41": {"problem": "8", "locations": [], "treatment": null}, "53": {"problem": "8", "locations": [], "treatment": null}, "55": {"problem": "8", "locations": [], "treatment": null}, "71": {"problem": "3", "locations": [], "treatment": null}}
 \.
 
 
@@ -14041,11 +14167,15 @@ COPY nhahocduong.nhahocduong_teeth_record (id, record) FROM stdin;
 --
 
 COPY nhahocduong.nhahocduong_treatment_record (id, treatment_service, dentist_name, diagnosis, tooth, prescription, exam, status, created_date, updated_date, created_by, updated_by) FROM stdin;
-2	4	asd234	Răng 33 Mất do sâu	11	\N	100	t	2026-05-26 18:10:01.928678	2026-07-02 12:30:40.647305	\N	\N
-1	2	asdasd	Răng 14 Sâu mặt ngoài mặt trong	14	\N	100	t	2026-05-26 12:13:28.792708	2026-07-02 12:30:40.649314	\N	\N
 4	1	Dr.Strange	Răng 72 Trám sâu lại mặt ngoài	72	\N	102	t	2026-07-02 13:34:07.945986	2026-07-02 13:36:11.17719	\N	\N
 3	2	\N	Răng 11 Sâu mặt trong	11	\N	102	t	2026-07-02 10:33:39.247187	2026-07-02 13:36:11.17719	\N	\N
 5	1	Tuan Cuong	Răng 43 Sâu	43	\N	103	t	2026-07-09 15:22:43.848206	2026-07-09 15:22:43.848206	\N	\N
+2	4	asd234	Răng 33 Mất do sâu	11	\N	100	t	2026-05-26 18:10:01.928678	2026-07-14 09:27:00.222707	\N	\N
+902000	Trám răng	Bác sĩ C	Sâu răng độ 1	65	{}	900107	t	2026-07-13 09:07:51.443847	\N	\N	\N
+902001	Điều trị tủy	Bác sĩ C	Sâu răng độ 1	16	{}	900108	t	2026-07-13 09:07:51.443847	\N	\N	\N
+902002	Lấy cao răng	Bác sĩ C	Sâu răng độ 1	26	{}	900109	t	2026-07-13 09:07:51.443847	\N	\N	\N
+902003	Lấy cao răng	Bác sĩ B	Sâu răng độ 1	45	{}	900112	t	2026-07-13 09:07:51.443847	\N	\N	\N
+1	2	asdasd	Răng 14 Sâu mặt ngoài mặt trong	14	\N	100	t	2026-05-26 12:13:28.792708	2026-07-14 09:27:00.228728	\N	\N
 \.
 
 
@@ -14451,9 +14581,9 @@ COPY nhahocduong.user_role_mapping (user_id, role_id) FROM stdin;
 55	1
 56	3
 57	1
-58	3
 60	1
 61	3
+62	1
 \.
 
 
@@ -14488,8 +14618,8 @@ COPY nhahocduong.user_user (id, username, email, phone_number, password, first_n
 52	bacsi123	bacsi123@gmail.com	083123781	$2a$10$Nq1HXsattA/6GtGEarpo.OqNjNKbjeUlAb6D.x69/aJFBiKCblsr6	Bac	Si	\N	\N	0	f	2026-07-06 14:43:13.64547	2026-07-06 14:43:13.64547	\N	\N	t	f	\N
 53	bacsi2	bacsi2@gmail.com	12342398456	$2a$10$Q43aewKac1KgeL71YHZIbOPXnOiXtqVlN.RHl2CQzHxt75ubYtvpS	si	bac	\N	\N	0	f	2026-07-06 14:46:43.905844	2026-07-06 14:46:43.905844	\N	\N	t	f	\N
 54	abcdoremi	adsad@asenad.com	023182	$2a$10$DPU.5Cyknb/cscGp76TzqO.z0dQYK/KECdpie9ocH2TJ0GyjMdZ96	djasjid	adsnjdh	\N	\N	0	f	2026-07-06 15:02:07.23073	2026-07-06 15:02:07.23073	\N	\N	t	f	\N
-55	riconcard	riconcard@gmail.com	0432156789	$2a$10$e3REQcWC44McC1kfYxPF9.VZHysVljVae3rbIbAIEKB1DQrvaSV/W	Siu	card	\N	\N	0	f	2026-07-08 08:40:53.53443	2026-07-08 08:43:18.572818	\N	\N	t	t	\N
-58	hades123	dp1.1a7.si@gmail.com	0987654322	$2a$10$WWEFs4jcUNJuOsbfOQw8vuJ5WaoemMN1q1Q2gwh6GRCfIswM6AkX6	van	si	\N	10174	0	f	2026-07-09 08:37:31.20544	2026-07-09 08:40:17.186521	\N	\N	t	t	\N
+55	riconcard	riconcard@gmail.com	0432156789	$2a$10$e3REQcWC44McC1kfYxPF9.VZHysVljVae3rbIbAIEKB1DQrvaSV/W	Siu	card	\N	\N	0	f	2026-07-08 08:40:53.53443	2026-07-14 10:02:55.373439	\N	\N	t	t	\N
+62	hades1123	dp1.1a7.si@gmail.com	0987249005	$2a$10$I7QZa2L/wJKEHW.HtdEzguiYUBb8w/EKTlJ0H8/1VF5YNOapIvgGy	Văn	Sĩ	\N	\N	0	f	2026-07-14 10:03:45.281689	2026-07-14 10:03:45.281689	\N	\N	t	f	\N
 60	buituan	hugag32@gmail.com	091830375123	$2a$10$yUlPB9zMUqb0dKtp5MVZxeIkwKs/bGsZzOteBwlQNvR8zhddQGGKm	Van	Bui	\N	\N	0	f	2026-07-09 10:09:41.69565	2026-07-09 10:09:41.69565	\N	\N	t	f	\N
 61	abcdoremi2	nguyenhoang1362005@gmail.com	0967318521	$2a$10$vzJgcwVUQKMU0M4FbYbUAe0CB.gFcQAcAr..VJFtGP88PDpPnXUdO	Hoang	Nguyen	\N	10174	0	f	2026-07-13 10:21:03.418589	2026-07-13 10:22:05.84012	\N	\N	t	t	\N
 \.
@@ -14499,7 +14629,7 @@ COPY nhahocduong.user_user (id, username, email, phone_number, password, first_n
 -- Name: Login_log_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong."Login_log_id_seq"', 204, true);
+SELECT pg_catalog.setval('nhahocduong."Login_log_id_seq"', 205, true);
 
 
 --
@@ -14513,7 +14643,7 @@ SELECT pg_catalog.setval('nhahocduong.academic_year_id_seq', 100, true);
 -- Name: auth_otp_token_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.auth_otp_token_id_seq', 14, true);
+SELECT pg_catalog.setval('nhahocduong.auth_otp_token_id_seq', 17, true);
 
 
 --
@@ -14541,7 +14671,7 @@ SELECT pg_catalog.setval('nhahocduong.class_id_seq', 109, true);
 -- Name: nhahocduong_dentist_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.nhahocduong_dentist_id_seq', 18, true);
+SELECT pg_catalog.setval('nhahocduong.nhahocduong_dentist_id_seq', 19, true);
 
 
 --
@@ -14583,7 +14713,7 @@ SELECT pg_catalog.setval('nhahocduong.nhahocduong_medication_id_seq', 100, false
 -- Name: nhahocduong_notification_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.nhahocduong_notification_id_seq', 33, true);
+SELECT pg_catalog.setval('nhahocduong.nhahocduong_notification_id_seq', 34, true);
 
 
 --
@@ -14604,7 +14734,7 @@ SELECT pg_catalog.setval('nhahocduong.nhahocduong_patient_id_seq', 1307, true);
 -- Name: nhahocduong_plaque_record_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.nhahocduong_plaque_record_id_seq', 110, true);
+SELECT pg_catalog.setval('nhahocduong.nhahocduong_plaque_record_id_seq', 111, true);
 
 
 --
@@ -14639,14 +14769,14 @@ SELECT pg_catalog.setval('nhahocduong.nhahocduong_rule_id_seq', 1, false);
 -- Name: nhahocduong_tartar_record_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.nhahocduong_tartar_record_id_seq', 110, true);
+SELECT pg_catalog.setval('nhahocduong.nhahocduong_tartar_record_id_seq', 111, true);
 
 
 --
 -- Name: nhahocduong_teeth_record_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.nhahocduong_teeth_record_id_seq', 110, true);
+SELECT pg_catalog.setval('nhahocduong.nhahocduong_teeth_record_id_seq', 111, true);
 
 
 --
@@ -14695,7 +14825,7 @@ SELECT pg_catalog.setval('nhahocduong.user_role_id_seq', 3, true);
 -- Name: user_user_id_seq; Type: SEQUENCE SET; Schema: nhahocduong; Owner: postgres
 --
 
-SELECT pg_catalog.setval('nhahocduong.user_user_id_seq', 61, true);
+SELECT pg_catalog.setval('nhahocduong.user_user_id_seq', 62, true);
 
 
 --
@@ -15620,5 +15750,5 @@ ALTER TABLE nhahocduong.system_log ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 5fcGj4jo3lsEDXIicOvr5lAyVa82xPtijhprrYxgqQlozaPJVKPNVK0w4OyEicO
+\unrestrict T1nXUTW9sXotjXAGgTSRXtxGXaKg2EYBNgRcV3DHt8TZyXYQJHyR9ZBEbverXAm
 

@@ -1,27 +1,31 @@
-# Local development: PostgreSQL trên Docker (port 5433)
-# Sử dụng: ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
-# Hoặc: java -jar target/*.jar --spring.profiles.active=local
-
 spring:
   autoconfigure:
     exclude:
       - org.springframework.modulith.runtime.autoconfigure.SpringModulithRuntimeAutoConfiguration
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres?currentSchema=nhahocduong&TimeZone=Asia/Ho_Chi_Minh
-    username: postgres
-    password: local123
+    url: jdbc:postgresql://localhost:5432/nhahocduong
+    username: nhahocduong
+    password: nhahocduong
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 5
+      maximum-pool-size: 5       # Increased from 1 — was serializing all DB requests!
+      minimum-idle: 2
+      connection-timeout: 20000  # 20s
+      idle-timeout: 300000       # 5min
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:password}
+      host: localhost
+      port: 6379
+      password: password
+
   cache:
     type: redis
+    redis:
+      time-to-live: 300000   # 5 minutes default TTL (ms)
+      cache-null-values: false
   jpa:
+    open-in-view: true          # Safe now: chronicConditions fetched via JOIN FETCH
     hibernate:
       ddl-auto: none
     show-sql: false
@@ -34,6 +38,9 @@ spring:
       name: app
       password: app
 
+  config:
+    import: optional:file:.env[.properties]
+
 server:
   error:
     whitelabel:
@@ -43,13 +50,13 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: "*"
 
 logging:
   level:
     org:
       hibernate:
-        # SQL: DEBUG    # Bỏ comment để debug SQL
+        #        SQL: DEBUG
         orm:
           jdbc:
             bind: TRACE
