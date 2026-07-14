@@ -1,6 +1,7 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
 import java.util.List;
+import java.util.Map;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.AcademicYearDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TransitionResultDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.YearTransitionRequest;
@@ -19,4 +20,7 @@ public interface AcademicYearService {
   List<String> validateBeforeTransition(Long currentYearId);
   TransitionResultDTO transitionToNewYear(YearTransitionRequest request);
   TransitionResultDTO rollbackTransition(String sessionId);
+
+  // History
+  List<Map<String, Object>> getTransitionHistory();
 }
