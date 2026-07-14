@@ -3,6 +3,8 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCamp
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamScheduleRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.OrganizationRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamScheduleService;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.User;
+import vn.viettel.bvrhm.nhahocduong.api.user.internal.repository.UserRepository;
 
 @Service
 public class ExamScheduleServiceImpl implements ExamScheduleService {
@@ -27,6 +31,7 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
   @Autowired private ExamCampaignRepository examCampaignRepository;
   @Autowired private OrganizationRepository organizationRepository;
   @Autowired private DentistRepository dentistRepository;
+  @Autowired private UserRepository userRepository;
   @Autowired private ExamScheduleMapper examScheduleMapper;
 
   @Override
@@ -73,10 +78,21 @@ public class ExamScheduleServiceImpl implements ExamScheduleService {
       schedule.setStatus(true);
     }
 
-    // Xử lý danh sách bác sĩ
+    // Xử lý danh sách bác sĩ - lọc bỏ các bác sĩ có tài khoản bị khóa
     if (dto.getDentistIds() != null && !dto.getDentistIds().isEmpty()) {
       List<Dentist> dentists = dentistRepository.findAllById(dto.getDentistIds());
-      schedule.setDentists(new HashSet<>(dentists));
+      // Lọc bỏ các bác sĩ có tài khoản đã bị khóa hoặc chưa được duyệt
+      Set<Dentist> activeDentists = dentists.stream()
+          .filter(dentist -> {
+            Optional<User> userOpt = userRepository.findById(dentist.getUserId());
+            return userOpt.isPresent()
+                && userOpt.get().getStatus() != null
+                && userOpt.get().getStatus()
+                && userOpt.get().getRegisterStatus() != null
+                && userOpt.get().getRegisterStatus();
+          })
+          .collect(Collectors.toSet());
+      schedule.setDentists(new HashSet<>(activeDentists));
     } else {
       schedule.setDentists(new HashSet<>());
     }

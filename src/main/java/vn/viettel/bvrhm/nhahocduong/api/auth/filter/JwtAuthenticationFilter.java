@@ -69,6 +69,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
+    // Từ chối truy cập nếu tài khoản đã bị khóa (status = false)
+    if (!userAuthDetails.isEnabled()) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tài khoản đã bị khóa");
+      return;
+    }
+
+    // Từ chối truy cập nếu tài khoản chưa được admin duyệt
+    if (userAuthDetails.getRegisterStatus() == null || !userAuthDetails.getRegisterStatus()) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tài khoản chưa được duyệt");
+      return;
+    }
+
     // TODO extract roles
     // Option 1: get from JWT token => Use this for now
     // Option 2: load from database => Revise later
