@@ -2,11 +2,12 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import static java.util.Objects.isNull;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ImageUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TreatmentRecordMapper;
+//import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.TreatmentRecordMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
 
@@ -36,10 +37,10 @@ public class ExamServiceImpl implements ExamService {
   @Autowired private ExamRepository examRepository;
   @Autowired private DiseaseRepository diseaseRepository;
   @Autowired private ExamMapper examMapper;
-  @Autowired private TreatmentRecordMapper treatmentRecordMapper;
+  //@Autowired private TreatmentRecordMapper treatmentRecordMapper;
   @Autowired private PatientRepository patientRepository;
-  @Autowired private DentistRepository dentistRepository;
-  @Autowired private OrganizationRepository organizationRepository;
+ // @Autowired private DentistRepository dentistRepository;
+  //@Autowired private OrganizationRepository organizationRepository;
   @Autowired private TartarRecordRepository tartarRecordRepository;
   @Autowired private TeethRecordRepository teethRecordRepository;
   @Autowired private PlaqueRecordRepository plaqueRecordRepository;
@@ -61,6 +62,7 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
+  @CacheEvict(value = "reExams", allEntries = true)
   public ExamDTO createExam(ExamDTO newExamDTO) {
     Exam newExam = examMapper.toEntity(newExamDTO);
     newExam.setId(null);
@@ -175,6 +177,7 @@ public class ExamServiceImpl implements ExamService {
 //  }
 
   @Override
+  @CacheEvict(value = "reExams", allEntries = true)
   public boolean delete(Long id) {
     Exam exam =
         examRepository
@@ -189,6 +192,7 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
+  @CacheEvict(value = "reExams", allEntries = true)
   public ExamDTO updateExam(ExamDTO examDTO) {
     Exam exam = examRepository.findExamByIdAndPatientId(examDTO.getId(), examDTO.getPatientId());
     if (isNull(exam)) {
@@ -213,32 +217,8 @@ public class ExamServiceImpl implements ExamService {
   @Override
   @Cacheable(value = "reExams")
   public List<ExamDTO> getReExams() {
-    // Tìm tất cả exam đang active, kiểm tra nếu có răng sâu (CARIES) thì cần tái khám
-    List<Exam> allExams = examRepository.findAll().stream()
-        .filter(e -> e.getStatus() == null || e.getStatus())
-        .collect(Collectors.toList());
-
-    List<ExamDTO> reExams = new ArrayList<>();
-    for (Exam exam : allExams) {
-      TeethRecord tr = exam.getTeethRecord();
-      if (tr != null && tr.getRecord() != null) {
-        boolean hasCaries = tr.getRecord().values().stream()
-            .anyMatch(cond -> cond != null
-                && cond.getProblem() == vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem.CARIES);
-        if (hasCaries) {
-          ExamDTO dto = examMapper.toDto(exam);
-          // Tính ngày tái khám dự kiến = ngày khám + 6 tháng
-          if (exam.getDate() != null) {
-            dto.setReExamDate(exam.getDate().plusMonths(6));
-          } else {
-            dto.setReExamDate(java.time.LocalDate.now().plusMonths(6));
-          }
-          dto.setReExamNote("Cần tái khám điều trị sâu răng");
-          reExams.add(dto);
-        }
-      }
-    }
-    return reExams;
+    List<Exam> exams = examRepository.findUpcomingReExams();
+    return examMapper.toDtoList(exams);
   }
 
   @Override

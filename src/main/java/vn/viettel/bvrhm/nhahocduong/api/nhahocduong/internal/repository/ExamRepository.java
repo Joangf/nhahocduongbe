@@ -41,11 +41,31 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
   """)
   Page<Exam> search(ExamSearchCriteria searchCriteria, Pageable pageable);
 
-  @Query("SELECT e FROM Exam e WHERE e.reExamDate IS NOT NULL AND e.reExamDate >= CURRENT_DATE ORDER BY e.reExamDate ASC")
+  @Query("""
+    SELECT e FROM Exam e
+    LEFT JOIN FETCH e.patient
+    LEFT JOIN FETCH e.dentist
+    LEFT JOIN FETCH e.organization
+    LEFT JOIN FETCH e.teethRecord
+    LEFT JOIN FETCH e.campaign
+    WHERE e.reExamDate IS NOT NULL AND e.reExamDate >= CURRENT_DATE
+    ORDER BY e.reExamDate ASC
+  """)
   List<Exam> findUpcomingReExams();
 
   @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true")
   Long countTotalExamined();
 
   Exam findTopByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);
+
+  @Query("""
+    SELECT e FROM Exam e
+    LEFT JOIN FETCH e.patient
+    LEFT JOIN FETCH e.dentist
+    LEFT JOIN FETCH e.organization
+    LEFT JOIN FETCH e.teethRecord
+    LEFT JOIN FETCH e.campaign
+    WHERE e.status = true OR e.status IS NULL
+  """)
+  List<Exam> findAllActiveWithAssociations();
 }
