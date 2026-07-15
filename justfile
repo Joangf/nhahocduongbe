@@ -1,2 +1,2 @@
 dev:
-    ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev -Dmaven.test.skip=true
+    ./mvnw spring-boot:run -Dspring-boot.run.profiles=local -Dmaven.test.skip=true

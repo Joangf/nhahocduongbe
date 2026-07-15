@@ -1,12 +1,9 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.NotificationDTO;
 
 public interface NotificationService {
-
-  NotificationDTO createNotification(NotificationDTO dto);
 
   List<NotificationDTO> getMyNotifications();
 
@@ -26,4 +23,13 @@ public interface NotificationService {
    */
   void createNotificationForDentist(
       Long userId, Long campaignId, String campaignName, List<String> scheduleDetails);
+
+  /**
+   * Tạo thông báo cho admin về tài khoản mới cần duyệt.
+   *
+   * @param adminId ID của admin nhận thông báo
+   * @param title Tiêu đề thông báo
+   * @param message Nội dung thông báo
+   */
+  void createNotificationForAdmin(Long adminId, String title, String message);
 }
