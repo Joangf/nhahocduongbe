@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
@@ -56,6 +57,9 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
   @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true OR e.status IS NULL")
   Long countTotalExamined();
 
+  @Query("SELECT COUNT(e) FROM Exam e WHERE e.organization.id = :orgId AND (e.status = true OR e.status IS NULL)")
+  Long countTotalExaminedByOrganization(@Param("orgId") Long orgId);
+
   Exam findTopByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);
 
   @Query("""
@@ -68,4 +72,16 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
     WHERE e.status = true OR e.status IS NULL
   """)
   List<Exam> findAllActiveWithAssociations();
+
+  @Query("""
+    SELECT e FROM Exam e
+    LEFT JOIN FETCH e.patient
+    LEFT JOIN FETCH e.dentist
+    LEFT JOIN FETCH e.organization
+    LEFT JOIN FETCH e.teethRecord
+    LEFT JOIN FETCH e.campaign
+    WHERE (e.status = true OR e.status IS NULL)
+      AND e.organization.id = :orgId
+  """)
+  List<Exam> findAllActiveByOrganization(@Param("orgId") Long orgId);
 }
