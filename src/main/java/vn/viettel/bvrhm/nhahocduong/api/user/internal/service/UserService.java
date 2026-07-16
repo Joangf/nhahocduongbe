@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -129,6 +130,7 @@ public class UserService {
   }
 
   @Transactional
+  @CacheEvict(value = "userAuthDetails", allEntries = true)
   public UserDTO approveUser(Long userId) {
     User user = userRepository.getReferenceById(userId);
     user.setRegisterStatus(true);
@@ -138,6 +140,7 @@ public class UserService {
   }
 
   @Transactional
+  @CacheEvict(value = "userAuthDetails", allEntries = true)
   public void rejectUser(Long userId) {
     userRepository.deleteById(userId);
   }
@@ -149,6 +152,7 @@ public class UserService {
   }
 
   @Transactional
+  @CacheEvict(value = "userAuthDetails", allEntries = true)
   public void lockUser(Long userId) {
     User user = userRepository.getReferenceById(userId);
     user.setStatus(false);
@@ -156,6 +160,7 @@ public class UserService {
   }
 
   @Transactional
+  @CacheEvict(value = "userAuthDetails", allEntries = true)
   public void unlockUser(Long userId) {
     User user = userRepository.getReferenceById(userId);
     user.setStatus(true);
