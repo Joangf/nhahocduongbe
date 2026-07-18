@@ -66,6 +66,18 @@ public class PatientServiceImpl implements PatientService {
   @Override
   public PatientDTO getPatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElse(null);
+    if (patient == null) {
+      return null;
+    }
+
+    // SCHOOL accounts can only view patients belonging to their organization
+    AuthorizationData authData = authorizationService.authorize();
+    if (authData.getOrganizationId() != null
+        && (patient.getOrganization() == null
+            || !authData.getOrganizationId().equals(patient.getOrganization().getId()))) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền truy cập");
+    }
+
     return patientMapper.toDto(patient);
   }
 
@@ -102,6 +114,19 @@ public class PatientServiceImpl implements PatientService {
   @Transactional
   @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
   public PatientDTO updatePatient(PatientDTO patientDTO, Long id) {
+    // SCHOOL accounts can only update patients belonging to their organization
+    AuthorizationData authData = authorizationService.authorize();
+    if (authData.getOrganizationId() != null) {
+      Patient existing = patientRepository.findById(id).orElse(null);
+      if (existing == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy học sinh");
+      }
+      if (existing.getOrganization() == null
+          || !authData.getOrganizationId().equals(existing.getOrganization().getId())) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền cập nhật");
+      }
+    }
+
     var entity = patientMapper.toEntity(patientDTO);
     entity.setId(id);
 
@@ -171,9 +196,36 @@ public class PatientServiceImpl implements PatientService {
     return patients.map(patientMapper::toDto);
   }
 
+  /**
+   * Cache key that includes the user's organization so SCHOOL users don't see cached results
+   * from other organizations or admin users.
+   */
+  public String getPatientsByConditionCacheKey(PatientSearchCriteria searchCriteria, Pageable pageable) {
+    AuthorizationData authData = authorizationService.authorize();
+    String orgPart = authData.getOrganizationId() != null ? "org-" + authData.getOrganizationId() : "all";
+    return orgPart + "|"
+        + searchCriteria.getSearchText() + "|"
+        + searchCriteria.getOrganizationName() + "|"
+        + searchCriteria.getSchoolClass() + "|"
+        + searchCriteria.getAreaCode() + "|"
+        + pageable.getPageNumber() + "_"
+        + pageable.getPageSize() + "_"
+        + pageable.getSort();
+  }
+
   @Override
   public Page<PatientDTO> getAllPatients(Pageable pageable) {
-    Page<Patient> patients = patientRepository.findAll(pageable);
+    AuthorizationData authData = authorizationService.authorize();
+    Long orgId = authData.getOrganizationId();
+
+    Page<Patient> patients;
+    if (orgId != null) {
+      // SCHOOL account: only show patients from their school
+      patients = patientRepository.findAllByCondition(
+          null, null, orgId, Collections.emptyList(), null, true, pageable);
+    } else {
+      patients = patientRepository.findAll(pageable);
+    }
     return patients.map(patientMapper::toDto);
   }
 
@@ -181,6 +233,15 @@ public class PatientServiceImpl implements PatientService {
   @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
   public boolean deletePatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
+    // SCHOOL accounts can only delete patients belonging to their organization
+    AuthorizationData authData = authorizationService.authorize();
+    if (authData.getOrganizationId() != null
+        && (patient.getOrganization() == null
+            || !authData.getOrganizationId().equals(patient.getOrganization().getId()))) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền xóa");
+    }
+
     List<Exam> exams = examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(id, true);
 
     if (nonNull(exams) && !exams.isEmpty()) {

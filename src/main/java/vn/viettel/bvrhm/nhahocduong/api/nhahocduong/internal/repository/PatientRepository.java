@@ -76,6 +76,8 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
   List<Patient> findAllByStatus(boolean status);
 
+  long countByOrganization_IdAndStatus(Long organizationId, boolean status);
+
   List<Patient> findAllByOrganization_Id(Long id);
 
   List<Patient> findAllByOrganization_IdAndSchoolClassIn(Long id, List<String> schoolClass);

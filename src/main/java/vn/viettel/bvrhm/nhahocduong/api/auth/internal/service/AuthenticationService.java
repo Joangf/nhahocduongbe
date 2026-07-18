@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -121,6 +122,7 @@ public class AuthenticationService implements UserDetailsService {
 
   @Override
   @Transactional()
+  @Cacheable(value = "userAuthDetails", key = "#username")
   public UserAuthDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     UserDTO userDTO = userService.getUserByUsername(username);
     return userDTO == null ? null : userAuthDetailsMapper.userAuthDetailsFromUserDTO(userDTO);

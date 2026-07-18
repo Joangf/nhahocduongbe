@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.cache.annotation.Cacheable;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService.AuthorizationData;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentCountBySchoolDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.YearlyStudentCountDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
@@ -30,12 +32,22 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private StudentClassAffiliationRepository affiliationRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Override
     public Map<String, Object> getCampaignStats() {
+        AuthorizationData authData = authorizationService.authorize();
+        Long orgId = authData.getOrganizationId();
+
         long totalCampaigns = campaignRepository.count();
         long activeCampaigns = campaignRepository.countByStatus(true);
-        long totalStudents = patientRepository.count();
-        long totalExamined = examRepository.countTotalExamined();
+        long totalStudents = (orgId != null)
+            ? patientRepository.countByOrganization_IdAndStatus(orgId, true)
+            : patientRepository.count();
+        long totalExamined = (orgId != null)
+            ? examRepository.countTotalExaminedByOrganization(orgId)
+            : examRepository.countTotalExamined();
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCampaigns", totalCampaigns);
@@ -46,11 +58,16 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    @Cacheable(value = "dashboardStats")
+    @Cacheable(value = "dashboardStats", key = "#root.target.getCacheKey()")
     public Map<String, Object> getStats() {
+        AuthorizationData authData = authorizationService.authorize();
+        Long orgId = authData.getOrganizationId();
+
         Map<String, Object> campaignStats = getCampaignStats();
-        
-        List<Exam> allExams = examRepository.findAllActiveWithAssociations();
+
+        List<Exam> allExams = (orgId != null)
+            ? examRepository.findAllActiveByOrganization(orgId)
+            : examRepository.findAllActiveWithAssociations();
 
         // 1. Thống kê tỷ lệ sâu răng theo trường/lớp
         List<Map<String, Object>> cariesBySchoolClass = calculateCariesBySchoolClass(allExams);
@@ -73,6 +90,16 @@ public class DashboardServiceImpl implements DashboardService {
         return detailedStats;
     }
 
+    /**
+     * Returns a cache key that includes the organization ID so SCHOOL users
+     * don't see cached data from other organizations.
+     */
+    public String getCacheKey() {
+        AuthorizationData authData = authorizationService.authorize();
+        Long orgId = authData.getOrganizationId();
+        return orgId != null ? "org-" + orgId : "all";
+    }
+
     private List<Map<String, Object>> calculateCariesBySchoolClass(List<Exam> exams) {
         Map<String, List<Exam>> grouped = exams.stream()
                 .filter(e -> e.getOrganization() != null && e.getSchoolClass() != null)
@@ -82,12 +109,12 @@ public class DashboardServiceImpl implements DashboardService {
         for (Map.Entry<String, List<Exam>> entry : grouped.entrySet()) {
             List<Exam> groupExams = entry.getValue();
             Exam first = groupExams.get(0);
-            
+
             long totalExamined = groupExams.size();
             long cariesCount = groupExams.stream()
                     .filter(this::hasCaries)
                     .count();
-            
+
             double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
             cariesRate = Math.round(cariesRate * 10.0) / 10.0;
 
@@ -116,7 +143,7 @@ public class DashboardServiceImpl implements DashboardService {
             long cariesCount = yearExams.stream()
                     .filter(this::hasCaries)
                     .count();
-            
+
             double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
             cariesRate = Math.round(cariesRate * 10.0) / 10.0;
 
@@ -139,10 +166,10 @@ public class DashboardServiceImpl implements DashboardService {
         for (Map.Entry<String, List<Map<String, Object>>> entry : groupedBySchool.entrySet()) {
             String schoolName = entry.getKey();
             List<Map<String, Object>> list = entry.getValue();
-            
+
             long totalExamined = list.stream().mapToLong(m -> (long) m.get("totalExamined")).sum();
             long cariesCount = list.stream().mapToLong(m -> (long) m.get("cariesCount")).sum();
-            
+
             double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
             cariesRate = Math.round(cariesRate * 10.0) / 10.0;
 
@@ -162,7 +189,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     private Map<String, Integer> calculatePathologyHeatmap(List<Exam> exams) {
         Map<String, Integer> heatmap = new HashMap<>();
-        
+
         int[] regions = {1, 2, 3, 4};
         for (int r : regions) {
             for (int i = 1; i <= 8; i++) {
@@ -200,11 +227,17 @@ public class DashboardServiceImpl implements DashboardService {
                 .anyMatch(cond -> cond != null && cond.getProblem() == ToothProblem.CARIES);
     }
 
-    // ── Mới: Thống kê sĩ số theo năm học ──
+    // ── Thống kê sĩ số theo năm học ──
 
     @Override
     public List<StudentCountBySchoolDTO> getStudentCountByYear(Long academicYearId) {
-        List<Object[]> rows = affiliationRepository.countStudentsBySchoolAndGrade(academicYearId);
+        AuthorizationData authData = authorizationService.authorize();
+        Long orgId = authData.getOrganizationId();
+
+        List<Object[]> rows = (orgId != null)
+            ? affiliationRepository.countStudentsBySchoolAndGradeFiltered(academicYearId, orgId)
+            : affiliationRepository.countStudentsBySchoolAndGrade(academicYearId);
+
         return rows.stream()
             .map(r -> new StudentCountBySchoolDTO(
                 (String) r[0],
@@ -215,7 +248,13 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<YearlyStudentCountDTO> getStudentCountHistory() {
-        List<Object[]> rows = affiliationRepository.countStudentsByYear();
+        AuthorizationData authData = authorizationService.authorize();
+        Long orgId = authData.getOrganizationId();
+
+        List<Object[]> rows = (orgId != null)
+            ? affiliationRepository.countStudentsByYearFiltered(orgId)
+            : affiliationRepository.countStudentsByYear();
+
         return rows.stream()
             .map(r -> new YearlyStudentCountDTO(
                 (String) r[0],

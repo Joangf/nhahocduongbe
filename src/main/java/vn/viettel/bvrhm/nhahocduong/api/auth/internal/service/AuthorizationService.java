@@ -29,9 +29,12 @@ public class AuthorizationService {
     userRepository.findByIdWithOrganization(Long.parseLong(userId))
         .ifPresent(user -> {
           if (user.getOrganization() != null) {
-            switch (user.getOrganization().getType()) {
-              case SCHOOL -> data.setOrganizationId(user.getOrganization().getId());
-              case DEPARTMENT -> data.setAreaCode(user.getOrganization().getAreaCode());
+            // Only SCHOOL accounts are restricted to their own organization's data.
+            // DEPARTMENT, MINISTRY, HCMC, and other roles see all data.
+            if (user.getOrganization().getType() ==
+                vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums
+                    .OrganizationType.SCHOOL) {
+              data.setOrganizationId(user.getOrganization().getId());
             }
           }
         });
@@ -40,7 +43,7 @@ public class AuthorizationService {
   }
 
   @Data
-  public class AuthorizationData {
+  public static class AuthorizationData {
     private String areaCode;
     private Long organizationId;
   }
