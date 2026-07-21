@@ -9,7 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.DashboardService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService.AuthorizationData;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentCountBySchoolDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.YearlyStudentCountDTO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +30,12 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
     private ExamRepository examRepository;
+
+    @Autowired
+    private AuthorizationService authorizationService; 
+
+    @Autowired
+    private StudentClassAffiliationRepository affiliationRepository;
 
     // ── getCampaignStats: thống kê nhanh cho 4 card trên cùng ──────────────
     @Override
@@ -48,7 +58,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     // ── getStats: thống kê chi tiết (biểu đồ, heatmap, top trường) ─────────
     @Override
-    @Cacheable(value = "dashboardStats", key = "#root.target.getCacheKey()")
+    @Cacheable(value = "dashboardStats")
     public Map<String, Object> getStats() {
         // FIX: dùng campaignStats đã cache thay vì tính lại
         Map<String, Object> campaignStats = getCampaignStats();
