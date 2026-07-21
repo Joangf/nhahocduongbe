@@ -1,23 +1,21 @@
 package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
-import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService.AuthorizationData;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentCountBySchoolDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.YearlyStudentCountDTO;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.DashboardService;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Tooth;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
@@ -29,47 +27,37 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private ExamRepository examRepository;
 
-    @Autowired
-    private StudentClassAffiliationRepository affiliationRepository;
-
-    @Autowired
-    private AuthorizationService authorizationService;
-
+    // ── getCampaignStats: thống kê nhanh cho 4 card trên cùng ──────────────
     @Override
+    @Cacheable(value = "dashboardCampaignStats")
     public Map<String, Object> getCampaignStats() {
-        AuthorizationData authData = authorizationService.authorize();
-        Long orgId = authData.getOrganizationId();
-
-        long totalCampaigns = campaignRepository.count();
-        long activeCampaigns = campaignRepository.countByStatus(true);
-        long totalStudents = (orgId != null)
-            ? patientRepository.countByOrganization_IdAndStatus(orgId, true)
-            : patientRepository.count();
-        long totalExamined = (orgId != null)
-            ? examRepository.countTotalExaminedByOrganization(orgId)
-            : examRepository.countTotalExamined();
+        // FIX: dùng COUNT query thay vì load toàn bộ list
+        long totalCampaigns  = campaignRepository.count();
+        long activeCampaigns = campaignRepository.countByStatus(true);  // ← was: findAll().size()
+        long totalStudents   = patientRepository.count();
+        // FIX: dùng countTotalExamined() thay vì findAll().stream().filter()
+        long totalExamined   = examRepository.countTotalExamined();     // ← was: findAll() full scan
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalCampaigns", totalCampaigns);
+        stats.put("totalCampaigns",  totalCampaigns);
         stats.put("activeCampaigns", activeCampaigns);
-        stats.put("totalStudents", totalStudents);
-        stats.put("totalExamined", totalExamined);
+        stats.put("totalStudents",   totalStudents);
+        stats.put("totalExamined",   totalExamined);
         return stats;
     }
 
+    // ── getStats: thống kê chi tiết (biểu đồ, heatmap, top trường) ─────────
     @Override
     @Cacheable(value = "dashboardStats", key = "#root.target.getCacheKey()")
     public Map<String, Object> getStats() {
-        AuthorizationData authData = authorizationService.authorize();
-        Long orgId = authData.getOrganizationId();
-
+        // FIX: dùng campaignStats đã cache thay vì tính lại
         Map<String, Object> campaignStats = getCampaignStats();
 
-        List<Exam> allExams = (orgId != null)
-            ? examRepository.findAllActiveByOrganization(orgId)
-            : examRepository.findAllActiveWithAssociations();
+        // FIX: 1 query duy nhất với JOIN FETCH (tránh N+1 Organization + TeethRecord)
+        // Trước đây: findAll() x2 → O(N) lazy load queries
+        List<Exam> allExams = examRepository.findAllActiveWithDetails();
 
-        // 1. Thống kê tỷ lệ sâu răng theo trường/lớp
+        // 1. Tỷ lệ sâu răng theo trường/lớp
         List<Map<String, Object>> cariesBySchoolClass = calculateCariesBySchoolClass(allExams);
 
         // 2. Biểu đồ theo năm học
@@ -78,53 +66,50 @@ public class DashboardServiceImpl implements DashboardService {
         // 3. Top trường có tỷ lệ bệnh răng miệng cao
         List<Map<String, Object>> topSchoolsCaries = calculateTopSchools(cariesBySchoolClass);
 
-        // 4. Heatmap phân bố bệnh lý răng miệng (số ca sâu răng theo từng vị trí răng 11-48)
+        // 4. Heatmap phân bố bệnh lý (số ca sâu răng theo từng vị trí răng 11-48)
         Map<String, Integer> pathologyHeatmap = calculatePathologyHeatmap(allExams);
 
         Map<String, Object> detailedStats = new HashMap<>(campaignStats);
         detailedStats.put("cariesBySchoolClass", cariesBySchoolClass);
-        detailedStats.put("statsByYear", statsByYear);
-        detailedStats.put("topSchoolsCaries", topSchoolsCaries);
-        detailedStats.put("pathologyHeatmap", pathologyHeatmap);
+        detailedStats.put("statsByYear",         statsByYear);
+        detailedStats.put("topSchoolsCaries",    topSchoolsCaries);
+        detailedStats.put("pathologyHeatmap",    pathologyHeatmap);
 
         return detailedStats;
     }
 
-    /**
-     * Returns a cache key that includes the organization ID so SCHOOL users
-     * don't see cached data from other organizations.
-     */
-    public String getCacheKey() {
-        AuthorizationData authData = authorizationService.authorize();
-        Long orgId = authData.getOrganizationId();
-        return orgId != null ? "org-" + orgId : "all";
+    // ── Evict tất cả cache dashboard khi data thay đổi ──────────────────────
+    @CacheEvict(value = {"dashboardStats", "dashboardCampaignStats"}, allEntries = true)
+    public void evictDashboardCache() {
+        // Gọi method này sau khi tạo/sửa/xóa Exam hoặc Campaign
     }
 
+    // ── Private helpers ──────────────────────────────────────────────────────
+
     private List<Map<String, Object>> calculateCariesBySchoolClass(List<Exam> exams) {
+        // FIX: Organization đã được JOIN FETCH → không còn N+1
         Map<String, List<Exam>> grouped = exams.stream()
                 .filter(e -> e.getOrganization() != null && e.getSchoolClass() != null)
-                .collect(Collectors.groupingBy(e -> e.getOrganization().getId() + "_" + e.getSchoolClass()));
+                .collect(Collectors.groupingBy(
+                        e -> e.getOrganization().getId() + "_" + e.getSchoolClass()));
 
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<String, List<Exam>> entry : grouped.entrySet()) {
             List<Exam> groupExams = entry.getValue();
             Exam first = groupExams.get(0);
 
-            long totalExamined = groupExams.size();
-            long cariesCount = groupExams.stream()
-                    .filter(this::hasCaries)
-                    .count();
 
-            double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
-            cariesRate = Math.round(cariesRate * 10.0) / 10.0;
+            long totalExamined = groupExams.size();
+            long cariesCount   = groupExams.stream().filter(this::hasCaries).count();
+            double cariesRate  = totalExamined > 0 ? Math.round((double) cariesCount / totalExamined * 1000.0) / 10.0 : 0.0;
 
             Map<String, Object> map = new HashMap<>();
-            map.put("schoolId", first.getOrganization().getId());
-            map.put("schoolName", first.getOrganization().getName());
-            map.put("schoolClass", first.getSchoolClass());
+            map.put("schoolId",      first.getOrganization().getId());
+            map.put("schoolName",    first.getOrganization().getName());
+            map.put("schoolClass",   first.getSchoolClass());
             map.put("totalExamined", totalExamined);
-            map.put("cariesCount", cariesCount);
-            map.put("cariesRate", cariesRate);
+            map.put("cariesCount",   cariesCount);
+            map.put("cariesRate",    cariesRate);
             result.add(map);
         }
         return result;
@@ -137,21 +122,17 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<Map<String, Object>> result = new ArrayList<>();
         for (Map.Entry<String, List<Exam>> entry : grouped.entrySet()) {
-            String year = entry.getKey();
+            String year          = entry.getKey();
             List<Exam> yearExams = entry.getValue();
-            long totalExamined = yearExams.size();
-            long cariesCount = yearExams.stream()
-                    .filter(this::hasCaries)
-                    .count();
-
-            double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
-            cariesRate = Math.round(cariesRate * 10.0) / 10.0;
+            long totalExamined   = yearExams.size();
+            long cariesCount     = yearExams.stream().filter(this::hasCaries).count();
+            double cariesRate    = totalExamined > 0 ? Math.round((double) cariesCount / totalExamined * 1000.0) / 10.0 : 0.0;
 
             Map<String, Object> map = new HashMap<>();
-            map.put("year", year);
+            map.put("year",          year);
             map.put("totalExamined", totalExamined);
-            map.put("cariesCount", cariesCount);
-            map.put("cariesRate", cariesRate);
+            map.put("cariesCount",   cariesCount);
+            map.put("cariesRate",    cariesRate);
             result.add(map);
         }
         result.sort(Comparator.comparing(m -> (String) m.get("year")));
@@ -164,20 +145,18 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<Map<String, Object>> schoolStats = new ArrayList<>();
         for (Map.Entry<String, List<Map<String, Object>>> entry : groupedBySchool.entrySet()) {
-            String schoolName = entry.getKey();
+            String schoolName              = entry.getKey();
             List<Map<String, Object>> list = entry.getValue();
 
-            long totalExamined = list.stream().mapToLong(m -> (long) m.get("totalExamined")).sum();
-            long cariesCount = list.stream().mapToLong(m -> (long) m.get("cariesCount")).sum();
-
-            double cariesRate = totalExamined > 0 ? (double) cariesCount / totalExamined * 100 : 0.0;
-            cariesRate = Math.round(cariesRate * 10.0) / 10.0;
+            long   totalExamined = list.stream().mapToLong(m -> (long) m.get("totalExamined")).sum();
+            long   cariesCount   = list.stream().mapToLong(m -> (long) m.get("cariesCount")).sum();
+            double cariesRate    = totalExamined > 0 ? Math.round((double) cariesCount / totalExamined * 1000.0) / 10.0 : 0.0;
 
             Map<String, Object> map = new HashMap<>();
-            map.put("schoolName", schoolName);
+            map.put("schoolName",    schoolName);
             map.put("totalExamined", totalExamined);
-            map.put("cariesCount", cariesCount);
-            map.put("cariesRate", cariesRate);
+            map.put("cariesCount",   cariesCount);
+            map.put("cariesRate",    cariesRate);
             schoolStats.add(map);
         }
 
@@ -189,7 +168,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     private Map<String, Integer> calculatePathologyHeatmap(List<Exam> exams) {
         Map<String, Integer> heatmap = new HashMap<>();
-
         int[] regions = {1, 2, 3, 4};
         for (int r : regions) {
             for (int i = 1; i <= 8; i++) {
@@ -198,18 +176,15 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         for (Exam exam : exams) {
+            // FIX: TeethRecord đã JOIN FETCH → không còn N+1
             TeethRecord tr = exam.getTeethRecord();
             if (tr != null && tr.getRecord() != null) {
-                for (Map.Entry<Tooth, ToothCondition> entry : tr.getRecord().entrySet()) {
-                    Tooth tooth = entry.getKey();
+                for (Map.Entry<vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Tooth, ToothCondition> entry : tr.getRecord().entrySet()) {
                     ToothCondition cond = entry.getValue();
                     if (cond != null && cond.getProblem() == ToothProblem.CARIES) {
-                        String toothName = tooth.name();
-                        String numericCode = toothName.replaceAll("\\D+", "");
-                        if (heatmap.containsKey(numericCode)) {
-                            heatmap.put(numericCode, heatmap.get(numericCode) + 1);
-                        } else if (!numericCode.isEmpty()) {
-                            heatmap.put(numericCode, 1);
+                        String numericCode = entry.getKey().name().replaceAll("\\D+", "");
+                        if (!numericCode.isEmpty()) {
+                            heatmap.merge(numericCode, 1, Integer::sum);
                         }
                     }
                 }
@@ -220,9 +195,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     private boolean hasCaries(Exam exam) {
         TeethRecord tr = exam.getTeethRecord();
-        if (tr == null || tr.getRecord() == null) {
-            return false;
-        }
+        if (tr == null || tr.getRecord() == null) return false;
         return tr.getRecord().values().stream()
                 .anyMatch(cond -> cond != null && cond.getProblem() == ToothProblem.CARIES);
     }

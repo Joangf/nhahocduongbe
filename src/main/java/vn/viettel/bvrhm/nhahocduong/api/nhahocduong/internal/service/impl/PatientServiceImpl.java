@@ -48,6 +48,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.Organizatio
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PatientService;
 
 @Service
+@Transactional(readOnly = true)
 public class PatientServiceImpl implements PatientService {
   @Autowired AreaService areaService;
   @Autowired PatientRepository patientRepository;
@@ -230,7 +231,8 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  @CacheEvict(value = {"patients", "dashboardStats"}, allEntries = true)
+  @CacheEvict(value = "patients", allEntries = true)
+  @Transactional
   public boolean deletePatientById(Long id) {
     Patient patient = patientRepository.findById(id).orElseThrow(NoSuchElementException::new);
 

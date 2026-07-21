@@ -23,6 +23,6 @@ public class ToothTreatmentJpaConverter implements AttributeConverter<ToothTreat
     return Stream.of(ToothTreatment.values())
         .filter(ts -> ts.getCode().equals(code))
         .findFirst()
-        .orElseThrow(IllegalArgumentException::new);
+        .orElse(null);  // Bad data in DB → return null instead of crashing
   }
 }

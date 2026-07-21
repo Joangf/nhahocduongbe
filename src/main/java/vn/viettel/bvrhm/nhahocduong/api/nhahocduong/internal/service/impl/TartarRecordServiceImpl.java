@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TartarRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.TartarRecord;
@@ -13,6 +14,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TartarRecor
 import static java.util.Objects.isNull;
 
 @Service
+@Transactional(readOnly = true)
 public class TartarRecordServiceImpl implements TartarRecordService {
   @Autowired private TartarRecordRepository tartarRecordRepository;
   @Autowired private ExamRepository examRepository;
@@ -38,6 +40,7 @@ public class TartarRecordServiceImpl implements TartarRecordService {
   }
 
   @Override
+  @Transactional
   public TartarRecordDTO upsertTartarRecord(TartarRecordDTO tartarRecordDTO) {
     var entity = tartarRecordMapper.toEntity(tartarRecordDTO);
     var savedEntity = tartarRecordRepository.save(entity);

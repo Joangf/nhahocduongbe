@@ -3,12 +3,11 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity;
 import jakarta.persistence.*;
 import java.util.List;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Tooth;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothTreatment;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.PrescriptionItem;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.PrescriptionJsonConverter;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.ToothJpaConverter;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.converter.ToothTreatmentJpaConverter;
 
@@ -38,9 +37,12 @@ public class TreatmentRecord extends BaseEntity {
   @Convert(converter = ToothJpaConverter.class)
   private Tooth tooth;
 
-  @SuppressWarnings("JpaAttributeTypeInspection")
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "prescription")
+  /**
+   * Stored as JSON in DB. Using @Convert instead of @JdbcTypeCode to enable
+   * custom deserialization that handles corrupted {} values gracefully.
+   */
+  @Convert(converter = PrescriptionJsonConverter.class)
+  @Column(name = "prescription", columnDefinition = "jsonb")
   private List<PrescriptionItem> prescription;
 
   @ManyToOne

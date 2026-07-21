@@ -32,9 +32,6 @@ public class Area {
   @Column(name = "type")
   private Integer type;
 
-  @Column(name = "active")
-  private Integer active;
-
   @Column(name = "parent_area_id")
   @JsonProperty("parent_area_id")
   private Integer parentAreaId;

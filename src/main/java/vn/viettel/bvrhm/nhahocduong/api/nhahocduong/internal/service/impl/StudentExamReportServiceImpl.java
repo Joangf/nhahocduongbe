@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
@@ -25,6 +26,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientR
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.StudentExamReportService;
 
 @Service
+@Transactional(readOnly = true)
 public class StudentExamReportServiceImpl implements StudentExamReportService {
 
   @Autowired private PatientRepository patientRepository;
