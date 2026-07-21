@@ -26,6 +26,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TreatmentRe
  * @since: 29-Sep-23
  */
 @Service
+@Transactional(readOnly = true)
 public class TreatmentRecordServiceImpl implements TreatmentRecordService {
   @Autowired ExamService examService;
 
@@ -34,6 +35,7 @@ public class TreatmentRecordServiceImpl implements TreatmentRecordService {
   @Autowired TreatmentRecordMapper treatmentRecordMapper;
 
   @Override
+  @Transactional
   public List<TreatmentRecordDTO> upsertTreatmentRecordsByExamIdAndPatientId(
       Long examId, Long patientId, List<TreatmentRecordDTO> treatmentRecordDTOS) {
     ExamDTO examDTO = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
@@ -69,6 +71,7 @@ public class TreatmentRecordServiceImpl implements TreatmentRecordService {
   }
 
   @Override
+  @Transactional
   public boolean deleteTreatmentRecord(Long examId, Long patientId, Long treatmentRecordId) {
     ExamDTO examDTO = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
     if (isNull(examDTO)) {

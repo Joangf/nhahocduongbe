@@ -8,6 +8,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.SchoolStatsDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.OrganizationRepository;
@@ -15,6 +16,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientR
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.SchoolReportService;
 
 @Service
+@Transactional(readOnly = true)
 public class SchoolReportServiceImpl implements SchoolReportService {
 
   @Autowired private OrganizationRepository organizationRepository;

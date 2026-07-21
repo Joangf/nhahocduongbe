@@ -23,6 +23,6 @@ public class ToothJpaConverter implements AttributeConverter<Tooth, String> {
     return Stream.of(Tooth.values())
         .filter(ts -> ts.getCode().equals(code))
         .findFirst()
-        .orElseThrow(IllegalArgumentException::new);
+        .orElse(null);  // Bad data in DB → return null instead of crashing
   }
 }

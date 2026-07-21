@@ -27,7 +27,7 @@ spring:
       time-to-live: 300000   # 5 minutes default TTL (ms)
       cache-null-values: false
   jpa:
-    open-in-view: true          # Safe now: chronicConditions fetched via JOIN FETCH
+    open-in-view: false          # Disabled OSIV: all service methods now have proper @Transactional
     hibernate:
       ddl-auto: none
     show-sql: false
