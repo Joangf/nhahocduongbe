@@ -1,1670 +1,878 @@
-# TÀI LIỆU ĐẶC TẢ YÊU CẦU HỆ THỐNG (SRS)
-# Hệ thống Khám Răng Học Đường — Backend API
+# Nha Học Đường — Hệ thống Quản lý Khám Răng Học Đường
 
-**Phiên bản:** 1.0 (Reverse Engineering)
-**Ngày tạo:** 2024
-**Nguồn:** Phân tích từ source code `nhahocduongbe-master`
-**Tổ chức:** Bệnh viện Răng Hàm Mặt Trung ương TP. HCM (BVRHM)
+Hệ thống phần mềm hỗ trợ chương trình khám răng học đường tại Bệnh viện Răng Hàm Mặt (BVRHM). Ứng dụng cho phép quản lý học sinh, tổ chức đợt khám, ghi nhận hồ sơ khám răng miệng, quản lý tài khoản bác sĩ và trường học, đồng thời cung cấp dashboard thống kê và khả năng xuất báo cáo.
 
 ---
 
 ## Mục lục
 
-1. [Giới thiệu (Introduction)](#1-giới-thiệu)
-2. [Tổng quan hệ thống (Overall Description)](#2-tổng-quan-hệ-thống)
-3. [Các Actor và Phân quyền](#3-các-actor-và-phân-quyền)
-4. [Functional Requirements](#4-functional-requirements)
-5. [Non-Functional Requirements](#5-non-functional-requirements)
-6. [Business Rules](#6-business-rules)
-7. [Use Case Analysis](#7-use-case-analysis)
-8. [Activity Diagrams](#8-activity-diagrams)
-9. [Sequence Diagrams](#9-sequence-diagrams)
-10. [Database Design](#10-database-design)
-11. [Architecture Design](#11-architecture-design)
-12. [API Specification](#12-api-specification)
-13. [Security Design](#13-security-design)
-14. [Technical Debt Analysis](#14-technical-debt-analysis)
-15. [Bug Risk Analysis](#15-bug-risk-analysis)
-16. [Future Improvement Recommendations](#16-future-improvement-recommendations)
+1. [Tổng quan bài toán](#1-tổng-quan-bài-toán)
+2. [Trạng thái dự án](#2-trạng-thái-dự-án)
+3. [Yêu cầu hệ thống](#3-yêu-cầu-hệ-thống)
+4. [Hướng dẫn cài đặt](#4-hướng-dẫn-cài-đặt)
+5. [Cấu hình biến môi trường](#5-cấu-hình-biến-môi-trường)
+6. [Khởi tạo database](#6-khởi-tạo-database)
+7. [Hướng dẫn chạy development](#7-hướng-dẫn-chạy-development)
+8. [Hướng dẫn build và chạy production](#8-hướng-dẫn-build-và-chạy-production)
+9. [Chạy bằng Docker](#9-chạy-bằng-docker)
+10. [Hướng dẫn chạy test](#10-hướng-dẫn-chạy-test)
+11. [Các chức năng chính](#11-các-chức-năng-chính)
+12. [Vai trò người dùng và phân quyền](#12-vai-trò-người-dùng-và-phân-quyền)
+13. [Kiến trúc hệ thống](#13-kiến-trúc-hệ-thống)
+14. [Công nghệ sử dụng](#14-công-nghệ-sử-dụng)
+15. [Cấu trúc thư mục](#15-cấu-trúc-thư-mục)
+16. [Mô hình dữ liệu](#16-mô-hình-dữ-liệu)
+17. [Các luồng nghiệp vụ quan trọng](#17-các-luồng-nghiệp-vụ-quan-trọng)
+18. [Tài liệu API — Swagger](#18-tài-liệu-api--swagger)
+19. [Cơ chế bảo mật](#19-cơ-chế-bảo-mật)
+20. [Báo cáo và xuất dữ liệu](#20-báo-cáo-và-xuất-dữ-liệu)
+21. [Hạn chế và chức năng đang phát triển](#21-hạn-chế-và-chức-năng-đang-phát-triển)
+22. [License](#22-license)
 
 ---
 
-## 1. Giới thiệu
+## 1. Tổng quan bài toán
 
-### 1.1 Mục đích
+Chương trình khám răng học đường được tổ chức định kỳ bởi BVRHM nhằm phát hiện và điều trị sớm bệnh lý răng miệng cho học sinh. Hệ thống số hóa toàn bộ quy trình bao gồm:
 
-Tài liệu này được tạo ra thông qua quá trình **Reverse Engineering** toàn bộ source code của hệ thống backend "Khám Răng Học Đường" (nhahocduongbe). Mọi kết luận đều dựa trực tiếp vào code thực tế.
-
-Mục tiêu: tái tạo lại bộ tài liệu phân tích thiết kế phục vụ bảo trì, sửa lỗi, nâng cấp, và onboarding developer mới.
-
-### 1.2 Phạm vi
-
-Hệ thống là một **RESTful API Backend** viết bằng Java Spring Boot, phục vụ chương trình khám răng học đường tại các trường học thuộc các tỉnh (hiện có dữ liệu thực của tỉnh **Vĩnh Long** và **Bến Tre**). Đơn vị chủ quản: **Bệnh viện Răng Hàm Mặt Trung ương TP. Hồ Chí Minh (BVRHM)**.
-
-### 1.3 Định nghĩa, từ viết tắt
-
-| Thuật ngữ | Giải thích |
-|-----------|-----------|
-| BVRHM | Bệnh viện Răng Hàm Mặt |
-| SYT | Sở Y tế |
-| PGD | Phòng Giáo dục và Đào tạo |
-| TH | Trường Tiểu học |
-| JWT | JSON Web Token |
-| RBAC | Role-Based Access Control |
-| JPQL | Java Persistence Query Language |
-| PI | Plaque Index — Chỉ số mảng bám |
-| RVV | Răng Vĩnh Viễn |
-| RS | Răng Sữa |
-
-### 1.4 Công nghệ sử dụng
-
-Dựa trên `pom.xml` và `application.yaml`:
-
-| Công nghệ | Phiên bản | Ghi chú |
-|-----------|-----------|---------|
-| Java Spring Boot | 3.1.0 | Framework chính |
-| Spring Data JPA | — | ORM layer |
-| Spring Security | — | Authentication/Authorization |
-| Spring Data REST | — | Expose repository qua REST |
-| PostgreSQL | — | Database |
-| Hibernate | — | JPA implementation, dialect PostgreSQL |
-| JJWT | — | JWT token |
-| MapStruct | — | Entity ↔ DTO mapping |
-| Lombok | — | Boilerplate code generation |
-| Apache POI | — | Excel import/export |
-| SpringDoc OpenAPI | 2.5.0 | Swagger UI |
-| Spring Modulith | 0.6.0 | Modular architecture support |
-| Prometheus/Loki/Promtail | — | Monitoring stack (Docker Compose) |
-| Docker | — | Container deployment |
+- Quản lý thông tin trường học, lớp học và học sinh.
+- Lập kế hoạch và phân công bác sĩ cho từng đợt khám.
+- Ghi nhận hồ sơ khám điện tử với sơ đồ hàm răng (odontogram), hồ sơ mảng bám (plaque), cao răng (tartar) và biên bản điều trị.
+- Quản lý năm học và chuyển lớp tự động.
+- Thống kê tổng quan và xuất báo cáo Excel/PDF.
 
 ---
 
-## 2. Tổng quan hệ thống
+## 2. Trạng thái dự án
 
-### 2.1 Mục đích nghiệp vụ
+| Khu vực | Trạng thái |
+|---|---|
+| Backend API (Spring Boot) | Đang vận hành |
+| Frontend (React + Vite) | Đang vận hành |
+| Database schema (PostgreSQL) | Đang vận hành — quản lý bằng SQL dump thủ công |
+| Xuất báo cáo Excel & PDF | Đã triển khai |
+| Tích hợp dashboard Superset | Đã triển khai (nhúng iframe) |
+| Docker Compose (PostgreSQL + Redis) | Đã triển khai — container app bị comment out |
+| Monitoring (Prometheus + Grafana + Loki) | Cấu hình có sẵn nhưng bị comment out trong docker-compose |
+| Migration tự động (Liquibase) | Đã comment out — không sử dụng |
+| Tính năng kê đơn (Prescription) | Chỉ có entity và controller placeholder — bị comment out hoàn toàn |
 
-Hệ thống hỗ trợ **chương trình khám răng học đường** — một chương trình y tế cộng đồng trong đó bác sĩ nha khoa từ bệnh viện đến các trường học để khám và ghi nhận tình trạng răng miệng của học sinh. Hệ thống quản lý toàn bộ vòng đời dữ liệu:
+---
 
+## 3. Yêu cầu hệ thống
+
+### Backend
+
+| Yêu cầu | Phiên bản tối thiểu |
+|---|---|
+| Java | 17 |
+| Maven | 3.8+ (hoặc dùng `mvnw` đi kèm) |
+| PostgreSQL | 14+ |
+| Redis | 6+ |
+
+### Frontend
+
+| Yêu cầu | Phiên bản tối thiểu |
+|---|---|
+| Node.js | 18+ |
+| npm | 9+ |
+
+### Docker (tùy chọn)
+
+| Yêu cầu | Ghi chú |
+|---|---|
+| Docker | 24+ |
+| Docker Compose | v2 (plugin `docker compose`) |
+
+---
+
+## 4. Hướng dẫn cài đặt
+
+### Backend
+
+```bash
+cd nhahocduongbe
+
+# Cài đặt dependency
+./mvnw dependency:resolve
+
+# Sao chép file môi trường
+cp .env.example .env
+# Chỉnh sửa .env với thông tin thực tế
 ```
-Đăng ký trường học → Đăng ký học sinh → Tổ chức buổi khám → Ghi nhận kết quả khám → Báo cáo thống kê
-```
 
-### 2.2 Đối tượng sử dụng (Stakeholders)
+### Frontend
 
-Từ phân tích `OrganizationType.java` và `SecurityConfig.java`:
+```bash
+cd nhahocduongfe
 
-| Actor | Mô tả | Tổ chức tương ứng |
-|-------|-------|-------------------|
-| Admin hệ thống | Quản trị toàn hệ thống, duyệt tài khoản | BVRHM (type=4) |
-| Quản lý BVRHM | Quản lý toàn bộ dữ liệu | BVRHM |
-| Bác sĩ (Dentist) | Thực hiện khám, ghi nhận kết quả | BVRHM |
-| Quản lý Sở/Phòng (DEPARTMENT) | Xem dữ liệu theo khu vực (areaCode) | SYT / PGD (type=2,3) |
-| Quản lý Trường (SCHOOL) | Xem/quản lý dữ liệu học sinh của trường | Trường học (type=1) |
-
-> **Bằng chứng:** `OrganizationType.java` định nghĩa 4 loại: `SCHOOL(1)`, `DEPARTMENT(2)`, `MINISTRY(3)`, `HCMC_CENTRAL_DENTAL_HOSPITAL(4)`. `AuthorizationService.java` phân biệt quyền `SCHOOL` (lọc theo `organizationId`) vs `DEPARTMENT` (lọc theo `areaCode`).
-
-### 2.3 Các module chính
-
-```
-nhahocduongbe
-├── auth        — Xác thực (Login, JWT)
-├── user        — Quản lý người dùng, Role
-├── common      — Dữ liệu vùng/địa chỉ hành chính (Area)
-└── nhahocduong — Nghiệp vụ chính:
-    ├── Organization — Quản lý trường/đơn vị
-    ├── Patient      — Quản lý học sinh
-    ├── Exam         — Quản lý phiếu khám
-    ├── TeethRecord  — Tình trạng răng
-    ├── PlaqueRecord — Mảng bám (Plaque Index)
-    ├── TartarRecord — Vôi răng (Tartar)
-    ├── TreatmentRecord — Điều trị
-    ├── Disease      — Bệnh mãn tính
-    └── Medication   — Thuốc/vật tư
+# Cài đặt dependency
+npm install
 ```
 
 ---
 
-## 3. Các Actor và Phân quyền
+## 5. Cấu hình biến môi trường
 
-### 3.1 Actor Hierarchy
+### Backend — file `nhahocduongbe/.env` (sao chép từ `.env.example`)
 
-```plantuml
-@startuml
-left to right direction
-actor "Admin / BVRHM" as Admin
-actor "Bác sĩ" as Dentist
-actor "Quản lý Sở/Phòng" as Dept
-actor "Quản lý Trường" as School
-actor "Người dùng chờ duyệt" as Pending
+| Biến | Bắt buộc | Mô tả | Ví dụ an toàn |
+|---|---|---|---|
+| `DB_URL` | Có | JDBC URL kết nối PostgreSQL | `jdbc:postgresql://localhost:5432/nhahocduong` |
+| `DB_USERNAME` | Có | Tên đăng nhập database | `nhahocduong` |
+| `DB_PASSWORD` | Có | Mật khẩu database | _(không điền thật)_ |
+| `REDIS_HOST` | Có | Hostname Redis | `localhost` |
+| `REDIS_PORT` | Không | Cổng Redis (mặc định 6379) | `6379` |
+| `REDIS_PASSWORD` | Có | Mật khẩu Redis | _(không điền thật)_ |
+| `JWT_SIGNING_KEY` | Có | Khóa ký JWT (Base64-encoded 32 byte) | _(tạo bằng `openssl rand -hex 32`)_ |
+| `JWT_EXPIRATION_MS` | Không | Thời gian sống access token (ms) | `2592000000` (30 ngày) |
+| `MAIL_HOST` | Không | SMTP host (mặc định `smtp.gmail.com`) | `smtp.gmail.com` |
+| `MAIL_PORT` | Không | SMTP port (mặc định 587) | `587` |
+| `MAIL_USERNAME` | Có | Tài khoản email gửi OTP | _(không điền thật)_ |
+| `MAIL_PASSWORD` | Có | Mật khẩu ứng dụng email | _(không điền thật)_ |
+| `MAIL_FROM` | Không | Địa chỉ From trong email OTP | `noreply@nhahocduong.vn` |
+| `OTP_EXPIRATION_MINUTES` | Không | Thời gian OTP có hiệu lực (phút) | `5` |
 
-Admin --|> Dentist : extends
-Dept --|> School : extends
-@enduml
-```
+> **Ghi chú**: Với môi trường `dev`, giá trị mặc định được khai báo trong `application-dev.yaml` — không cần file `.env` nếu dùng database local không có mật khẩu.
 
-### 3.2 Phân quyền theo Role
+### Frontend — file `nhahocduongfe/enviroments/.env.development`
 
-Dựa trên `AuthorizationService.java` và dữ liệu seed trong `4-user.sql`:
+| Biến | Bắt buộc | Mô tả | Ví dụ |
+|---|---|---|---|
+| `VITE_API_URL` | Có | Base URL của backend API | `http://localhost:8081` |
 
-| Role Code | Role Name | Quyền |
-|-----------|-----------|-------|
-| QL | Quản lý | Xem dữ liệu được giới hạn theo tổ chức |
-| (Admin) | Admin | Duyệt tài khoản, quản lý toàn hệ thống |
-
-> **Lưu ý:** Hệ thống hiện có model RBAC đầy đủ (Policy, Resource, Rule, Role) nhưng **chưa được implement vào logic phân quyền API**. `SecurityConfig.java` dòng `anyRequest().permitAll()` cho thấy toàn bộ API đang **mở** sau khi JWT hợp lệ.
-
-### 3.3 Logic phân quyền dữ liệu (Data-level Authorization)
-
-Từ `AuthorizationService.java`:
-
-```java
-switch (user.getOrganization().getType()) {
-    case SCHOOL -> data.setOrganizationId(user.getOrganization().getId());
-    case DEPARTMENT -> data.setAreaCode(user.getOrganization().getAreaCode());
-}
-```
-
-| Loại tổ chức | Phạm vi dữ liệu |
-|-------------|----------------|
-| SCHOOL (type=1) | Chỉ thấy dữ liệu của trường mình (filter theo `organizationId`) |
-| DEPARTMENT (type=2,3) | Thấy dữ liệu của tất cả trường trong khu vực (`areaCode`) |
-| BVRHM / Admin (type=4, null) | Thấy toàn bộ dữ liệu |
+> **Lưu ý**: Thư mục `enviroments` (có lỗi chính tả) chứa file `.env.development` và `.env.production`. Vite đọc file `.env` theo `--mode` được truyền khi chạy.
 
 ---
 
-## 4. Functional Requirements
+## 6. Khởi tạo database
 
-### 4.1 Quản lý Tổ chức (Organization)
+Schema và dữ liệu được quản lý hoàn toàn thủ công qua SQL dump. **Hệ thống không dùng migration tool tự động** (Liquibase đã bị comment out trong `pom.xml`).
 
-**Controller:** `OrganizationController.java`
-**Service:** `OrganizationServiceImpl.java`
+### Cách 1: Dùng Docker Compose (khuyến nghị khi phát triển)
 
-| Chức năng | Mô tả | Business Rule |
-|-----------|-------|---------------|
-| Tạo tổ chức | Tạo mới trường/phòng/sở | Không được có lớp trùng tên (duplicate class check); Tự động sinh `code` theo `areaCode` |
-| Sửa tổ chức | Cập nhật thông tin | Không được có lớp trùng tên |
-| Xóa (soft delete) tổ chức | Đặt `status=false` | **Không thể xóa nếu còn học sinh thuộc tổ chức** |
-| Xem chi tiết | Lấy thông tin 1 tổ chức | — |
-| Tìm kiếm/phân trang | Tìm theo tên, areaCode, loại | Kết quả bị giới hạn theo quyền người dùng |
-| Lấy danh sách tất cả | Sắp xếp theo tên | — |
-| Kiểm tra lớp có thể xóa | Xác định lớp nào đang có học sinh | Không thể xóa lớp còn học sinh |
+```bash
+cd nhahocduongbe
 
-**Thuộc tính tổ chức:**
-- `name`, `code` (tự sinh), `address`, `areaCode`
-- `type`: SCHOOL / DEPARTMENT / MINISTRY / BVRHM
-- `classes`: JSON Map<Grade, List<String>> (ví dụ: `{"1": ["1A", "1B"], "2": ["2A"]}`)
-- `headMember`: User là hiệu trưởng/trưởng đơn vị
-- `parent`: Tổ chức cha (phân cấp)
-- `status`: true/false (soft delete)
+# Khởi động PostgreSQL và Redis
+docker compose up db cache -d
+```
 
-**Sinh code tổ chức** (`OrganizationHelper.generateCode`):
-- Format: `{areaCode_3_digits}{order_3_digits}` (ví dụ: `086001`)
-- Lấy code cao nhất hiện tại + 1
+Docker Compose sẽ tự động nạp `backup_nhahocduong.sql` vào container PostgreSQL khi khởi động lần đầu (thông qua `docker-entrypoint-initdb.d`).
 
-### 4.2 Quản lý Học sinh (Patient)
+### Cách 2: Nạp thủ công vào PostgreSQL đã có sẵn
 
-**Controller:** `PatientController.java`
-**Service:** `PatientServiceImpl.java`
+```bash
+# Tạo database và schema
+psql -U postgres -c "CREATE DATABASE nhahocduong;"
+psql -U nhahocduong -d nhahocduong -f nhahocduongbe/backup_nhahocduong.sql
+```
 
-| Chức năng | Input | Output | Business Rule |
-|-----------|-------|--------|---------------|
-| Tạo học sinh | PatientDTO | PatientDTO | Lớp học phải tồn tại trong danh sách lớp của trường |
-| Sửa học sinh | PatientDTO, id | PatientDTO | — |
-| Xóa (soft delete) | id | boolean | **Không thể xóa học sinh đã có phiếu khám** |
-| Xem chi tiết | id | PatientDTO | — |
-| Tìm kiếm/phân trang | PatientSearchCriteria | Page<PatientDTO> | Lọc theo tên, số BHYT, tên trường, lớp, areaCode |
-| Lấy tất cả (có phân trang) | Pageable | Page<PatientDTO> | — |
-| Import từ Excel | MultipartFile (.xlsx) | List<PatientDTO> | Validate required fields; Validate organization code |
-| Xuất ra Excel | — | .xlsx file | Xuất toàn bộ học sinh đang active |
-| Tải template Excel | — | .xlsx file | Template có sheet danh sách trường động |
+### Script seed dữ liệu mẫu (tùy chọn)
 
-**Sinh code học sinh** (`PatientHelper.generateCode`):
-- Format: `{org_code_6_chars}{order_3_digits}` (ví dụ: `086001001`)
+```bash
+# Tại thư mục gốc nhd/
+# Yêu cầu Python 3 và thư viện psycopg2
+python seed_students.py
+python fix_birthdate.py
+python fix_class_and_index.py
+python fix_ethnic.py
+```
 
-**Thuộc tính học sinh:**
-- `fullName`, `code`, `healthInsuranceNumber`, `gender` (1=nam, 2=nữ)
-- `birthDate`, `ethnic` (enum), `areaType` (Thành thị/Ngoại ô/Nông thôn)
-- `addressLine`, `phoneNumber`, `nationalIdNum`, `careTaker`
-- `organization` (FK), `schoolClass`, `chronicConditions` (M-N với Disease)
-- `status`: true/false
-
-### 4.3 Quản lý Phiếu khám (Exam)
-
-**Controller:** `ExamController.java`
-**Service:** `ExamServiceImpl.java`
-
-| Chức năng | Input | Output | Ghi chú |
-|-----------|-------|--------|---------|
-| Tạo phiếu khám | ExamDTO (patientId từ path) | ExamDTO | Gán `patientId` từ path variable |
-| Sửa phiếu khám | ExamDTO | ExamDTO | Partial update qua MapStruct |
-| Xóa (soft delete) | id | boolean | Đặt `status=false` |
-| Lấy danh sách phiếu khám của học sinh | patientId, status | List<ExamDTO> | Sắp xếp DESC theo id |
-| Lấy chi tiết phiếu khám | patientId, examId, status | ExamDTO | — |
-| Tìm kiếm phiếu khám | ExamSearchCriteria, patientId | Page<ExamDTO> | Lọc theo ngày, patientId, examId |
-| Cập nhật teeth_record_id | examId, teethRecordId | ExamDTO | SERIALIZABLE + Retry (5 lần, delay 300ms) |
-| Cập nhật plaque_record_id | examId, plaqueRecordId | ExamDTO | SERIALIZABLE + Retry |
-| Cập nhật tartar_record_id | examId, tartarRecordId | ExamDTO | SERIALIZABLE + Retry |
-
-**Thuộc tính phiếu khám:**
-- `patient`, `dentist`, `organization`
-- `schoolClass`, `year`, `profileNumber` (unique)
-- `date`
-- `teethRecord` (1-1), `plaqueRecord` (1-1), `tartarRecord` (1-1)
-- `chronicConditions` (M-N với Disease)
-- `treatmentRecords` (1-N)
-- `status`: true/false
-
-### 4.4 Quản lý Tình trạng Răng (TeethRecord)
-
-**Controller:** `TeethRecordController.java`
-**Service:** `TeethRecordServiceImpl.java`
-
-Ghi nhận tình trạng từng răng theo mã FDI (11-18, 21-28, 31-38, 41-48, 51-55, 61-65, 71-75, 81-85).
-
-Mỗi răng lưu dưới dạng `ToothCondition`:
-- `problem`: enum `ToothProblem` (0=Bình thường, 1=Sâu, 2=Sâu trám lại, 3=Trám tốt, 4=Mất do sâu, 5=Mất lý do khác, 6=Bít hố rãnh, 7=Trụ cầu, 8=Chưa mọc, 9=Loại trừ)
-- `locations`: List<ToothSide> (Nh=Nhai, N=Ngoài, T=Trong, G=Gần, X=Xa)
-- `treatment`: enum `ToothTreatment` (0=Không, 1=Trám 1 mặt, 2=Trám 2+ mặt, 3=Mão răng, 4=Veneer, 5=Điều trị tủy, 6=Nhổ răng, F=Sealants, P=Trám phòng ngừa)
-
-> **Thiết kế:** Lưu dưới dạng JSON trong cột `record` kiểu JSONB.
-
-| Chức năng | Ghi chú |
-|-----------|---------|
-| Upsert TeethRecord theo exam | Tạo hoặc cập nhật; sau đó cập nhật FK trong Exam |
-| Lấy TeethRecord theo patientId + examId | Lọc exam của patient → lấy teethRecord |
-| Lấy TeethRecord theo id | — |
-
-### 4.5 Quản lý Mảng Bám (PlaqueRecord)
-
-**Controller:** `PlaqueRecordController.java`
-
-Ghi nhận mảng bám (Plaque Index) theo 6 điểm đo chuẩn CPI:
-`17-16n`, `11n`, `26-27n`, `47-46t`, `31n`, `36-37t`
-
-Điều kiện: `PlaqueCondition` = {4=Không có răng, 0=Không có mảng bám, 1=1/3 cổ răng, 2=2/3 răng, 3=>2/3 răng}
-
-> **Lưu ý:** Enum tên `PlaqueCondition` nhưng description nói "Vôi răng" — có thể lẫn lộn khái niệm với TartarCondition. Xem mục Technical Debt.
-
-### 4.6 Quản lý Vôi Răng (TartarRecord)
-
-**Controller:** `TartarRecordController.java`
-
-Cấu trúc giống PlaqueRecord, 6 điểm đo tương tự.
-`TartarCondition` = {4=Không có răng, 0=Không có vôi, 1=1/3 cổ răng, 2=2/3 răng, 3=>2/3 răng}
-
-### 4.7 Quản lý Điều Trị (TreatmentRecord)
-
-**Controller:** `TreatmentRecordController.java`
-**Service:** `TreatmentRecordServiceImpl.java`
-
-| Chức năng | Ghi chú |
-|-----------|---------|
-| Lấy danh sách điều trị theo examId | Chỉ lấy status=true |
-| Upsert danh sách điều trị | Xóa soft những bản ghi không còn trong danh sách mới; Lưu các bản ghi mới/cập nhật |
-| Xóa 1 bản ghi điều trị | Xác minh exam thuộc patient; Đặt status=false |
-
-**Thuộc tính TreatmentRecord:**
-- `service`: ToothTreatment (loại điều trị)
-- `dentistName`, `diagnosis`, `tooth`: Tooth (răng được điều trị)
-- `prescription`: JSON List<PrescriptionItem> {medicationId, medicationName, quantity, unit}
-- `exam` (FK)
-- `status`: true/false
-
-### 4.8 Quản lý Bệnh Mãn Tính (Disease)
-
-**Controller:** `DiseaseController.java`
-
-| Chức năng | Ghi chú |
-|-----------|---------|
-| Lấy danh sách bệnh mãn tính | — |
-| Lấy bệnh mãn tính của phiếu khám | — |
-| Cập nhật bệnh mãn tính của phiếu khám | Cập nhật M-N exam_disease |
-
-Dữ liệu seed: X1=Cao huyết áp, X2=Tiểu đường, X3=Tim mạch, X4=Viêm khớp, X5=Bệnh thận, X6=Bệnh dạ dày, X7=Viêm khớp dạng thấp, X8=Bệnh lý khác.
-
-### 4.9 Quản lý Tài khoản Người dùng (User)
-
-**Controller:** `UserController.java`, `AdminController.java`
-
-| Chức năng | Endpoint | Ghi chú |
-|-----------|----------|---------|
-| Đăng ký tài khoản | POST /api/user/register | Tạo user với `registerStatus=false` (chờ duyệt) |
-| Phê duyệt tài khoản | PUT /api/user/{id}/approve | Admin set `registerStatus=true` |
-| Từ chối tài khoản | DELETE /api/user/{id}/reject | — |
-| Lấy danh sách chờ duyệt | GET /api/admin/waiting | — |
-
-### 4.10 Xác thực (Authentication)
-
-**Controller:** `AuthenticationController.java`
-
-| Chức năng | Ghi chú |
-|-----------|---------|
-| Đăng nhập | POST /api/auth/login; trả về JWT token |
-
-### 4.11 Dữ liệu Enum Y tế (Medical Enum)
-
-**Controller:** `MedicalEnumController.java`
-
-Cung cấp danh sách lookup cho frontend:
-- `GET /api/tartarCondition` — Tình trạng vôi răng
-- `GET /api/plaqueCondition` — Tình trạng mảng bám
-- `GET /api/toothProblem` — Loại vấn đề răng
-- `GET /api/toothSide` — Vị trí mặt răng
-- `GET /api/toothTreatment` — Loại điều trị
-- `GET /api/ethnics` — Dân tộc
-
-### 4.12 Dữ liệu Địa giới hành chính (Area)
-
-**Controller:** `AreaController.java`
-
-- Tìm kiếm đơn vị hành chính theo `code`
-- Lấy danh sách đơn vị con theo `areaCode`
-- Phục vụ lọc dữ liệu theo khu vực địa lý
+> Các script này dùng để tạo dữ liệu học sinh mẫu. Kết nối database được cấu hình bên trong từng script.
 
 ---
 
-## 5. Non-Functional Requirements
+## 7. Hướng dẫn chạy development
 
-### 5.1 Security
+### Backend
 
-| Yêu cầu | Triển khai | File |
-|---------|------------|------|
-| Authentication | JWT Bearer Token | `JwtAuthenticationFilter.java` |
-| Password hashing | BCrypt | `SecurityConfig.java` |
-| Token expiry | 30 ngày (1000 * 60 * 60 * 24 * 30 ms) | `JwtService.java` |
-| Token algorithm | HS256 | `JwtService.java` |
-| CORS | Chỉ cho phép localhost:* | `SecurityConfig.java` |
-| CSRF | Disabled (API stateless) | `SecurityConfig.java` |
-| Session | Stateless (STATELESS policy) | `SecurityConfig.java` |
-| Data-level authorization | Lọc theo organization/areaCode | `AuthorizationService.java` |
+```bash
+cd nhahocduongbe
 
-> **CRITICAL:** JWT signing key được hardcode plaintext trong source code: `JwtService.java` dòng `private static final String JWT_SIGNING_KEY = "6A586E32..."`
+# Cách 1: Dùng justfile
+just dev
 
-### 5.2 Performance
+# Cách 2: Trực tiếp Maven Wrapper
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
-| Yêu cầu | Triển khai |
-|---------|------------|
-| Pagination | Spring Data Pageable trên Patient, Organization, Exam |
-| Concurrency control | `@Retryable` + `@Transactional(isolation = SERIALIZABLE)` cho cập nhật record IDs |
-| Retry on lock | 5 lần, delay 300ms (`ExamServiceImpl.java`) |
+Backend khởi động tại: `http://localhost:8081`
 
-### 5.3 Observability
+### Frontend
 
-- **Prometheus:** Expose qua `/actuator/prometheus` (`application.yaml`)
-- **Loki + Promtail:** Thu thập log (cấu hình trong `metric-tools-config/`)
-- **Spring Boot Actuator:** Cấu hình nhưng comment `include: '*'` (chỉ expose prometheus)
+```bash
+cd nhahocduongfe
 
-### 5.4 API Documentation
+# Cách 1: Dùng justfile
+just dev
 
-- **Swagger UI:** Expose tại `/swagger-ui.html`, `/v3/api-docs/**` (public, không cần auth)
-- **Library:** SpringDoc OpenAPI 2.5.0
+# Cách 2: Trực tiếp npm
+npm run dev
+```
 
-### 5.5 Database
-
-- PostgreSQL
-- `ddl-auto: none` (không tự động tạo/sửa schema)
-- Schema quản lý bằng SQL scripts (`db-scripts/`)
-- JSON/JSONB cho dữ liệu phức tạp (TeethRecord, classes, prescription)
+Frontend khởi động tại: `http://localhost:5173`
 
 ---
 
-## 6. Business Rules
+## 8. Hướng dẫn build và chạy production
 
-### BR-001: Tạo Học sinh
-**File:** `PatientServiceImpl.createPatient`
+### Backend
 
-Học sinh chỉ được tạo nếu lớp học (`schoolClass`) tồn tại trong danh sách lớp của trường (`organization.classes`).
-```
-IF schoolClass NOT IN organization.getFlattenClassList() THEN
-  throw HTTP 404 "Không tìm thấy lớp"
-```
+```bash
+cd nhahocduongbe
 
-### BR-002: Xóa Học sinh
-**File:** `PatientServiceImpl.deletePatientById`
+# Build JAR
+./mvnw clean package -DskipTests
 
-Không thể xóa học sinh nếu học sinh đó còn phiếu khám đang active (`status=true`).
-```
-IF existsExamWithStatus(patientId, true) THEN
-  throw HTTP 400 "Không thể xóa học sinh đã có phiếu khám"
+# Chạy với profile prod
+java -jar target/api-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 ```
 
-### BR-003: Xóa Tổ chức
-**File:** `OrganizationServiceImpl.delete`
+### Frontend
 
-Không thể xóa tổ chức nếu còn học sinh thuộc tổ chức đó.
-```
-IF patients.count(organizationId) > 0 THEN
-  throw HTTP 400 "Không thể xóa tổ chức còn học sinh"
-```
+```bash
+cd nhahocduongfe
 
-### BR-004: Xóa Lớp học
-**File:** `OrganizationServiceImpl.checkDeletableClasses`
+# Build cho production
+npm run build-prod
 
-Không thể xóa lớp học nếu còn học sinh đang học lớp đó.
-```
-FOR each class:
-  IF patients.anyMatch(schoolClass == class) THEN
-    mark as NOT deletable
-```
-
-### BR-005: Sinh Code Tổ chức
-**File:** `OrganizationHelper.generateCode`
-
-Code tổ chức tự sinh: `{areaCode_3_digits}{autoIncrement_3_digits}`
-- Tìm tổ chức có code cao nhất cùng areaCode → tăng thêm 1
-- Nếu chưa có → bắt đầu từ 001
-
-### BR-006: Sinh Code Học sinh
-**File:** `PatientHelper.generateCode`
-
-Code học sinh tự sinh: `{org_code_6_chars}{autoIncrement_3_digits}`
-- Tìm học sinh có code cao nhất cùng tổ chức → tăng thêm 1
-- Nếu chưa có → bắt đầu từ 001
-
-### BR-007: Đăng nhập
-**File:** `AuthenticationService.authenticate`
-
-1. Kiểm tra username tồn tại
-2. Kiểm tra `registerStatus == true` (đã được admin duyệt)
-3. Kiểm tra mật khẩu (BCrypt verify)
-4. Sinh JWT token chứa: `userId`, `username`, `roles`, `organization`
-
-### BR-008: Tài khoản chờ duyệt
-**File:** `UserController.createUser`, `AuthenticationService`
-
-User mới tạo có `registerStatus=false` và không thể đăng nhập cho đến khi admin phê duyệt.
-
-### BR-009: Phân quyền dữ liệu theo tổ chức
-**File:** `AuthorizationService.authorize`
-
-- User thuộc SCHOOL: chỉ thấy dữ liệu của trường mình
-- User thuộc DEPARTMENT/MINISTRY: thấy dữ liệu theo `areaCode`
-- User không thuộc tổ chức nào (admin): thấy tất cả
-
-### BR-010: Tình trạng răng (ToothCondition)
-**File:** `ToothCondition.java` (comment từ BS BVRHM ngày 8/6/2023)
-
-Mỗi răng chỉ có **1 vấn đề** (chọn 1), có thể có nhiều vị trí (chọn nhiều), và 1 phương án điều trị.
-
-### BR-011: Chỉ số mảng bám (PI)
-**File:** `app_view.sql`
-
-PI = (r1716n + r11n + r2627n + r3637t + r31n + r4746t) / 6
-
-Đánh giá: PI < 1 = Tốt; 1 ≤ PI < 2 = Trung bình; PI ≥ 2 = Kém
-
-### BR-012: Tính toán báo cáo
-**File:** `app_view.sql`
-
-Phân biệt Răng Vĩnh Viễn (RVV): mã FDI 11-18, 21-28, 31-38, 41-48
-Răng Sữa (RS): các mã còn lại (51-55, 61-65, 71-75, 81-85)
-
----
-
-## 7. Use Case Analysis
-
-### 7.1 Use Case List
-
-| UC ID | Use Case | Actor | Mô tả |
-|-------|----------|-------|-------|
-| UC-01 | Đăng nhập | Tất cả | Xác thực bằng username/password, nhận JWT |
-| UC-02 | Đăng ký tài khoản | Người dùng mới | Tạo tài khoản chờ duyệt |
-| UC-03 | Duyệt tài khoản | Admin | Phê duyệt/từ chối tài khoản |
-| UC-04 | Quản lý tổ chức | Admin/BVRHM | CRUD tổ chức trường/sở/phòng |
-| UC-05 | Quản lý lớp học | Admin/BVRHM | Thêm/xóa lớp trong trường (qua update organization) |
-| UC-06 | Tạo học sinh | Admin/BVRHM | Đăng ký học sinh vào hệ thống |
-| UC-07 | Cập nhật học sinh | Admin/BVRHM | Sửa thông tin học sinh |
-| UC-08 | Xóa học sinh | Admin/BVRHM | Soft-delete học sinh |
-| UC-09 | Tìm kiếm học sinh | Tất cả đã đăng nhập | Tìm theo tên, BHYT, trường, lớp |
-| UC-10 | Import học sinh Excel | Admin/BVRHM | Nhập hàng loạt từ file .xlsx |
-| UC-11 | Xuất học sinh Excel | Admin/BVRHM | Xuất danh sách học sinh |
-| UC-12 | Tạo phiếu khám | Bác sĩ | Tạo phiếu khám cho học sinh |
-| UC-13 | Ghi nhận tình trạng răng | Bác sĩ | Điền thông tin TeethRecord |
-| UC-14 | Ghi nhận mảng bám | Bác sĩ | Điền PlaqueRecord (PI) |
-| UC-15 | Ghi nhận vôi răng | Bác sĩ | Điền TartarRecord |
-| UC-16 | Ghi nhận bệnh mãn tính | Bác sĩ | Cập nhật chronicConditions của exam |
-| UC-17 | Ghi nhận điều trị | Bác sĩ | Tạo/sửa TreatmentRecord |
-| UC-18 | Xem lịch sử khám | Tất cả đã đăng nhập | Xem danh sách phiếu khám của học sinh |
-| UC-19 | Xem báo cáo | Admin/BVRHM/Dept | Xem thống kê qua SQL view |
-
-### 7.2 Use Case Diagram
-
-```plantuml
-@startuml
-left to right direction
-
-actor "Admin / BVRHM" as Admin
-actor "Bác sĩ" as Dentist
-actor "Quản lý Sở/Phòng" as Dept
-actor "Quản lý Trường" as School
-
-rectangle "Hệ thống Khám Răng Học Đường" {
-  package "Xác thực" {
-    usecase "UC-01: Đăng nhập" as UC01
-    usecase "UC-02: Đăng ký" as UC02
-    usecase "UC-03: Duyệt tài khoản" as UC03
-  }
-  
-  package "Quản lý Tổ chức" {
-    usecase "UC-04: CRUD Tổ chức" as UC04
-    usecase "UC-05: Quản lý lớp học" as UC05
-  }
-  
-  package "Quản lý Học sinh" {
-    usecase "UC-06: Tạo học sinh" as UC06
-    usecase "UC-07: Cập nhật học sinh" as UC07
-    usecase "UC-08: Xóa học sinh" as UC08
-    usecase "UC-09: Tìm kiếm học sinh" as UC09
-    usecase "UC-10: Import Excel" as UC10
-    usecase "UC-11: Xuất Excel" as UC11
-  }
-  
-  package "Quản lý Phiếu khám" {
-    usecase "UC-12: Tạo phiếu khám" as UC12
-    usecase "UC-13: Ghi tình trạng răng" as UC13
-    usecase "UC-14: Ghi mảng bám" as UC14
-    usecase "UC-15: Ghi vôi răng" as UC15
-    usecase "UC-16: Ghi bệnh mãn tính" as UC16
-    usecase "UC-17: Ghi điều trị" as UC17
-    usecase "UC-18: Xem lịch sử khám" as UC18
-  }
-}
-
-Admin --> UC01
-Admin --> UC03
-Admin --> UC04
-Admin --> UC05
-Admin --> UC06
-Admin --> UC07
-Admin --> UC08
-Admin --> UC09
-Admin --> UC10
-Admin --> UC11
-Admin --> UC18
-
-Dentist --> UC01
-Dentist --> UC12
-Dentist --> UC13
-Dentist --> UC14
-Dentist --> UC15
-Dentist --> UC16
-Dentist --> UC17
-Dentist --> UC18
-
-Dept --> UC01
-Dept --> UC09
-Dept --> UC18
-
-School --> UC01
-School --> UC02
-School --> UC09
-School --> UC18
-
-UC12 ..> UC01 : <<include>>
-UC13 ..> UC12 : <<include>>
-UC14 ..> UC12 : <<include>>
-UC15 ..> UC12 : <<include>>
-UC16 ..> UC12 : <<include>>
-UC17 ..> UC12 : <<include>>
-@enduml
+# Kết quả build nằm trong thư mục dist/
+# Phục vụ bằng Nginx hoặc bất kỳ static file server nào
+npm run preview   # Xem trước production build locally
 ```
 
 ---
 
-## 8. Activity Diagrams
+## 9. Chạy bằng Docker
 
-### 8.1 Đăng nhập
+> **Lưu ý**: Container cho ứng dụng backend (`app`), Prometheus, Grafana và Loki hiện đang bị **comment out** trong `docker-compose.yml`. Chỉ có PostgreSQL và Redis được cấu hình để chạy.
 
-```plantuml
-@startuml
-start
-:Nhập username + password;
-:POST /api/auth/login;
-if (username tồn tại?) then (Không)
-  :Throw InvalidCredentialException;
-  :HTTP 401 Unauthorized;
-  stop
-else (Có)
-  if (registerStatus == true?) then (Không)
-    :Throw InvalidCredentialException;
-    :HTTP 401;
-    stop
-  else (Có)
-    if (BCrypt verify password?) then (Sai)
-      :Throw InvalidCredentialException;
-      :HTTP 401;
-      stop
-    else (Đúng)
-      :Lấy danh sách Role active;
-      :Lấy Organization của user;
-      :Sinh JWT token (30 ngày);
-      :Trả về LoginResponse{token};
-      stop
-    endif
-  endif
-endif
-@enduml
+### Khởi động PostgreSQL và Redis
+
+```bash
+cd nhahocduongbe
+docker compose up db cache -d
 ```
 
-### 8.2 Quản lý Học sinh — Tạo mới
+### Build và chạy backend thủ công bằng Docker
 
-```plantuml
-@startuml
-start
-:POST /api/patient với PatientDTO;
-:Lấy Organization theo ID;
-if (Organization tồn tại?) then (Không)
-  :HTTP 404 Organization not found;
-  stop
-else (Có)
-  :Lấy danh sách lớp của Organization;
-  if (schoolClass có trong danh sách lớp?) then (Không)
-    :HTTP 404 Class not found;
-    stop
-  else (Có)
-    :Map DTO → Entity;
-    :Sinh code học sinh tự động;
-    :Save patient;
-    :Refresh entity từ DB;
-    :Map Entity → DTO;
-    :Trả về PatientDTO;
-    stop
-  endif
-endif
-@enduml
-```
+```bash
+cd nhahocduongbe
 
-### 8.3 Quy trình Khám răng học đường
+# Bước 1: Build JAR
+./mvnw clean package -DskipTests
 
-```plantuml
-@startuml
-start
-:Bác sĩ chọn học sinh (patientId);
-:Tạo Phiếu khám (POST /api/patients/{id}/exams);
-note right: Ghi: dentistId, organizationId, class, year, date
+# Bước 2: Build Docker image
+docker build -t nhahocduong-api .
 
-fork
-  :Ghi Tình trạng Răng;
-  :POST /api/patients/{id}/exams/{examId}/teethRecord;
-  :Upsert TeethRecord (JSON map răng);
-  :Cập nhật teeth_record_id trong Exam;
-fork again
-  :Ghi Mảng Bám;
-  :POST /api/patients/{id}/exams/{examId}/plaqueRecord;
-  :Upsert PlaqueRecord (6 điểm đo);
-  :Cập nhật plaque_record_id trong Exam;
-fork again
-  :Ghi Vôi Răng;
-  :POST /api/patients/{id}/exams/{examId}/tartarRecord;
-  :Upsert TartarRecord (6 điểm đo);
-  :Cập nhật tartar_record_id trong Exam;
-end fork
-
-:Ghi Bệnh mãn tính;
-:POST /api/patients/{id}/exams/{examId}/chronicConditions;
-
-:Ghi Điều trị;
-:POST /api/patients/{id}/exams/{examId}/treatmentRecord;
-note right: Có thể có nhiều TreatmentRecord\nmỗi record ghi 1 răng, thuốc, dịch vụ
-
-stop
-@enduml
-```
-
-### 8.4 Import Học sinh từ Excel
-
-```plantuml
-@startuml
-start
-:POST /api/patient/excel với MultipartFile;
-:Đọc sheet index 0 từ workbook;
-:Iterate từng row (bỏ qua header row 0);
-while (còn row?) is (Có)
-  :Đọc các cell;
-  if (required cell rỗng?) then (Có)
-    :Throw HTTP 400 "Required field missing";
-    stop
-  else (Không)
-    :Map cell value sang PatientExcelData;
-    if (SCHOOL_CODE cell) then
-      :Lookup Organization theo code;
-      if (không tìm thấy?) then (Có)
-        :Throw HTTP 400 "Organization not found";
-        stop
-      endif
-    endif
-  endif
-endwhile (Không)
-
-:Gọi createPatient() cho từng PatientExcelData;
-note right: Áp dụng BR-001 (validate lớp)\nvà BR-006 (sinh code)
-
-:Trả về List<PatientDTO>;
-stop
-@enduml
+# Bước 3: Chạy container (ví dụ)
+docker run -d \
+  --name nhd-api \
+  -p 8081:8081 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DB_URL=jdbc:postgresql://... \
+  -e DB_USERNAME=... \
+  -e DB_PASSWORD=... \
+  -e REDIS_HOST=... \
+  -e REDIS_PASSWORD=... \
+  -e JWT_SIGNING_KEY=... \
+  -e MAIL_USERNAME=... \
+  -e MAIL_PASSWORD=... \
+  nhahocduong-api
 ```
 
 ---
 
-## 9. Sequence Diagrams
+## 10. Hướng dẫn chạy test
 
-### 9.1 Login Flow
+### Backend
 
-```plantuml
-@startuml
-actor Client
-participant "AuthenticationController" as AC
-participant "AuthenticationService" as AS
-participant "UserService" as US
-participant "RoleService" as RS
-participant "JwtService" as JS
+```bash
+cd nhahocduongbe
 
-Client -> AC: POST /api/auth/login {username, password}
-AC -> AS: authenticate(loginRequest)
-AS -> US: getUserByUsername(username)
-US --> AS: UserDTO
-AS -> AS: check registerStatus
-AS -> US: checkValidUserIdPassword(userId, password)
-US --> AS: boolean
-AS -> RS: getActiveRoleByUsername(username)
-RS --> AS: List<RoleDTO>
-AS -> US: getUserByUsername(username).organization()
-US --> AS: OrganizationDTO
-AS -> JS: makeToken(userId, claims{roles, username, organization})
-JS --> AS: JWT string
-AS --> AC: LoginResponse{token}
-AC --> Client: 200 OK {token}
-@enduml
+# Chạy tất cả test
+./mvnw test
 ```
 
-### 9.2 Tạo Phiếu Khám (Exam Creation)
+Hiện có **5 file test** đã xác minh:
 
-```plantuml
-@startuml
-actor Dentist
-participant "ExamController" as EC
-participant "ExamServiceImpl" as ES
-participant "ExamMapper" as EM
-participant "ExamRepository" as ER
+| File test | Loại |
+|---|---|
+| `ModulithArchitectureTest` | Kiểm tra cấu trúc module (Spring Modulith) |
+| `AreaServiceUnitTest` | Unit test — AreaService |
+| `DiseaseServiceImplUnitTest` | Unit test — DiseaseService |
+| `ExamCampaignServiceImplUnitTest` | Unit test — ExamCampaignService |
+| `ExamServiceImplUnitTest` | Unit test — ExamService |
+| `MedicalEnumServiceImplUnitTest` | Unit test — MedicalEnumService |
 
-Dentist -> EC: POST /api/patients/{patientId}/exams {ExamDTO}
-EC -> EC: examDTO.setPatientId(patientId)
-EC -> ES: createExam(examDTO)
-ES -> EM: toEntity(examDTO)
-EM --> ES: Exam entity
-ES -> ES: newExam.setId(null)
-ES -> ER: save(newExam)
-ER --> ES: Saved Exam
-ES -> EM: toDto(createdExam)
-EM --> ES: ExamDTO
-ES --> EC: ExamDTO
-EC --> Dentist: 200 OK ExamDTO
-@enduml
+> **Lưu ý**: Phạm vi kiểm thử hiện tại còn hạn chế — chủ yếu bao phủ một số service đơn lẻ. Nhiều controller và service khác chưa có test.
+
+### Frontend
+
+Dự án frontend chưa có file test nào được xác minh.
+
+---
+
+## 11. Các chức năng chính
+
+### 11.1. Xác thực và quản lý tài khoản
+
+- **Đăng nhập** (`POST /api/auth/login`): trả về access token (JWT) trong body và refresh token qua `HttpOnly Cookie`.
+- **Đăng xuất** (`POST /api/auth/logout`): xóa refresh token cookie.
+- **Làm mới token** (`POST /api/auth/refresh`): sử dụng refresh token cookie.
+- **Đăng ký tài khoản** (`POST /api/user/register`): yêu cầu xác thực email OTP trước.
+- **Quên mật khẩu / Đặt lại mật khẩu**: luồng 3 bước — gửi OTP qua email (`/api/auth/forgot-password`) → xác thực OTP (`/api/auth/verify-otp`) → đặt mật khẩu mới (`/api/auth/reset-password`).
+- **Đổi mật khẩu**: luồng tương tự, sử dụng endpoint `/api/auth/change-password-send-otp`.
+- **Đăng nhập khách** (`POST /api/auth/guest-login`): trả về token với quyền hạn chế.
+- **Duyệt / Từ chối đăng ký**: admin duyệt qua `PUT /api/user/{id}/approve`, từ chối qua `DELETE /api/user/{id}/reject`.
+- **Khóa / Mở khóa tài khoản**: admin thực hiện qua `PUT /api/admin/users/{id}/lock` và `PUT /api/admin/users/{id}/unlock`.
+- **Nhật ký đăng nhập**: lưu trong bảng `LOGIN_LOG`, truy vấn qua `GET /api/admin/login-logs`.
+
+### 11.2. Quản lý tổ chức (Trường học)
+
+- CRUD trường học (`/api/organization`): tạo, xem, cập nhật, xóa.
+- Tìm kiếm có phân trang (`GET /api/organization/search`).
+- Lấy toàn bộ danh sách (`GET /api/organization/all`).
+- Kiểm tra lớp có thể xóa (`POST /api/organization/{id}/classes/deletable`).
+- Cấu trúc lớp được lưu dưới dạng JSON (`Map<Grade, List<String>>`) trong bảng `nhahocduong_organization`.
+
+### 11.3. Quản lý học sinh (Patient)
+
+- CRUD học sinh (`/api/patient`).
+- Tìm kiếm, lọc có phân trang (`GET /api/patient/search`).
+- **Import Excel**: `POST /api/patient/excel` — đọc danh sách học sinh từ file Excel.
+- **Export Excel**: `GET /api/patient/excel` — xuất toàn bộ danh sách học sinh.
+- **Tải template Excel**: `GET /api/patient/excel/template`.
+
+### 11.4. Năm học và chuyển lớp
+
+- CRUD năm học (`/api/academic-years`).
+- Lấy năm học hiện tại (`GET /api/academic-years/current`).
+- **Kiểm tra trước khi chuyển năm** (`POST /api/academic-years/validate/{currentYearId}`): trả về danh sách cảnh báo.
+- **Chuyển sang năm học mới** (`POST /api/academic-years/transition`): tự động tạo lớp mới, cập nhật quan hệ học sinh–lớp (`StudentClassAffiliation`), đánh dấu học sinh lớp 12 tốt nghiệp (`AffiliationStatus.GRADUATED`).
+- **Rollback thao tác chuyển năm** (`POST /api/academic-years/rollback/{sessionId}`): khôi phục dựa trên `session_id` lưu trong `SystemLog`.
+- **Lịch sử chuyển năm** (`GET /api/academic-years/history`): truy vấn từ bảng `system_log`.
+
+### 11.5. Đợt khám và lịch khám
+
+- CRUD đợt khám (`ExamCampaign`) tại `/api/exam-campaigns`.
+- Trạng thái đợt khám: `UPCOMING` → `IN_PROGRESS` → `COMPLETED` / `CANCELLED`.
+- Quản lý lịch khám (`ExamSchedule`) theo từng đợt, trường và lớp, có gán bác sĩ (`ManyToMany` với `Dentist`).
+- Theo dõi trạng thái khám của học sinh trong đợt (`GET /api/exam-campaigns/{id}/students`).
+- **Gửi thông báo cho bác sĩ** (`POST /api/exam-campaigns/{campaignId}/notify`): tạo bản ghi `Notification` cho từng bác sĩ được phân công.
+- Danh sách học sinh cần tái khám (`GET /api/exams/re-exams`).
+
+### 11.6. Hồ sơ khám và điều trị
+
+- CRUD lần khám (`Exam`) theo học sinh (`/api/patients/{patientId}/exams`).
+- Ghi nhận **sơ đồ hàm răng** (`TeethRecord`): lưu dưới dạng JSON (`Map<Tooth, ToothCondition>`) trong PostgreSQL.
+- Ghi nhận **mảng bám** (`PlaqueRecord`) và **cao răng** (`TartarRecord`).
+- Ghi nhận **danh sách điều trị** (`TreatmentRecord`) cho từng lần khám.
+- Cập nhật **đánh giá bệnh lý** và **ghi chú điều trị** (`PATCH /api/exams/{examId}/assessment`).
+- Cập nhật / xóa **ảnh trước và sau điều trị** (`PATCH /api/exams/{examId}/images`, `DELETE /api/exams/{examId}/images/{side}`).
+- So sánh các lần khám: có component `CompareExamsView.tsx` ở frontend.
+- Tra cứu danh sách bệnh lý (`/api/tartarCondition`, `/api/plaqueCondition`, `/api/toothProblem`, `/api/toothSide`, `/api/toothTreatment`, `/api/ethnics`).
+
+### 11.7. Dashboard và thống kê
+
+- Dashboard tổng quan (`GET /api/dashboard/stats`): số liệu đã khám, chưa khám, thống kê sâu răng theo trường và lớp.
+- Thống kê chiến dịch (`GET /api/dashboard/campaign-stats`).
+- Sĩ số học sinh theo trường và năm học (`GET /api/dashboard/student-count`).
+- Lịch sử sĩ số qua các năm (`GET /api/dashboard/student-count-history`).
+- **Báo cáo nâng cao**: nhúng dashboard từ Superset/Viettel DMP qua iframe (trang `Superset_BC1`).
+
+### 11.8. Quản lý tài khoản (Admin)
+
+- Xem danh sách tài khoản (`GET /api/admin/users`).
+- Xem danh sách chờ duyệt (`GET /api/admin/waiting` hoặc `GET /api/user/waiting`).
+- Xem nhật ký đăng nhập (`GET /api/admin/login-logs`).
+- CRUD và tìm kiếm người dùng (`/api/user`).
+- Xem và gán vai trò (`/api/roles`).
+
+### 11.9. Thông báo (Notification)
+
+- Lấy thông báo của người dùng hiện tại (`GET /api/notifications`).
+- Đếm thông báo chưa đọc (`GET /api/notifications/unread-count`).
+- Đánh dấu đã đọc (`PUT /api/notifications/{id}/read`).
+- Đánh dấu tất cả đã đọc (`PUT /api/notifications/read-all`).
+
+### 11.10. Dữ liệu địa phương (Vùng địa lý)
+
+- Tra cứu tỉnh/thành, quận/huyện, phường/xã (`/api/areas/lookup`).
+- Dữ liệu địa lý Việt Nam lưu trong thư mục `vn-geo` ở thư mục gốc.
+
+---
+
+## 12. Vai trò người dùng và phân quyền
+
+Hệ thống sử dụng mô hình RBAC với bảng `USER_ROLE` và bảng liên kết `user_role_mapping`. Vai trò được lưu dưới dạng bản ghi trong database (không phải enum cứng) với trường `code` và `name`.
+
+Phân quyền API được thực thi ở tầng filter (`JwtAuthenticationFilter`). Hiện tại, `SecurityConfig` chỉ phân biệt **endpoint công khai** và **endpoint yêu cầu xác thực** — chưa có phân quyền chi tiết theo role cụ thể ở tầng controller trong code đã xác minh.
+
+| Vai trò | Quyền hạn chính (dựa trên endpoint và service) |
+|---|---|
+| **Admin** | Duyệt / từ chối / khóa / mở khóa tài khoản; xem nhật ký đăng nhập; quản lý toàn bộ người dùng và vai trò; CRUD tổ chức, năm học, đợt khám |
+| **Bác sĩ (Dentist)** | Ghi nhận hồ sơ khám, sơ đồ hàm răng, điều trị; nhận thông báo lịch khám; xem danh sách học sinh được phân công |
+| **Người dùng thông thường** | Xem dữ liệu theo tổ chức được gán; quản lý học sinh; xem và tạo đợt khám |
+| **Khách (Guest)** | Token hạn chế, chỉ truy cập một số endpoint được cấu hình là `permitAll` |
+
+> **Lưu ý**: Phân quyền chi tiết theo role ở từng controller chưa được implement đồng đều trong codebase — đây là điểm còn hạn chế.
+
+---
+
+## 13. Kiến trúc hệ thống
+
+```mermaid
+graph TD
+    Browser["Trình duyệt Web\n(React + Vite)"]
+    BE["Backend API\n(Spring Boot 3.1)"]
+    PG["PostgreSQL\n(nhahocduong schema)"]
+    Redis["Redis\n(Cache / OTP)"]
+    Mail["SMTP Server\n(Gmail / OTP email)"]
+    Superset["Viettel DMP\n(Superset dashboard)"]
+
+    Browser -->|"HTTP/JSON, JWT Bearer"| BE
+    BE -->|"JPA / Hibernate"| PG
+    BE -->|"Spring Cache (TTL 5 phút)"| Redis
+    BE -->|"Spring Mail"| Mail
+    Browser -->|"iframe embed"| Superset
 ```
 
-### 9.3 Upsert TeethRecord
+### Mô tả các thành phần
 
-```plantuml
-@startuml
-actor Dentist
-participant "TeethRecordController" as TC
-participant "TeethRecordServiceImpl" as TS
-participant "TeethRecordRepository" as TR
-participant "ExamServiceImpl" as ES
-participant "ExamRepository" as ER
+| Thành phần | Vai trò |
+|---|---|
+| **Frontend** | SPA React + Vite, giao tiếp với backend qua Axios. Quản lý trạng thái bằng Zustand. Routing với React Router v6. UI dùng MUI v5 + TailwindCSS + RSuite. |
+| **Backend API** | Spring Boot 3.1 (Java 17). Chia module theo package: `auth`, `user`, `nhahocduong`, `common`, `system`. Sử dụng Spring Modulith cho kiểm tra kiến trúc module. |
+| **Database** | PostgreSQL. Schema `nhahocduong`. Không dùng migration tự động — schema được quản lý bằng SQL dump (`backup_nhahocduong.sql`). |
+| **Cache** | Redis — dùng cho Spring Cache (`@Cacheable`) với TTL 5 phút mặc định, lưu OTP token, refresh token. |
+| **Authentication** | JWT access token (30 ngày mặc định) + HttpOnly Cookie chứa refresh token (30 ngày). Stateless session. |
+| **Email** | Spring Mail qua SMTP (Gmail) — gửi mã OTP đăng ký và đặt lại mật khẩu. |
+| **Báo cáo** | Apache POI (Excel) + OpenPDF (PDF) — xuất trực tiếp từ backend. |
+| **Dashboard nâng cao** | Superset (Viettel DMP) — nhúng iframe trong frontend. |
 
-Dentist -> TC: POST /api/patients/{patientId}/exams/{examId}/teethRecord {TeethRecordDTO}
-TC -> TS: upsertTeethRecord(teethRecordDTO)
-TS -> TR: save(entity)
-TR --> TS: saved entity
-TS --> TC: TeethRecordDTO (với id)
-TC -> ES: updateTeethRecordIdOfExam(examId, createdDto.id())
-note over ES: @Retryable(5 attempts)\n@Transactional(SERIALIZABLE)
-ES -> ER: getReferenceById(examId)
-ER --> ES: Exam
-ES -> ES: exam.setTeethRecord(...)
-ES -> ER: save(exam)
-ER --> ES: updated Exam
-ES --> TC: ExamDTO
-TC --> Dentist: 200 OK TeethRecordDTO
-@enduml
+---
+
+## 14. Công nghệ sử dụng
+
+| Thành phần | Công nghệ | Phiên bản |
+|---|---|---|
+| **Backend language** | Java | 17 |
+| **Backend framework** | Spring Boot | 3.1.0 |
+| **ORM** | Spring Data JPA + Hibernate | — |
+| **Security** | Spring Security | — |
+| **JWT** | JJWT | 0.11.5 |
+| **Database** | PostgreSQL | 17 (Docker image) |
+| **Cache / Session** | Redis | alpine (Docker image) |
+| **Mapping** | MapStruct | 1.5.3.Final |
+| **Code generation** | Lombok | 1.18.30 |
+| **Excel** | Apache POI | 5.2.3 |
+| **PDF** | OpenPDF | 2.0.2 |
+| **API docs** | SpringDoc OpenAPI (Swagger UI) | 2.1.0 |
+| **Metrics** | Micrometer + Prometheus | 1.11.5 |
+| **Build tool** | Maven Wrapper (mvnw) | — |
+| **Module testing** | Spring Modulith | 0.6.0 |
+| **Frontend language** | TypeScript | 5.x |
+| **Frontend framework** | React | 18.2 |
+| **Build tool (FE)** | Vite | 4.x |
+| **UI components** | MUI (Material UI) | 5.13.5 |
+| **CSS framework** | TailwindCSS | 3.3 |
+| **UI extras** | RSuite, Headless UI, Heroicons | — |
+| **HTTP client** | Axios | 1.4 |
+| **State management** | Zustand | 4.3.8 |
+| **Form** | React Hook Form + Formik + Yup | — |
+| **Routing** | React Router DOM | 6.x |
+| **Data fetching** | React Query | 3.x |
+| **Containers** | Docker + Docker Compose | — |
+
+---
+
+## 15. Cấu trúc thư mục
+
+```
+nhd/                                  # Thư mục gốc repository
+├── nhahocduongbe/                    # Backend (Spring Boot)
+│   ├── src/main/java/
+│   │   └── vn/viettel/bvrhm/nhahocduong/api/
+│   │       ├── auth/                 # Xác thực, JWT, OTP, refresh token
+│   │       │   ├── filter/           # JwtAuthenticationFilter
+│   │       │   └── internal/
+│   │       │       ├── controller/   # AuthenticationController, PasswordResetController
+│   │       │       ├── entity/       # LoginLog, OtpToken, RefreshToken, UserPassword, Policy, Rule
+│   │       │       └── service/      # AuthenticationService, JwtService, OtpService
+│   │       ├── user/                 # Quản lý người dùng và vai trò
+│   │       │   └── internal/
+│   │       │       ├── controller/   # AdminController, UserController, RoleController
+│   │       │       └── entity/       # User, Role
+│   │       ├── nhahocduong/          # Logic nghiệp vụ chính
+│   │       │   └── internal/
+│   │       │       ├── controller/   # 17 controller (Patient, Exam, Organization, ...)
+│   │       │       ├── entity/       # 18 entity (Patient, Exam, ExamCampaign, ...)
+│   │       │       ├── service/impl/ # 17 service implementation
+│   │       │       ├── repository/   # Spring Data JPA repository
+│   │       │       ├── dto/          # Data Transfer Objects
+│   │       │       ├── mapper/       # MapStruct mappers
+│   │       │       └── data/excel/   # Logic đọc/ghi file Excel
+│   │       ├── common/               # Dùng chung: BaseEntity, AreaController, ...
+│   │       └── system/
+│   │           ├── security/         # SecurityConfig, AuthenticationProvider
+│   │           └── openapi/          # OpenApiConfig (Swagger)
+│   ├── src/main/resources/
+│   │   ├── application.yaml          # Cấu hình chung (port 8081, mail, OTP)
+│   │   ├── application-dev.yaml      # Cấu hình development (DB, Redis local)
+│   │   ├── application-prod.yaml     # Cấu hình production
+│   │   └── application-prod-docker.yaml
+│   ├── src/test/                     # 5 unit test class
+│   ├── backup_nhahocduong.sql        # SQL dump — dữ liệu khởi tạo database
+│   ├── docker-compose.yml            # PostgreSQL + Redis containers
+│   ├── Dockerfile                    # Image backend (eclipse-temurin:17-jre-alpine)
+│   ├── .env.example                  # Mẫu biến môi trường
+│   ├── justfile                      # Lệnh tắt: `just dev`
+│   └── pom.xml
+│
+├── nhahocduongfe/                    # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── api/                      # Axios API clients (9 file)
+│   │   │   ├── api.ts                # Axios instance, interceptors
+│   │   │   ├── userApi.ts            # Tài khoản, admin, OTP
+│   │   │   ├── reportApi.ts          # Xuất Excel/PDF
+│   │   │   ├── notificationApi.ts    # Thông báo
+│   │   │   ├── examApi.ts            # Lần khám
+│   │   │   ├── examCampaignApi.ts    # Đợt khám
+│   │   │   └── dentistApi.ts         # Bác sĩ
+│   │   ├── pages/                    # 11 module trang
+│   │   │   ├── Dashboard/            # Tổng quan thống kê
+│   │   │   ├── Patient/              # Danh sách, chi tiết, tạo học sinh
+│   │   │   ├── DentalRecord/         # Hồ sơ khám, sơ đồ hàm răng (Odontogram)
+│   │   │   ├── ExamCampaign/         # Đợt khám, lịch khám, theo dõi, tái khám
+│   │   │   ├── AcademicYear/         # Năm học (chỉ có thư mục, không có file .tsx)
+│   │   │   ├── Management/           # Quản lý người dùng, duyệt tài khoản, nhật ký
+│   │   │   ├── Superset_BC1/         # Nhúng dashboard Superset
+│   │   │   ├── Login/                # Đăng nhập, đổi mật khẩu
+│   │   │   ├── Signup/               # Đăng ký
+│   │   │   ├── ForgotPassword/       # Quên mật khẩu
+│   │   │   └── Logout/               # Đăng xuất
+│   │   ├── components/               # Component dùng chung
+│   │   ├── stores/                   # Zustand stores (auth, user, theme, root)
+│   │   ├── routes/                   # AppRoutes, ProtectedRoutes, PublicRoutes
+│   │   ├── hooks/                    # Custom hooks
+│   │   ├── types/                    # TypeScript types
+│   │   └── utils/                    # Hàm tiện ích
+│   ├── enviroments/                  # [Lỗi chính tả] Thư mục chứa .env
+│   │   ├── .env.development          # VITE_API_URL=http://localhost:8081
+│   │   └── .env.production           # VITE_API_URL=https://...
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── justfile                      # Lệnh tắt: `just dev`
+│
+├── vn-geo/                           # Dữ liệu địa lý Việt Nam (tỉnh/huyện/xã)
+├── seed_students.py                  # Script seed dữ liệu học sinh (Python)
+├── fix_birthdate.py                  # Script sửa ngày sinh (Python)
+├── fix_class_and_index.py            # Script sửa lớp và chỉ số (Python)
+├── fix_ethnic.py                     # Script sửa dân tộc (Python)
+└── .env                              # File môi trường gốc (không commit)
 ```
 
 ---
 
-## 10. Database Design
+## 16. Mô hình dữ liệu
 
-### 10.1 Danh sách bảng
-
-| Bảng | Ý nghĩa nghiệp vụ | PK | Ghi chú |
-|------|-------------------|-----|---------|
-| `USER_USER` | Người dùng hệ thống | `id` BIGSERIAL | FK → `nhahocduong_organization` |
-| `USER_ROLE` | Vai trò người dùng | `id` BIGSERIAL | — |
-| `user_role_mapping` | Mapping User ↔ Role | — | Junction table |
-| `AUTH_PASSWORD` | Mật khẩu riêng (không dùng) | `id` BIGSERIAL | Bảng legacy, không dùng trong flow chính |
-| `nhahocduong_organization` | Trường/sở/phòng/bệnh viện | `id` BIGSERIAL | Self-referencing FK `parent` |
-| `nhahocduong_patient` | Học sinh | `id` BIGSERIAL | FK → organization |
-| `nhahocduong_dentist` | Bác sĩ | `id` BIGSERIAL | FK → USER_USER |
-| `nhahocduong_exam` | Phiếu khám | `id` BIGSERIAL | FK → patient, dentist, organization, 3 record tables |
-| `nhahocduong_teeth_record` | Tình trạng răng | `id` BIGSERIAL | JSONB `record` |
-| `nhahocduong_plaque_record` | Mảng bám (6 điểm) | `id` BIGSERIAL | 6 cột varchar |
-| `nhahocduong_tartar_record` | Vôi răng (6 điểm) | `id` BIGSERIAL | 6 cột varchar |
-| `nhahocduong_treatment_record` | Kết quả điều trị | `id` BIGSERIAL | JSONB `prescription`; FK → exam |
-| `nhahocduong_disease` | Bệnh mãn tính | `id` BIGSERIAL | — |
-| `nhahocduong_exam_disease` | Bệnh mãn tính của phiếu khám | — | Junction table |
-| `nhahocduong_patient_disease` | Bệnh mãn tính của học sinh | — | Junction table |
-| `nhahocduong_medication` | Thuốc/vật tư | `id` BIGSERIAL | `code` UNIQUE |
-| `common_area` | Đơn vị hành chính | — | Bảng địa lý (từ `2-common_area.sql`) |
-
-### 10.2 ERD (Entity Relationship Diagram)
+### Các entity chính và quan hệ
 
 ```mermaid
 erDiagram
     USER_USER {
-        bigint id PK
-        varchar username UK
-        varchar email UK
-        varchar phone_number UK
-        varchar password
-        varchar first_name
-        varchar last_name
-        date birthdate
-        bigint organization FK
-        boolean register_status
+        Long id PK
+        String username
+        String email
+        String password
+        String firstName
+        String lastName
+        Long organization FK
+        Boolean registerStatus
     }
-
     USER_ROLE {
-        bigint id PK
-        varchar code UK
-        varchar name UK
-        boolean status
-        varchar description
+        Long id PK
+        String code
+        String name
+        Boolean status
     }
-
     user_role_mapping {
-        bigint user_id FK
-        bigint role_id FK
+        Long user_id FK
+        Long role_id FK
     }
-
     nhahocduong_organization {
-        bigint id PK
-        varchar name
-        varchar code
-        varchar address
-        varchar area_code
-        bigint head_member FK
-        bigint parent FK
-        int type
-        jsonb classes
-        boolean status
+        Long id PK
+        String name
+        String code
+        String address
+        String areaCode
+        OrganizationType type
+        JSON classes
+        Boolean status
     }
-
     nhahocduong_patient {
-        bigint id PK
-        varchar full_name
-        varchar code
-        varchar health_insurance_number
-        int gender
-        date birthdate
-        varchar ethnic
-        varchar area_type
-        varchar address_line
-        varchar phone_number
-        varchar school_class
-        varchar national_id_num
-        varchar care_taker
-        bigint organization FK
-        boolean status
+        Long id PK
+        String fullName
+        String code
+        LocalDate birthDate
+        Integer gender
+        String ethnic
+        Long organization FK
+        String schoolClass
+        Boolean status
     }
-
-    nhahocduong_dentist {
-        bigint id PK
-        bigint user_id FK
-        varchar title
+    academic_year {
+        Long id PK
+        String name
+        LocalDate startDate
+        LocalDate endDate
+        AcademicYearStatus status
     }
-
+    class {
+        Long id PK
+        String name
+        String grade
+        String room
+        Long school_id FK
+        Long academic_year_id FK
+    }
+    student_class_affiliation {
+        Long id PK
+        Long student_id FK
+        Long class_id FK
+        Long academic_year_id FK
+        AffiliationStatus status
+    }
+    nhahocduong_exam_campaign {
+        Long id PK
+        String name
+        CampaignStatus campaignStatus
+        LocalDate startDate
+        LocalDate endDate
+    }
+    nhahocduong_exam_schedule {
+        Long id PK
+        Long campaign_id FK
+        Long organization_id FK
+        String schoolClass
+        LocalDate examDate
+    }
     nhahocduong_exam {
-        bigint id PK
-        bigint patient_id FK
-        bigint dentist_id FK
-        bigint organization_id FK
-        varchar class
-        varchar year
-        bigint profile_number UK
-        date date
-        bigint teeth_record_id FK
-        bigint plaque_record_id FK
-        bigint tartar_record_id FK
-        boolean status
+        Long id PK
+        Long patient_id FK
+        Long dentist_id FK
+        Long organization_id FK
+        Long campaign_id FK
+        LocalDate date
+        LocalDate reExamDate
+        String pathologyAssessment
+        String treatmentNote
+        String imageUpperUrl
+        String imageLowerUrl
     }
-
     nhahocduong_teeth_record {
-        bigint id PK
-        jsonb record
+        Long id PK
+        JSON record
     }
-
-    nhahocduong_plaque_record {
-        bigint id PK
-        varchar "17-16n"
-        varchar "11n"
-        varchar "26-27n"
-        varchar "47-46t"
-        varchar "31n"
-        varchar "36-37t"
-    }
-
-    nhahocduong_tartar_record {
-        bigint id PK
-        varchar "17-16n"
-        varchar "11n"
-        varchar "26-27n"
-        varchar "47-46t"
-        varchar "31n"
-        varchar "36-37t"
-    }
-
     nhahocduong_treatment_record {
-        bigint id PK
-        varchar treatment_service
-        varchar dentist_name
-        varchar diagnosis
-        varchar tooth
-        jsonb prescription
-        bigint exam FK
-        boolean status
+        Long id PK
+        Long exam_id FK
     }
 
-    nhahocduong_disease {
-        bigint id PK
-        varchar code
-        varchar name
-    }
-
-    nhahocduong_exam_disease {
-        bigint exam_id FK
-        bigint disease_id FK
-    }
-
-    nhahocduong_patient_disease {
-        bigint patient_id FK
-        bigint disease_id FK
-    }
-
-    nhahocduong_medication {
-        bigint id PK
-        varchar code UK
-        varchar name
-        varchar unit
-    }
-
-    USER_USER ||--o{ user_role_mapping : "has"
-    USER_ROLE ||--o{ user_role_mapping : "assigned to"
-    USER_USER }o--o| nhahocduong_organization : "belongs to"
-    nhahocduong_organization ||--o{ nhahocduong_patient : "has"
-    nhahocduong_organization |o--o| nhahocduong_organization : "parent"
-    nhahocduong_organization |o--o| USER_USER : "head_member"
-    nhahocduong_patient ||--o{ nhahocduong_exam : "has"
-    nhahocduong_dentist ||--o{ nhahocduong_exam : "performs"
-    nhahocduong_organization ||--o{ nhahocduong_exam : "location"
-    nhahocduong_exam |o--o| nhahocduong_teeth_record : "has"
-    nhahocduong_exam |o--o| nhahocduong_plaque_record : "has"
-    nhahocduong_exam |o--o| nhahocduong_tartar_record : "has"
-    nhahocduong_exam ||--o{ nhahocduong_treatment_record : "has"
-    nhahocduong_exam ||--o{ nhahocduong_exam_disease : "has"
-    nhahocduong_disease ||--o{ nhahocduong_exam_disease : "in"
-    nhahocduong_patient ||--o{ nhahocduong_patient_disease : "has"
-    nhahocduong_disease ||--o{ nhahocduong_patient_disease : "in"
-    USER_USER ||--o{ nhahocduong_dentist : "is"
+    USER_USER ||--o{ user_role_mapping : "có"
+    USER_ROLE ||--o{ user_role_mapping : "gán"
+    USER_USER }o--|| nhahocduong_organization : "thuộc"
+    nhahocduong_patient }o--|| nhahocduong_organization : "học tại"
+    nhahocduong_patient ||--o{ student_class_affiliation : "có"
+    class ||--o{ student_class_affiliation : "chứa"
+    class }o--|| nhahocduong_organization : "thuộc"
+    class }o--|| academic_year : "thuộc"
+    nhahocduong_exam }o--|| nhahocduong_patient : "của"
+    nhahocduong_exam }o--|| nhahocduong_exam_campaign : "thuộc"
+    nhahocduong_exam ||--o| nhahocduong_teeth_record : "có"
+    nhahocduong_exam ||--o{ nhahocduong_treatment_record : "có"
+    nhahocduong_exam_schedule }o--|| nhahocduong_exam_campaign : "thuộc"
 ```
 
-### 10.3 Quan hệ quan trọng
+### Mô tả entity quan trọng
 
-| Quan hệ | Loại | Ghi chú |
-|---------|------|---------|
-| Exam ↔ TeethRecord | One-to-One | `teeth_record_id` UNIQUE trong exam |
-| Exam ↔ PlaqueRecord | One-to-One | `plaque_record_id` UNIQUE |
-| Exam ↔ TartarRecord | One-to-One | `tartar_record_id` UNIQUE |
-| Exam → TreatmentRecord | One-to-Many | Một phiếu khám có nhiều bản ghi điều trị |
-| Exam ↔ Disease | Many-to-Many | Qua `nhahocduong_exam_disease` |
-| Patient ↔ Disease | Many-to-Many | Qua `nhahocduong_patient_disease` |
-| Organization → Organization | Self-referencing | `parent` FK |
-| User ↔ Role | Many-to-Many | Qua `user_role_mapping` |
-| Organization → User | One-to-Many (directMembers) | User có FK `organization` |
-| Organization → User | One-to-One (headMember) | FK `head_member` trong Organization |
+| Entity | Bảng | Mô tả |
+|---|---|---|
+| `User` | `USER_USER` | Tài khoản người dùng hệ thống |
+| `Role` | `USER_ROLE` | Vai trò, liên kết qua `user_role_mapping` |
+| `Organization` | `nhahocduong_organization` | Trường học, lưu danh sách lớp dạng JSON |
+| `Patient` | `nhahocduong_patient` | Học sinh |
+| `AcademicYear` | `academic_year` | Năm học với trạng thái `UPCOMING/CURRENT/COMPLETED` |
+| `Class` | `class` | Lớp học gắn với trường và năm học |
+| `StudentClassAffiliation` | `student_class_affiliation` | Quan hệ học sinh–lớp–năm học với trạng thái `STUDYING/PROMOTED/GRADUATED` |
+| `ExamCampaign` | `nhahocduong_exam_campaign` | Đợt khám với trạng thái `UPCOMING/IN_PROGRESS/COMPLETED/CANCELLED` |
+| `ExamSchedule` | `nhahocduong_exam_schedule` | Lịch khám theo trường, lớp, ngày, bác sĩ |
+| `Exam` | `nhahocduong_exam` | Hồ sơ một lần khám, có ảnh trước/sau điều trị |
+| `TeethRecord` | `nhahocduong_teeth_record` | Sơ đồ hàm răng dạng JSON `Map<Tooth, ToothCondition>` |
+| `PlaqueRecord` | `nhahocduong_plaque_record` | Chỉ số mảng bám |
+| `TartarRecord` | `nhahocduong_tartar_record` | Chỉ số cao răng |
+| `TreatmentRecord` | `nhahocduong_treatment_record` | Biên bản điều trị từng lần khám |
+| `Notification` | `nhahocduong_notification` | Thông báo nội bộ cho bác sĩ |
+| `SystemLog` | `system_log` | Ghi log thao tác quan trọng (chuyển năm, rollback) |
+| `LoginLog` | `LOGIN_LOG` | Nhật ký đăng nhập |
+| `OtpToken` | — | Lưu OTP và reset token trong Redis |
+| `RefreshToken` | — | Refresh token liên kết với User |
+| `BaseEntity` | — | Lớp cha: `status`, `createdDate`, `updatedDate`, `createdBy`, `updatedBy` |
 
 ---
 
-## 11. Architecture Design
+## 17. Các luồng nghiệp vụ quan trọng
 
-### 11.1 Kiến trúc tổng thể
-
-Hệ thống theo kiến trúc **Layered Architecture (Modular Monolith)** với Spring Modulith.
-
-```plantuml
-@startuml
-package "Client (Frontend)" {
-  [Browser / Mobile App]
-}
-
-package "API Layer (Spring Boot)" {
-  package "auth module" {
-    [AuthenticationController]
-    [JwtAuthenticationFilter]
-    [AuthenticationService]
-    [JwtService]
-    [AuthorizationService]
-  }
-  
-  package "user module" {
-    [UserController]
-    [AdminController]
-    [UserService]
-    [RoleService]
-  }
-  
-  package "nhahocduong module" {
-    [OrganizationController]
-    [PatientController]
-    [ExamController]
-    [TeethRecordController]
-    [PlaqueRecordController]
-    [TartarRecordController]
-    [TreatmentRecordController]
-    [DiseaseController]
-    [MedicalEnumController]
-  }
-  
-  package "common module" {
-    [AreaController]
-    [AreaService]
-  }
-  
-  package "system" {
-    [SecurityConfig]
-    [DatabaseConfig]
-    [OpenApiConfig]
-  }
-}
-
-package "Data Layer" {
-  database "PostgreSQL" {
-    [nhahocduong schema]
-    [user schema]
-    [auth schema]
-  }
-}
-
-package "Observability" {
-  [Prometheus]
-  [Loki]
-  [Promtail]
-}
-
-[Browser / Mobile App] --> [AuthenticationController] : JWT Bearer
-[Browser / Mobile App] --> [PatientController]
-[Browser / Mobile App] --> [ExamController]
-[JwtAuthenticationFilter] --> [SecurityConfig]
-[AuthenticationController] --> [AuthenticationService]
-[PatientController] --> [PatientService]
-[ExamController] --> [ExamServiceImpl]
-[PatientService] --> [PatientRepository]
-[ExamServiceImpl] --> [ExamRepository]
-[PatientRepository] --> [PostgreSQL]
-[ExamRepository] --> [PostgreSQL]
-[Promtail] --> [Loki]
-[Spring Boot Actuator] --> [Prometheus]
-@enduml
-```
-
-### 11.2 Các tầng (Layers)
-
-| Tầng | Package | Vai trò |
-|------|---------|---------|
-| Controller | `.controller` | Nhận HTTP request, validate path/body, gọi Service |
-| Service Interface | `.service` | Định nghĩa contract |
-| Service Impl | `.service.impl` | Business logic |
-| Helper | `.helper` | Utility logic (code generation, Excel) |
-| Repository | `.repository` | JPA data access, custom JPQL queries |
-| Entity | `.entity` | JPA entity mapping |
-| DTO | `.dto` | Data transfer object |
-| Mapper | `.mapper` | MapStruct entity ↔ DTO |
-| Criteria | `.data.criteria` | Search filter objects |
-| Enum | `.constants.enums` | Enum values |
-| Converter | `.entity.converter` | JPA AttributeConverter |
-
-### 11.3 Package Structure
+### 17.1. Luồng đăng ký tài khoản
 
 ```
-vn.viettel.bvrhm.nhahocduong.api
-├── ApiApplication.java          (Main class)
-├── auth/
-│   ├── LoginRequest.java
-│   ├── LoginResponse.java
-│   ├── exception/
-│   ├── filter/JwtAuthenticationFilter.java
-│   └── internal/
-│       ├── controller/AuthenticationController.java
-│       ├── entity/ {Policy, Resource, Rule, UserPassword}
-│       ├── mapper/
-│       ├── object/ {AuthenticationToken, Authority, UserAuthDetails}
-│       ├── repository/ {AuthorizationRepository, UserPasswordRepository}
-│       └── service/ {AuthenticationService, AuthorizationService, JwtService}
-├── common/
-│   └── internal/
-│       ├── controller/AreaController.java
-│       ├── dto/
-│       ├── entity/ {Area, AreaType, BaseEntity, Region}
-│       ├── mapper/
-│       ├── model/response/
-│       ├── repository/AreaRepository.java
-│       ├── service/AreaService.java
-│       └── utils/ExcelUtil.java
-├── nhahocduong/
-│   └── internal/
-│       ├── config/
-│       ├── constants/ {ResponseMessage, enums/}
-│       ├── controller/ (9 controllers)
-│       ├── data/ {PrescriptionItem, criteria/, excel/}
-│       ├── dto/ (14 DTOs)
-│       ├── entity/ (10 entities + converters)
-│       ├── helper/ {OrganizationHelper, PatientHelper}
-│       ├── mapper/ (9 MapStruct mappers)
-│       ├── repository/ (10 repositories)
-│       └── service/ (10 interfaces + 9 impls)
-├── system/
-│   ├── database/DatabaseConfig.java
-│   ├── openapi/OpenApiConfig.java
-│   └── security/ {AuthenticationProvider, SecurityConfig}
-└── user/
-    ├── exception/
-    └── internal/
-        ├── controller/ {AdminController, RoleController, UserController}
-        ├── dto/ {RoleDTO, UserDTO}
-        ├── entity/ {Role, User}
-        ├── mapper/
-        ├── repository/
-        ├── service/ {RoleService, UserService}
-        └── validator/UserValidator.java
+Người dùng gửi thông tin → Backend gửi OTP qua email
+→ Người dùng nhập OTP → Backend xác thực → Trả về reset token
+→ Người dùng hoàn tất đăng ký (kèm token) → Tài khoản tạo với registerStatus = false
+→ Admin duyệt → registerStatus = true → Người dùng có thể đăng nhập
+```
+
+### 17.2. Luồng đăng nhập
+
+```
+POST /api/auth/login (username + password)
+→ Xác thực password (BCrypt) + kiểm tra registerStatus
+→ Tạo access token (JWT, 30 ngày) + refresh token
+→ Access token trả trong body; Refresh token đặt trong HttpOnly Cookie
+→ Frontend lưu access token vào localStorage, tự động refresh khi gần hết hạn
+```
+
+### 17.3. Luồng chuyển năm học
+
+```
+Admin kiểm tra (POST /validate/{currentYearId})
+→ Hệ thống trả danh sách cảnh báo (học sinh chưa phân lớp, v.v.)
+→ Admin xác nhận chuyển (POST /transition) với sessionId
+→ Backend: tạo lớp mới, cập nhật StudentClassAffiliation
+  - Học sinh lớp 12 → AffiliationStatus.GRADUATED
+  - Học sinh khác → tạo affiliation mới cho năm sau
+→ Ghi SystemLog với oldValue/newValue (JSON) để hỗ trợ rollback
+→ Rollback: POST /rollback/{sessionId} → đọc SystemLog, hoàn tác
+```
+
+### 17.4. Luồng ghi nhận hồ sơ khám
+
+```
+Bác sĩ chọn đợt khám → chọn học sinh (từ danh sách được phân công)
+→ Tạo lần khám (POST /patients/{id}/exams)
+→ Ghi sơ đồ hàm răng (POST /patients/{id}/exams/{examId}/teethRecord)
+→ Ghi mảng bám, cao răng (POST .../plaqueRecord, .../tartarRecord)
+→ Ghi danh sách điều trị (POST .../treatmentRecord)
+→ Cập nhật đánh giá bệnh lý, ghi chú (PATCH /exams/{examId}/assessment)
+→ Upload ảnh trước/sau điều trị (PATCH /exams/{examId}/images)
+→ Đặt ngày tái khám nếu cần
 ```
 
 ---
 
-## 12. API Specification
+## 18. Tài liệu API — Swagger
 
-### 12.1 Base URL
+Backend tích hợp **SpringDoc OpenAPI** (Swagger UI). Sau khi khởi động, truy cập tài liệu API tại:
 
 ```
-http://localhost:8081/api
+http://localhost:8081/swagger-ui.html
+http://localhost:8081/v3/api-docs
 ```
 
-### 12.2 Authentication
+Swagger UI được cấu hình là public endpoint (không yêu cầu xác thực).
 
-Tất cả API (trừ các endpoint công khai) yêu cầu header:
-```
-Authorization: Bearer <JWT_TOKEN>
-```
+### Nhóm endpoint chính
 
-### 12.3 Endpoint Catalog
-
-#### Authentication
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| POST | `/api/auth/login` | Public | Đăng nhập |
-| POST | `/api/user/register` | Public | Đăng ký tài khoản |
-
-**Login Request/Response:**
-```json
-// Request
-{ "username": "admin", "password": "123" }
-
-// Response
-{ "token": "eyJhbGciOiJIUzI1NiJ9..." }
-```
-
-#### User Management
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/admin/waiting` | JWT | Lấy danh sách user chờ duyệt |
-| PUT | `/api/user/{id}/approve` | JWT | Phê duyệt user |
-| DELETE | `/api/user/{id}/reject` | JWT | Từ chối user |
-
-#### Organization
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/organization/all` | JWT | Lấy tất cả tổ chức |
-| GET | `/api/organization/search` | JWT | Tìm kiếm phân trang |
-| GET | `/api/organization/{id}` | JWT | Chi tiết tổ chức |
-| POST | `/api/organization` | JWT | Tạo tổ chức |
-| PUT | `/api/organization/{id}` | JWT | Cập nhật tổ chức |
-| DELETE | `/api/organization/{id}` | JWT | Xóa (soft) tổ chức |
-| POST | `/api/organization/{id}/classes/deletable` | JWT | Kiểm tra lớp có thể xóa |
-
-**Organization Search Params:**
-- `searchText`: tìm theo code hoặc name
-- `areaCode`: mã vùng
-- `type`: loại tổ chức (mặc định: SCHOOL)
-- `status`: true/false (mặc định: true)
-- `page`, `size`, `sort` (Spring Pageable)
-
-#### Patient
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| POST | `/api/patient` | JWT | Tạo học sinh |
-| GET | `/api/patient/{id}` | JWT | Chi tiết học sinh |
-| PUT | `/api/patient/{id}` | JWT | Cập nhật học sinh |
-| DELETE | `/api/patient/{id}` | JWT | Xóa học sinh |
-| GET | `/api/patient` | JWT | Lấy tất cả (phân trang) |
-| GET | `/api/patient/search` | JWT | Tìm kiếm |
-| POST | `/api/patient/excel` | JWT | Import từ Excel |
-| GET | `/api/patient/excel` | JWT | Xuất ra Excel |
-| GET | `/api/patient/excel/template` | JWT | Tải template Excel |
-
-**Patient Search Params:**
-- `searchText`: tìm theo tên hoặc số BHYT
-- `organizationName`: tên trường
-- `areaCode`: mã vùng
-- `schoolClass`: tên lớp
-- `status`: true/false
-
-#### Exam
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/patients/{patientId}/exams` | JWT | Danh sách phiếu khám |
-| GET | `/api/patients/{patientId}/exams/{examId}` | JWT | Chi tiết phiếu khám |
-| POST | `/api/patients/{patientId}/exams` | JWT | Tạo phiếu khám |
-| PUT | `/api/patients/{patientId}/exams` | JWT | Cập nhật phiếu khám |
-| DELETE | `/api/exams/{id}` | JWT | Xóa phiếu khám |
-| GET | `/api/patients/{patientId}/exams/search` | JWT | Tìm kiếm phiếu khám |
-
-#### TeethRecord
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/patients/{patientId}/exams/{examId}/teethRecord` | JWT | Lấy tình trạng răng |
-| POST | `/api/patients/{patientId}/exams/{examId}/teethRecord` | JWT | Lưu tình trạng răng |
-| GET | `/api/teethRecord/{id}` | JWT | Lấy theo id |
-| POST | `/api/teethRecord` | JWT | Tạo độc lập (không qua exam) |
-
-**TeethRecord Body:**
-```json
-{
-  "id": null,
-  "record": {
-    "11": { "problem": "1", "locations": ["X", "Nh"], "treatment": "1" },
-    "36": { "problem": "4", "locations": [], "treatment": "6" }
-  }
-}
-```
-
-#### PlaqueRecord
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/patients/{patientId}/exams/{examId}/plaqueRecord` | JWT | Lấy mảng bám |
-| POST | `/api/patients/{patientId}/exams/{examId}/plaqueRecord` | JWT | Lưu mảng bám |
-
-#### TartarRecord
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/patients/{patientId}/exams/{examId}/tartarRecord` | JWT | Lấy vôi răng |
-| POST | `/api/patients/{patientId}/exams/{examId}/tartarRecord` | JWT | Lưu vôi răng |
-
-#### TreatmentRecord
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/patients/{patientId}/exams/{examId}/treatmentRecord` | JWT | Danh sách điều trị |
-| POST | `/api/patients/{patientId}/exams/{examId}/treatmentRecord` | JWT | Upsert danh sách điều trị |
-| DELETE | `/api/patients/{patientId}/exams/{examId}/treatmentRecord/{id}` | JWT | Xóa 1 bản ghi điều trị |
-
-#### Disease
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/diseases` | JWT | Danh sách bệnh |
-| GET | `/api/patients/{patientId}/exams/{examId}/chronicConditions` | JWT | Bệnh mãn tính của phiếu khám |
-| POST | `/api/patients/{patientId}/exams/{examId}/chronicConditions` | JWT | Cập nhật bệnh mãn tính |
-
-#### Medical Enums
-
-| Method | Endpoint | Auth | Mô tả |
-|--------|----------|------|-------|
-| GET | `/api/tartarCondition` | JWT | Danh sách tình trạng vôi |
-| GET | `/api/plaqueCondition` | JWT | Danh sách tình trạng mảng bám |
-| GET | `/api/toothProblem` | JWT | Danh sách vấn đề răng |
-| GET | `/api/toothSide` | JWT | Danh sách mặt răng |
-| GET | `/api/toothTreatment` | JWT | Danh sách điều trị |
-| GET | `/api/ethnics` | JWT | Danh sách dân tộc |
-
-#### Spring Data REST (Auto-generated)
-
-Một số Repository được annotate `@RepositoryRestResource`, tạo ra thêm các endpoint REST tự động tại `/api`:
-- `/dentists` — CRUD Dentist
-- `/medications` — CRUD Medication
-- `/plaqueRecords`, `/tartarRecords`, `/organizations`, `/patients` — Auto-generated CRUD
-
-> **Rủi ro bảo mật:** Các endpoint auto-generated này không có validation hay authorization riêng.
+| Nhóm | Prefix | Mô tả |
+|---|---|---|
+| Authentication | `/api/auth` | Đăng nhập, đăng xuất, refresh, OTP, đặt lại mật khẩu |
+| User | `/api/user` | Đăng ký, xem thông tin, duyệt/từ chối |
+| Admin | `/api/admin` | Quản lý tài khoản, khóa/mở khóa, nhật ký đăng nhập |
+| Role | `/api/roles` | Danh sách vai trò |
+| Organization | `/api/organization` | CRUD trường học |
+| Patient | `/api/patient` | CRUD học sinh, import/export Excel |
+| Exam | `/api/patients/{id}/exams` | CRUD lần khám, ảnh, đánh giá |
+| TeethRecord | `/api/patients/{id}/exams/{id}/teethRecord` | Sơ đồ hàm răng |
+| PlaqueRecord | `/api/patients/{id}/exams/{id}/plaqueRecord` | Mảng bám |
+| TartarRecord | `/api/patients/{id}/exams/{id}/tartarRecord` | Cao răng |
+| TreatmentRecord | `/api/patients/{id}/exams/{id}/treatmentRecord` | Điều trị |
+| ExamCampaign | `/api/exam-campaigns` | CRUD đợt khám, lịch khám, thông báo |
+| AcademicYear | `/api/academic-years` | CRUD năm học, chuyển năm, rollback |
+| Dashboard | `/api/dashboard` | Thống kê tổng quan |
+| Notification | `/api/notifications` | Thông báo người dùng |
+| Report | `/api/students/{id}/exam-report/pdf` | Xuất PDF phiếu khám |
+| School Report | `/api/schools/export/excel` | Xuất Excel báo cáo trường |
+| Medical Enum | `/api/tartarCondition`, `/api/plaqueCondition`, ... | Danh sách mã tra cứu |
+| Area | `/api/areas` | Tra cứu địa giới hành chính |
+| Dentist | `/api/dentists` | Danh sách bác sĩ |
 
 ---
 
-## 13. Security Design
+## 19. Cơ chế bảo mật
 
-### 13.1 Authentication Flow
-
-```
-Client → [POST /api/auth/login] → AuthenticationController
-    → AuthenticationService.authenticate()
-        → Verify username exists
-        → Verify registerStatus == true
-        → BCrypt verify password
-        → Build JWT claims: {sub: userId, username, roles, organization}
-        → Sign với HS256 key
-    → Return JWT (30 ngày)
-
-Subsequent requests:
-Client → [Any API] → JwtAuthenticationFilter
-    → Extract Bearer token
-    → JwtService.isTokenValid()
-    → Extract userId, username, roles
-    → Build AuthenticationToken → SecurityContextHolder
-    → Proceed to Controller
-```
-
-### 13.2 JWT Structure
-
-```json
-{
-  "sub": "1",                    // userId (String)
-  "iat": 1700000000,
-  "nbf": 1700000000,
-  "exp": 1702592000,             // 30 ngày sau
-  "roles": [{ "id": 1, "code": "QL", "name": "Quản lý", "status": true }],
-  "username": "admin",
-  "organization": { ... }
-}
-```
-
-### 13.3 Public Endpoints (không cần JWT)
-
-Từ `SecurityConfig.java`:
-```
-OPTIONS /**
-/swagger-ui.html, /swagger-ui/**, /v3/api-docs/**, /v3/api-docs.yaml
-/actuator/**
-/api/auth/login
-/api/user/register
-/api/user/hello
-/api/areas/**
-```
-
-### 13.4 CORS Policy
-
-Chỉ cho phép từ `localhost:*` và `127.0.0.1:*`. **Không có domain production** trong cấu hình CORS hiện tại.
+| Cơ chế | Mô tả |
+|---|---|
+| **Authentication** | JWT (access token) + HttpOnly Cookie (refresh token). Stateless — không dùng server-side session. |
+| **Password hashing** | BCrypt (`BCryptPasswordEncoder`). |
+| **OTP** | Mã 6 chữ số gửi qua email, lưu trong Redis với TTL 5 phút mặc định. Giới hạn 5 lần gửi/giờ. |
+| **Authorization** | Spring Security `SecurityFilterChain` — phân biệt endpoint công khai và yêu cầu xác thực. Phân quyền chi tiết theo role chưa được áp dụng đồng đều. |
+| **CORS** | Cấu hình trong `SecurityConfig`, cho phép `localhost:*` và `127.0.0.1:*`. |
+| **Input validation** | Bean Validation (`jakarta.validation`) ở một số controller và request class. |
+| **Soft delete** | `BaseEntity` có trường `status` (Boolean) — xóa mềm được áp dụng cho hầu hết entity. Bộ lọc `@Where(clause = "status = true")` được dùng ở một số quan hệ trong `Exam`. |
+| **Audit trail (Exam/User)** | `BaseEntity` lưu `createdDate`, `updatedDate`, `createdBy`, `updatedBy`. |
+| **System log (chuyển năm)** | `SystemLog` lưu `action`, `entityType`, `oldValue`, `newValue` dạng JSON để phục vụ rollback. |
+| **Login log** | Bảng `LOGIN_LOG` ghi thời điểm và kết quả đăng nhập. |
+| **Token revocation** | Refresh token được lưu và xóa khỏi database/Redis khi logout hoặc refresh. |
 
 ---
 
-## 14. Technical Debt Analysis
+## 20. Báo cáo và xuất dữ liệu
 
-### TD-001 [CRITICAL] — JWT Signing Key hardcoded
-**File:** `JwtService.java`
-```java
-private static final String JWT_SIGNING_KEY =
-    "6A586E3272357538782F413F4428472D4B6150645367566B5970337336763979";
-```
-**Mức độ:** CRITICAL
-**Rủi ro:** Bất kỳ ai đọc source code đều có thể forge JWT token hợp lệ.
-**Fix:** Chuyển sang environment variable hoặc secrets manager.
+| Loại | Endpoint | Mô tả |
+|---|---|---|
+| **Xuất danh sách học sinh (Excel)** | `GET /api/patient/excel` | Toàn bộ danh sách học sinh |
+| **Template import học sinh (Excel)** | `GET /api/patient/excel/template` | File mẫu để import |
+| **Import học sinh từ Excel** | `POST /api/patient/excel` | Đọc file Excel, tạo hàng loạt |
+| **Báo cáo tổng hợp các trường (Excel)** | `GET /api/schools/export/excel` | Tổng hợp dữ liệu tất cả trường |
+| **Báo cáo học sinh theo trường (Excel)** | `GET /api/schools/{schoolId}/students/export/excel` | Danh sách học sinh một trường |
+| **Phiếu khám học sinh (PDF)** | `GET /api/students/{studentId}/exam-report/pdf` | Phiếu khám cá nhân của một học sinh |
+| **Dashboard nâng cao** | Trang `Superset_BC1` (iframe) | Nhúng dashboard từ Viettel DMP Superset |
 
-### TD-002 [CRITICAL] — anyRequest().permitAll() trong SecurityConfig
-**File:** `SecurityConfig.java`
-```java
-anyRequest().permitAll()  // Tất cả request đều được phép sau JWT filter
-```
-**Mức độ:** CRITICAL
-**Rủi ro:** Không có role-based access control ở tầng HTTP. Mọi user đã đăng nhập đều có thể gọi mọi API.
-**Fix:** Thay bằng `anyRequest().authenticated()` và áp dụng `@PreAuthorize` trên từng endpoint.
-
-### TD-003 [HIGH] — Auth Model chưa được kết nối vào Authorization
-**File:** `Policy.java`, `Resource.java`, `Rule.java`
-**Vấn đề:** Hệ thống có model Policy/Resource/Rule hoàn chỉnh nhưng không được sử dụng trong bất kỳ logic phân quyền nào.
-**Mức độ:** HIGH
-**Rủi ro:** Model chết (dead code), gây nhầm lẫn.
-
-### TD-004 [HIGH] — CORS chỉ cho phép localhost
-**File:** `SecurityConfig.java`
-**Vấn đề:** Không có domain production trong whitelist CORS.
-**Mức độ:** HIGH
-**Fix:** Thêm domain production vào CORS config; đọc từ environment variable.
-
-### TD-005 [HIGH] — Injection trực tiếp của Repository vào Controller
-**File:** `PatientController.java`
-```java
-@Autowired PatientRepository patientRepository;
-@Autowired PatientMapper patientMapper;
-```
-**Vấn đề:** Controller trực tiếp inject Repository — vi phạm layered architecture. Business logic có thể bị bypass.
-**Mức độ:** HIGH
-
-### TD-006 [HIGH] — Spring Data REST tự expose các endpoint không kiểm soát
-**File:** Nhiều Repository annotate `@RepositoryRestResource`
-**Vấn đề:** Tự động expose CRUD endpoints cho Dentist, Medication, PlaqueRecord, TartarRecord mà không có validation hay logging nghiệp vụ.
-**Mức độ:** HIGH
-
-### TD-007 [HIGH] — Duplicate data structure: PlaqueCondition vs TartarCondition
-**File:** `PlaqueCondition.java`, `TartarCondition.java`
-**Vấn đề:** 2 enum hoàn toàn giống nhau về structure và giá trị. `PlaqueCondition` mô tả "Vôi răng" thay vì "Mảng bám" — có thể bị copy-paste sai.
-**Mức độ:** HIGH (gây nhầm lẫn nghiệp vụ)
-
-### TD-008 [MEDIUM] — Hard delete bị comment thay bằng soft delete không nhất quán
-**Vấn đề:** Soft delete dùng `status=false` nhưng `@Where(clause = "status = true")` chỉ được áp dụng ở một số nơi (TeethRecord trong Exam, PlaqueRecord trong Exam, TartarRecord trong Exam). Không phải tất cả query đều tự động lọc.
-**Mức độ:** MEDIUM
-
-### TD-009 [MEDIUM] — Không có validation annotation trên DTO
-**Vấn đề:** Không có `@Valid`, `@NotNull`, `@Size` trên các DTO. Validation được thực hiện thủ công trong service.
-**Mức độ:** MEDIUM
-
-### TD-010 [MEDIUM] — Nhiều TODO comment trong code
-**Các TODO tìm thấy:**
-- `DiseaseController.java`: `// TODO check ownership permission`
-- `TreatmentRecordController.java`: `// TODO check permission ?`
-- `Patient.java`: `// TODO change to localeClassification`, `// TODO nationality`
-- `JwtAuthenticationFilter.java`: `// TODO extract roles — Option 2: load from database`
-- `OrganizationController.java`: TODO trong authorization
-- `AuthorizationService.java`: `// TODO: Optimize author`
-
-### TD-011 [MEDIUM] — ExamSearchCriteria không filter theo areaCode/organizationId
-**File:** `ExamServiceImpl.search()`
-**Vấn đề:** Khi tìm kiếm exam, không áp dụng authorization filter (areaCode/organizationId) như Patient và Organization đã làm.
-**Mức độ:** MEDIUM
-
-### TD-012 [LOW] — Dead code: ExamPlace enum và các cột đã comment
-**File:** `ExamPlace.java`, `Exam.java`
-```java
-// @Convert(converter = ExamPlaceJpaConverter.class)
-// @Column(name = "exam_place")
-// private ExamPlace examPlace;
-```
-Nhiều cột trong Exam entity bị comment out (`exam_place`, `prescription`, `diagnosis`).
-
-### TD-013 [LOW] — AUTH_PASSWORD table không được sử dụng
-**File:** `AuthPasswordRepository`, `5-auth.sql`
-**Vấn đề:** Bảng `AUTH_PASSWORD` tồn tại trong schema và có entity nhưng logic tạo password qua bảng này đã bị comment out. Hiện tại password lưu thẳng vào `USER_USER.password`.
-
-### TD-014 [LOW] — Duplicate insert trong seed data
-**File:** `3-nhahocduong.sql`
-```sql
-insert into nhahocduong_exam_disease values (1, 1), (1, 1), ...  -- duplicate (1,1)
-```
-Không có UNIQUE constraint trên `nhahocduong_exam_disease`, có thể tạo duplicate records.
-
-### TD-015 [MEDIUM] — TreatmentRecord upsert logic có thể có bug
-**File:** `TreatmentRecordServiceImpl.upsertTreatmentRecordsByExamIdAndPatientId`
-```java
-.filter(id -> treatmentRecords.stream()
-    .anyMatch(upsertRecord -> !id.equals(upsertRecord.getId())))
-```
-Logic filter "records không có trong upsert list" có thể sai: `anyMatch(!id.equals(...))` sẽ true ngay khi có bất kỳ element nào khác id, nên tất cả existing records đều bị soft-delete nếu list > 1 item.
-**Mức độ:** HIGH (potential data loss bug)
+Thư viện sử dụng: **Apache POI 5.2.3** cho Excel, **OpenPDF 2.0.2** cho PDF.
 
 ---
 
-## 15. Bug Risk Analysis
+## 21. Hạn chế và chức năng đang phát triển
 
-### BUG-001 [HIGH] — TreatmentRecord upsert xóa nhầm records
-**File:** `TreatmentRecordServiceImpl.java`, phương thức `upsertTreatmentRecordsByExamIdAndPatientId`
+### Chức năng chưa hoàn thiện hoặc bị tắt
 
-Logic tìm records "không có trong danh sách upsert" để soft-delete:
-```java
-filter(id -> treatmentRecords.stream()
-    .anyMatch(upsertRecord -> !id.equals(upsertRecord.getId())))
-```
-**Vấn đề:** Điều kiện này dùng `anyMatch` thay vì `noneMatch`. Nếu list upsert có 2+ items, mọi existing record ID đều match `anyMatch(!id.equals(...))` vì luôn có ít nhất 1 element khác trong list. Kết quả: tất cả existing TreatmentRecords bị soft-delete mỗi lần upsert.
+| Chức năng | Trạng thái |
+|---|---|
+| **Kê đơn thuốc (Prescription)** | Controller có nhưng toàn bộ logic bị comment out — chưa hoạt động |
+| **Container hóa backend** | Dockerfile và service `app` trong `docker-compose.yml` bị comment out — chưa tích hợp vào Compose |
+| **Giám sát (Prometheus + Grafana + Loki)** | Cấu hình có sẵn nhưng bị comment out trong `docker-compose.yml` |
+| **Trang Năm học (AcademicYear) ở FE** | Thư mục `pages/AcademicYear` tồn tại nhưng không có file `.tsx` — chưa có giao diện frontend |
+| **Phân quyền chi tiết theo role** | Backend có entity `Policy` và `Rule` trong module `auth` nhưng chưa được tích hợp vào Security filter |
+| **Backup và Restore database** | Chưa có script hoặc endpoint tự động |
+| **CI/CD pipeline** | Chưa có file cấu hình CI/CD (GitHub Actions, GitLab CI,...) trong repository |
+| **Đồng bộ dữ liệu lớp theo Organization** | Danh sách lớp được lưu trùng lặp cả trong `Organization.classes` (JSON) lẫn bảng `class` riêng — cần làm rõ nguồn sự thật |
 
-### BUG-002 [MEDIUM] — PlaqueRecord lấy theo examId không hiệu quả
-**File:** `PlaqueRecordServiceImpl.getPlaqueRecordByPatientIdAndExamId`
-```java
-examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(patientId, true)
-    .stream().filter(e -> e.getId().equals(examId)).findFirst()
-```
-Load toàn bộ exam của patient rồi filter trong memory — không dùng query trực tiếp theo examId. Hiệu năng kém với patient có nhiều phiếu khám.
+### Hạn chế đã biết
 
-Tương tự ở `TartarRecordServiceImpl` và `TeethRecordServiceImpl`.
-
-### BUG-003 [MEDIUM] — Null Pointer trong generateCode khi areaCode không phải số
-**File:** `OrganizationHelper.generateCode`
-```java
-codeBuilder.append(String.format("%03d", Integer.parseInt(organizationDTO.getAreaCode())));
-```
-Nếu `areaCode` không phải số nguyên (ví dụ: có chứa chữ cái), sẽ throw `NumberFormatException`.
-
-### BUG-004 [MEDIUM] — Stack overflow tiềm năng trong Organization với circular parent reference
-**File:** `Organization.java`
-```java
-@OneToOne
-@JoinColumn(name = "parent", referencedColumnName = "id")
-private Organization parent;
-```
-Nếu vô tình tạo circular reference (A → B → A), Hibernate có thể gặp vấn đề.
-
-### BUG-005 [LOW] — Date format cứng trong Excel import
-**File:** `PatientHelper.extractPatientDataFromSheet`
-```java
-DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss z yyyy");
-```
-Format này dành cho Java Date.toString(). Nếu Excel chứa ngày theo format khác (ví dụ: dd/MM/yyyy), sẽ throw `DateTimeParseException`.
-
-### BUG-006 [LOW] — Actuator endpoints công khai
-**File:** `SecurityConfig.java`
-```java
-.requestMatchers("/actuator/**").permitAll()
-```
-Kết hợp với `application.yaml` comment `include: '*'`, nếu uncomment thì tất cả actuator endpoints (health, env, beans, mappings) sẽ public mà không cần auth.
-
-### BUG-007 [LOW] — Race condition trong sinh code
-**File:** `OrganizationHelper.generateCode`, `PatientHelper.generateCode`
-
-Không có transaction lock khi đọc code cao nhất và tạo code mới:
-```java
-Organization latestOrganization = organizationRepository.findFirstByAreaCodeOrderByCodeDesc(...)
-int orgOrderNumber = ...;
-codeBuilder.append(String.format("%03d", orgOrderNumber + 1));
-```
-2 request đồng thời có thể sinh cùng code.
+- Thư mục môi trường frontend đặt tên là `enviroments` (thiếu chữ "n") — có thể gây nhầm lẫn.
+- Phiên bản Spring Modulith (`0.6.0`) là experimental — API có thể thay đổi theo phiên bản Spring Boot mới.
+- `SecurityConfig` hiện đặt `CORS_ALLOWED_ORIGINS` cứng trong code cho `localhost` — biến `CORS_ALLOWED_ORIGINS` trong `.env.example` chưa được đọc trong `SecurityConfig` đã xác minh.
+- Test coverage còn hạn chế — chỉ có 5 unit test cho một số service.
 
 ---
 
-## 16. Future Improvement Recommendations
+## 22. License
 
-### P0 — Bảo mật (ưu tiên cao nhất)
-
-1. **Di chuyển JWT signing key ra environment variable:**
-   ```yaml
-   jwt:
-     secret: ${JWT_SECRET}
-   ```
-
-2. **Thay `anyRequest().permitAll()` bằng `anyRequest().authenticated()`** và áp dụng `@PreAuthorize` hoặc method security.
-
-3. **Kích hoạt RBAC thực sự** bằng cách nối Policy/Resource/Rule vào filter chain.
-
-4. **Thêm CORS domain production** đọc từ cấu hình.
-
-### P1 — Ổn định hệ thống
-
-5. **Sửa bug BUG-001**: TreatmentRecord upsert — thay `anyMatch` bằng `noneMatch`:
-   ```java
-   .filter(id -> treatmentRecords.stream()
-       .noneMatch(upsertRecord -> id.equals(upsertRecord.getId())))
-   ```
-
-6. **Tối ưu query PlaqueRecord/TartarRecord/TeethRecord** để dùng direct query thay vì load toàn bộ list.
-
-7. **Thêm UNIQUE constraint** cho `nhahocduong_exam_disease` và `nhahocduong_patient_disease`.
-
-8. **Xử lý race condition** trong sinh code tổ chức và học sinh — dùng `SELECT ... FOR UPDATE` hoặc sequence database.
-
-### P2 — Hoàn thiện nghiệp vụ
-
-9. **Implement phân quyền cho Exam search** tương tự Patient và Organization.
-
-10. **Hoàn thiện ExamPlace**: Bỏ comment cột `exam_place` nếu cần hoặc xóa hoàn toàn.
-
-11. **Xử lý TODO permissions** trong DiseaseController và TreatmentRecordController.
-
-12. **Thống nhất PlaqueCondition và TartarCondition**: Kiểm tra lại với nghiệp vụ — nếu chúng thực sự khác nhau thì cần sửa description; nếu giống nhau thì gộp lại.
-
-### P3 — Kỹ thuật
-
-13. **Thêm Bean Validation** (`@NotNull`, `@Size`, v.v.) trên DTO để validate tại tầng Controller.
-
-14. **Loại bỏ Repository injection trực tiếp** trong Controller (`PatientController`).
-
-15. **Tắt Spring Data REST** hoặc bảo vệ các auto-generated endpoints.
-
-16. **Thêm migration tool** (Flyway/Liquibase) để quản lý schema version thay vì SQL scripts thủ công.
-
-17. **Pagination cho TeethRecord** nếu dữ liệu lớn.
-
-18. **Logging nghiệp vụ** có cấu trúc (structured logging) cho audit trail.
-
-19. **Unit test và Integration test** — hiện tại source code không có test coverage đáng kể.
+Repository này **chưa khai báo license**. Mọi sử dụng nằm ngoài mục đích nội bộ của nhóm phát triển cần được sự đồng ý của tác giả.
 
 ---
 
-## Phụ lục: Cấu trúc dữ liệu TeethRecord (JSON)
-
-TeethRecord lưu dưới dạng JSONB:
-```json
-{
-  "11": {
-    "problem": "1",
-    "locations": ["X", "Nh"],
-    "treatment": "1"
-  },
-  "36": {
-    "problem": "4",
-    "locations": [],
-    "treatment": "6"
-  }
-}
-```
-
-**Mã răng theo FDI:**
-- Hàm trên phải: 11-18
-- Hàm trên trái: 21-28
-- Hàm dưới trái: 31-38
-- Hàm dưới phải: 41-48
-- Răng sữa hàm trên phải: 51-55
-- Răng sữa hàm trên trái: 61-65
-- Răng sữa hàm dưới trái: 71-75
-- Răng sữa hàm dưới phải: 81-85
-
----
-
-*Tài liệu này được tạo bằng Reverse Engineering từ source code `nhahocduongbe-master`. Mọi nhận định đều có bằng chứng từ code thực tế. Cần cập nhật khi hệ thống thay đổi.*
+*Tài liệu này được tạo bằng cách phân tích trực tiếp source code và configuration trong repository. Mọi mô tả phản ánh trạng thái implementation tại thời điểm phân tích.*
