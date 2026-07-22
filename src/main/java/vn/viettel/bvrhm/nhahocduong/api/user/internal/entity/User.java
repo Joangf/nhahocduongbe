@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import lombok.EqualsAndHashCode;
 import vn.viettel.bvrhm.nhahocduong.api.user.internal.entity.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.entity.BaseEntity;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.entity.RefreshToken;
 
 @Entity
 @Data
@@ -58,6 +61,11 @@ public class User extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "organization")
   private Organization organization;
+
+  @OneToMany(mappedBy = "user")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private List<RefreshToken> refreshTokens;
 
   @Column(name = "register_status")
   private Boolean registerStatus;
