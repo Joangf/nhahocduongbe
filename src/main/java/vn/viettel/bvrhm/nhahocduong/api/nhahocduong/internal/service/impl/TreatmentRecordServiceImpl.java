@@ -39,19 +39,25 @@ public class TreatmentRecordServiceImpl implements TreatmentRecordService {
   public List<TreatmentRecordDTO> upsertTreatmentRecordsByExamIdAndPatientId(
       Long examId, Long patientId, List<TreatmentRecordDTO> treatmentRecordDTOS) {
     ExamDTO examDTO = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
+    if (examDTO == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy phiếu khám");
+    }
     treatmentRecordDTOS.forEach(treatmentRecordDTO -> treatmentRecordDTO.setExamId(examId));
     List<TreatmentRecord> treatmentRecords =
         treatmentRecordMapper.toListEntity(treatmentRecordDTOS);
 
     // Remove treatment record that not in upsert list
-    List<Long> idOfRecordsNotIncluded =
-        examDTO.getTreatmentRecords().stream()
-            .map(TreatmentRecordDTO::getId)
-            .filter(
-                id ->
-                    treatmentRecords.stream()
-                        .noneMatch(upsertRecord -> id.equals(upsertRecord.getId())))
-            .toList();
+    List<Long> idOfRecordsNotIncluded = java.util.Collections.emptyList();
+    if (examDTO.getTreatmentRecords() != null) {
+      idOfRecordsNotIncluded =
+          examDTO.getTreatmentRecords().stream()
+              .map(TreatmentRecordDTO::getId)
+              .filter(
+                  id ->
+                      treatmentRecords.stream()
+                          .noneMatch(upsertRecord -> id.equals(upsertRecord.getId())))
+              .toList();
+    }
     List<TreatmentRecord> treatmentRecordsNotIncluded =
         treatmentRecordRepository.findByIdIsIn(idOfRecordsNotIncluded);
     treatmentRecordsNotIncluded.forEach(record -> record.setStatus(false));

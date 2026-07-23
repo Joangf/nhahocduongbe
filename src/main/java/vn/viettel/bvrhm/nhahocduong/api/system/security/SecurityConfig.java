@@ -59,6 +59,7 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth -> {
+              auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll();
               auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                   .permitAll();
               auth.requestMatchers(

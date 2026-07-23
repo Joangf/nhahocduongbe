@@ -43,6 +43,7 @@ public class TreatmentRecord extends BaseEntity {
    */
   @Convert(converter = PrescriptionJsonConverter.class)
   @Column(name = "prescription", columnDefinition = "jsonb")
+  @org.hibernate.annotations.ColumnTransformer(write = "?::jsonb")
   private List<PrescriptionItem> prescription;
 
   @ManyToOne
