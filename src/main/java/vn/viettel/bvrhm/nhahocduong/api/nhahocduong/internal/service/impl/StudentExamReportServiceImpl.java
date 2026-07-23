@@ -32,21 +32,18 @@ public class StudentExamReportServiceImpl implements StudentExamReportService {
   @Autowired private PatientRepository patientRepository;
   @Autowired private ExamRepository examRepository;
 
+  private final DentalChartSvgRenderer dentalChartRenderer = new DentalChartSvgRenderer();
+
   private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   @Override
-  public byte[] generateExamReportPdf(Long studentId) {
-    Patient patient =
-        patientRepository
-            .findById(studentId)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy học sinh"));
-
-    Exam exam = examRepository.findTopByPatientIdAndStatusOrderByIdDesc(studentId, true);
-    if (exam == null) {
-      throw new ResponseStatusException(
-          HttpStatus.NOT_FOUND, "Học sinh chưa có phiếu khám nào");
+  public byte[] generateExamReportPdf(Long examId) {
+    Exam exam = examRepository.findById(examId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy phiếu khám"));
+            
+    Patient patient = exam.getPatient();
+    if (patient == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy học sinh");
     }
 
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -109,6 +106,59 @@ public class StudentExamReportServiceImpl implements StudentExamReportService {
 
       // ── 1. Teeth Condition ──
       document.add(spacedTitle("1. TÌNH TRẠNG RĂNG", headerFont));
+
+      // ── Dental Chart (SVG → PNG) ──
+      if (exam.getTeethRecord() != null && exam.getTeethRecord().getRecord() != null) {
+        try {
+          byte[] chartPng =
+              dentalChartRenderer.renderDentalChart(exam.getTeethRecord().getRecord());
+          Image chartImage = Image.getInstance(chartPng);
+          chartImage.scaleToFit(500, 250);
+          chartImage.setAlignment(Image.ALIGN_CENTER);
+          document.add(chartImage);
+          
+          // ── Annotation Section (FDI, Mapping, Legend) ──
+          PdfPTable annotationTable = new PdfPTable(2);
+          annotationTable.setWidthPercentage(100);
+          annotationTable.setSpacingBefore(10);
+          annotationTable.setSpacingAfter(10);
+          annotationTable.setWidths(new float[]{1f, 1f}); // 50% 50%
+
+          // Left Column (FDI)
+          byte[] fdiPng = dentalChartRenderer.renderSvgFileToPng("template/Full_FDI_numbering_system.svg", 500f);
+          Image fdiImage = Image.getInstance(fdiPng);
+          fdiImage.scaleToFit(160, 240);
+          fdiImage.setAlignment(Element.ALIGN_CENTER);
+          PdfPCell leftCell = new PdfPCell(fdiImage);
+          leftCell.setBorder(Rectangle.NO_BORDER);
+          leftCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+          leftCell.setVerticalAlignment(Element.ALIGN_TOP);
+          annotationTable.addCell(leftCell);
+
+          // Right Column (Mapping + Legend)
+          PdfPCell rightCell = new PdfPCell();
+          rightCell.setBorder(Rectangle.NO_BORDER);
+          rightCell.setVerticalAlignment(Element.ALIGN_TOP);
+
+          byte[] mappingPng = dentalChartRenderer.renderSvgFileToPng("template/polygon_mapping.svg", 300f);
+          Image mappingImage = Image.getInstance(mappingPng);
+          mappingImage.scaleToFit(140, 140);
+          mappingImage.setAlignment(Element.ALIGN_CENTER);
+          rightCell.addElement(mappingImage);
+
+          PdfPTable legend = buildChartLegend(smallFont);
+          rightCell.addElement(legend);
+
+          annotationTable.addCell(rightCell);
+          document.add(annotationTable);
+
+        } catch (Exception e) {
+          // Fallback: continue without chart if rendering fails
+          document.add(new Paragraph("  [Không thể tạo sơ đồ răng: " + e.getMessage() + "]", smallFont));
+        }
+      }
+
+      // ── Teeth Table ──
       if (exam.getTeethRecord() != null && exam.getTeethRecord().getRecord() != null) {
         PdfPTable teethTable = new PdfPTable(4);
         teethTable.setWidthPercentage(100);
@@ -121,14 +171,15 @@ public class StudentExamReportServiceImpl implements StudentExamReportService {
 
         exam.getTeethRecord().getRecord().forEach(
             (tooth, condition) -> {
-              if (condition != null && condition.getProblem() != null) {
-                teethTable.addCell(new Phrase(tooth.name(), normalFont));
-                teethTable.addCell(new Phrase(condition.getProblem().name(), normalFont));
+              if (condition != null && condition.getProblem() != null 
+                  && condition.getProblem() != vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem.NO_PROBLEM) {
+                teethTable.addCell(new Phrase(tooth.name().replace("_", ""), normalFont));
+                teethTable.addCell(new Phrase(condition.getProblem().getDescription(), normalFont));
                 teethTable.addCell(
                     new Phrase(
                         condition.getLocations() != null
                             ? condition.getLocations().stream()
-                                .map(Enum::name)
+                                .map(vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothSide::getDescription)
                                 .reduce((a, b) -> a + ", " + b)
                                 .orElse("")
                             : "",
@@ -136,7 +187,7 @@ public class StudentExamReportServiceImpl implements StudentExamReportService {
                 teethTable.addCell(
                     new Phrase(
                         condition.getTreatment() != null
-                            ? condition.getTreatment().name()
+                            ? condition.getTreatment().getDescription()
                             : "",
                         normalFont));
               }
@@ -293,5 +344,47 @@ public class StudentExamReportServiceImpl implements StudentExamReportService {
 
   private String nvl(String s, String fallback) {
     return s != null && !s.isEmpty() ? s : fallback;
+  }
+
+  // ── Dental Chart Legend ──
+
+  private PdfPTable buildChartLegend(Font font) {
+    PdfPTable legend = new PdfPTable(4);
+    legend.setWidthPercentage(100);
+    legend.setSpacingBefore(20);
+    legend.setSpacingAfter(10);
+    legend.setWidths(new float[] {0.4f, 1.6f, 0.4f, 1.6f});
+
+    // Row 1
+    addLegendEntry(legend, new Color(255, 255, 255), "Bình thường", font);
+    addLegendEntry(legend, new Color(229, 57, 53), "Sâu", font);
+    // Row 2
+    addLegendEntry(legend, new Color(255, 152, 0), "Sâu trám lại", font);
+    addLegendEntry(legend, new Color(30, 136, 229), "Trám tốt", font);
+    // Row 3
+    addLegendEntry(legend, new Color(97, 97, 97), "Mất do sâu", font);
+    addLegendEntry(legend, new Color(158, 158, 158), "Mất lý do khác", font);
+    // Row 4
+    addLegendEntry(legend, new Color(123, 31, 162), "Bít hố rãnh", font);
+    addLegendEntry(legend, new Color(0, 137, 123), "Trụ cầu", font);
+    // Row 5
+    addLegendEntry(legend, new Color(245, 245, 245), "Chưa mọc", font);
+    addLegendEntry(legend, new Color(253, 216, 53), "Loại trừ", font);
+
+    return legend;
+  }
+
+  private void addLegendEntry(PdfPTable table, Color color, String text, Font font) {
+    PdfPCell colorCell = new PdfPCell();
+    colorCell.setBackgroundColor(color);
+    colorCell.setBorderColor(new Color(150, 150, 150));
+    colorCell.setFixedHeight(10);
+    table.addCell(colorCell);
+
+    PdfPCell textCell = new PdfPCell(new Phrase(text, font));
+    textCell.setBorder(Rectangle.NO_BORDER);
+    textCell.setPaddingLeft(2);
+    textCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    table.addCell(textCell);
   }
 }
