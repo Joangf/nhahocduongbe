@@ -56,9 +56,11 @@ public class RedisCacheConfig implements CachingConfigurer {
 
         // Per-cache TTL config
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
-        cacheConfigs.put("patients",       defaultConfig.entryTtl(Duration.ofMinutes(5)));
-        cacheConfigs.put("reExams",        defaultConfig.entryTtl(Duration.ofMinutes(10)));
-        cacheConfigs.put("dashboardStats", defaultConfig.entryTtl(Duration.ofMinutes(2)));
+        cacheConfigs.put("patients",               defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        cacheConfigs.put("reExams",                defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        cacheConfigs.put("dashboardStats",         defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        cacheConfigs.put("dashboardCampaignStats", defaultConfig.entryTtl(Duration.ofMinutes(2)));  // 4 card top
+        cacheConfigs.put("dashboardQuickStats",    defaultConfig.entryTtl(Duration.ofMinutes(2)));  // ExamService stats
 
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(defaultConfig)

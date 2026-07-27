@@ -125,33 +125,48 @@
 package vn.viettel.bvrhm.nhahocduong.api.auth.internal.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
+
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.viettel.bvrhm.nhahocduong.api.auth.LoginRequest;
 import vn.viettel.bvrhm.nhahocduong.api.auth.LoginResponse;
 import vn.viettel.bvrhm.nhahocduong.api.auth.exception.InvalidCredentialException;
+import vn.viettel.bvrhm.nhahocduong.api.auth.TokenPair;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthenticationService;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.JwtService;
+
 
 @RestController
 @RequestMapping(path = "/api/auth")
 public class AuthenticationController {
+
+  private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+  private static final Duration REFRESH_TOKEN_COOKIE_TTL = Duration.ofDays(30);
 
   @Autowired AuthenticationService authenticationService;
   @Autowired JwtService jwtService;
   @Autowired HttpServletRequest request;
 
   @PostMapping("/login")
-  public org.springframework.http.ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     try {
-      LoginResponse loginResponse = authenticationService.authenticate(loginRequest);
-      return org.springframework.http.ResponseEntity.ok(loginResponse);
+      TokenPair tokenPair = authenticationService.authenticate(loginRequest);
+      return ResponseEntity.ok()
+          .header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(tokenPair.refreshToken()).toString())
+          .body(new LoginResponse(tokenPair.accessToken()));
     } catch (InvalidCredentialException e) {
-      return org.springframework.http.ResponseEntity
+      return ResponseEntity
           .status(HttpStatus.UNAUTHORIZED)
           .body(java.util.Map.of("error", "Tên đăng nhập hoặc mật khẩu không đúng"));
     }
@@ -163,15 +178,55 @@ public class AuthenticationController {
   }
 
   @PostMapping("/logout")
-  public org.springframework.http.ResponseEntity<?> logout() {
+  public ResponseEntity<?> logout(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
     String authHeader = request.getHeader("Authorization");
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7);
       if (jwtService.isTokenValid(token)) {
         String username = jwtService.extractUsername(token);
-        authenticationService.logout(username);
+        authenticationService.logout(username, refreshToken);
       }
     }
-    return org.springframework.http.ResponseEntity.ok().build();
+
+    ResponseCookie clearedCookie = ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, "")
+        .httpOnly(true)
+        .secure(request.isSecure())
+        .sameSite("Lax")
+        .path("/api/auth")
+        .maxAge(0)
+        .build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, clearedCookie.toString())
+        .build();
   }
+  @Transactional
+  @PostMapping("/refresh")
+  public ResponseEntity<?> refreshToken(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(java.util.Map.of("error", "Refresh token không hợp lệ"));
+    }
+
+    try {
+      TokenPair tokenPair = authenticationService.refreshToken(refreshToken);
+      return ResponseEntity.ok()
+          .header(HttpHeaders.SET_COOKIE, buildRefreshTokenCookie(tokenPair.refreshToken()).toString())
+          .body(new LoginResponse(tokenPair.accessToken()));
+    } catch (InvalidCredentialException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(java.util.Map.of("error", "Refresh token không hợp lệ"));
+    }
+  }
+
+  private ResponseCookie buildRefreshTokenCookie(String refreshToken) {
+    return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, refreshToken)
+        .httpOnly(true)
+        .secure(request.isSecure())
+        .sameSite("Lax")
+        .path("/api/auth")
+        .maxAge(REFRESH_TOKEN_COOKIE_TTL)
+        .build();
+  }
+  
 }

@@ -39,7 +39,6 @@ public class AreaServiceUnitTest {
             List<Area> ancestor = new ArrayList<>();
             List<AreaDTO> ancestorDto = new ArrayList<>();
             Area area = new Area();
-            area.setActive(0);
             area.setAncestor(ancestor);
             area.setCode("1");
             area.setId(0);

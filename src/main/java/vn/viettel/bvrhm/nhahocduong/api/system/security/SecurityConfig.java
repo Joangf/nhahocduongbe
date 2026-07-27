@@ -34,6 +34,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
     configuration.setAllowedOriginPatterns(
         List.of(
             "http://localhost:*",
@@ -57,6 +58,7 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth -> {
+              auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll();
               auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                   .permitAll();
               auth.requestMatchers(
@@ -66,9 +68,17 @@ public class SecurityConfig {
                   .permitAll()
                   .requestMatchers("/api/auth/login")
                   .permitAll()
+                  .requestMatchers("/api/auth/logout")
+                  .permitAll()
+                  .requestMatchers("/api/auth/refresh")
+                  .permitAll()
                   .requestMatchers("/api/auth/guest-login")
                   .permitAll()
                   .requestMatchers("/api/auth/forgot-password")
+                  .permitAll()
+                  .requestMatchers("/api/roles")
+                  .permitAll()
+                  .requestMatchers("/api/organization/search*")
                   .permitAll()
                   .requestMatchers("/api/auth/register-send-otp")
                   .permitAll()
@@ -85,7 +95,7 @@ public class SecurityConfig {
                   .requestMatchers("/api/areas/**")
                   .permitAll()
                   .anyRequest()
-                  .permitAll();
+                  .authenticated();
             })
         // .authenticationProvider(jwtAuthenticationFilter)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

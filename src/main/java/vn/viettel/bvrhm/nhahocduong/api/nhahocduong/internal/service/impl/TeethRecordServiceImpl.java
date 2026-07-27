@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.TeethRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.TeethRecord;
@@ -13,6 +14,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.TeethRecord
 import static java.util.Objects.isNull;
 
 @Service
+@Transactional(readOnly = true)
 public class TeethRecordServiceImpl implements TeethRecordService {
 
   @Autowired TeethRecordRepository teethRecordRepository;
@@ -44,6 +46,7 @@ public class TeethRecordServiceImpl implements TeethRecordService {
   }
 
   @Override
+  @Transactional
   public TeethRecordDTO upsertTeethRecord(TeethRecordDTO teethRecordDTO) {
     //    System.out.println(
     //        ReflectionToStringBuilder.toString(teethRecordDTO, new RecursiveToStringStyle()));

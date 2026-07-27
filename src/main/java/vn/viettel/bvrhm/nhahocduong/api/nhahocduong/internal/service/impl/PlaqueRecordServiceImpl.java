@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PlaqueRecordDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.PlaqueRecord;
@@ -13,6 +14,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.PlaqueRecor
 import static java.util.Objects.isNull;
 
 @Service
+@Transactional(readOnly = true)
 public class PlaqueRecordServiceImpl implements PlaqueRecordService {
   @Autowired private PlaqueRecordRepository plagueRecordRepository;
   @Autowired private ExamRepository examRepository;
@@ -37,6 +39,7 @@ public class PlaqueRecordServiceImpl implements PlaqueRecordService {
   }
 
   @Override
+  @Transactional
   public PlaqueRecordDTO upsertPlaqueRecord(PlaqueRecordDTO plaqueRecordDTO) {
     var entity = plaqueRecordMapper.toEntity(plaqueRecordDTO);
     var savedEntity = plagueRecordRepository.save(entity);
