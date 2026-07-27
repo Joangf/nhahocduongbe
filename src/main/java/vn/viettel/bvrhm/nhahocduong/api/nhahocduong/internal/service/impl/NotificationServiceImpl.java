@@ -10,11 +10,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constant.SseConstants.NotificationType;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.NotificationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Notification;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.NotificationMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.NotificationRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.NotificationService;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.SseNotificationService;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -23,6 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Autowired private NotificationRepository notificationRepository;
   @Autowired private NotificationMapper notificationMapper;
+  @Autowired private SseNotificationService sseNotificationService;
 
   private Long getCurrentUserId() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,13 +40,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
-  @Override
-  @Transactional
-  public NotificationDTO createNotification(NotificationDTO dto) {
-    Notification notification = notificationMapper.toEntity(dto);
-    Notification saved = notificationRepository.save(notification);
-    return notificationMapper.toDto(saved);
-  }
 
   @Override
   @Transactional(readOnly = true)
@@ -87,14 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
   @Transactional
   public void markAllAsRead() {
     Long userId = getCurrentUserId();
-    List<Notification> unreadNotifications =
-        notificationRepository.findByRecipientIdAndStatusOrderByCreatedDateDesc(userId, true);
-    for (Notification notification : unreadNotifications) {
-      if (!notification.getIsRead()) {
-        notification.setIsRead(true);
-      }
-    }
-    notificationRepository.saveAll(unreadNotifications);
+    notificationRepository.markAllAsReadByRecipientId(userId);
   }
 
   @Override
@@ -121,5 +111,25 @@ public class NotificationServiceImpl implements NotificationService {
 
     notificationRepository.save(notification);
     log.info("Created notification for userId={}, campaignId={}", userId, campaignId);
+
+    // Push real-time SSE to the user
+    sseNotificationService.sendNotification(
+        userId.toString(), title, notification.getMessage(), NotificationType.SCHEDULE);
+  }
+
+  @Override
+  @Transactional
+  public void createNotificationForAdmin(Long adminId, String title, String message) {
+    Notification notification = new Notification();
+    notification.setRecipientId(adminId);
+    notification.setTitle(title);
+    notification.setMessage(message);
+
+    notificationRepository.save(notification);
+    log.info("Created admin notification for adminId={}", adminId);
+
+    // Push real-time SSE to admin
+    sseNotificationService.sendNotification(
+        adminId.toString(), title, message, NotificationType.REGISTRATION);
   }
 }

@@ -30,7 +30,7 @@ public class OtpService {
     @Value("${app.otp.expiration-minutes:5}")
     private int expirationMinutes;
 
-    @Value("${app.otp.max-attempts-per-hour:5}")
+    @Value("${app.otp.max-attempts-per-hour:1000}")
     private int maxAttemptsPerHour;
 
     private final SecureRandom random = new SecureRandom();

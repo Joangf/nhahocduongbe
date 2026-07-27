@@ -65,7 +65,7 @@ public class UserAuthDetails implements UserDetails, CredentialsContainer {
 
   @Override
   public String getPassword() {
-    return this.username;
+    return this.password;
   }
 
   @Override

@@ -83,10 +83,8 @@ public class UserService {
         String notificationMessage = "Người dùng \"" + createdUser.getUsername()
             + "\" (" + fullName.trim() + ") vừa đăng ký tài khoản và đang chờ được duyệt.";
         for (User admin : admins) {
-          List<String> details = new ArrayList<>();
-          details.add(notificationMessage);
-          notificationService.createNotificationForDentist(
-              admin.getId(), null, notificationTitle, details);
+          notificationService.createNotificationForAdmin(
+              admin.getId(), notificationTitle, notificationMessage);
         }
       }
     } catch (Exception e) {
