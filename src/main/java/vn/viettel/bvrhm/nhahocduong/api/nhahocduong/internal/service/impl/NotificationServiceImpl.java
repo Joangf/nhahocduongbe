@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constant.SseConstants.NotificationType;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.NotificationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Notification;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.NotificationMapper;
@@ -82,14 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
   @Transactional
   public void markAllAsRead() {
     Long userId = getCurrentUserId();
-    List<Notification> unreadNotifications =
-        notificationRepository.findByRecipientIdAndStatusOrderByCreatedDateDesc(userId, true);
-    for (Notification notification : unreadNotifications) {
-      if (!notification.getIsRead()) {
-        notification.setIsRead(true);
-      }
-    }
-    notificationRepository.saveAll(unreadNotifications);
+    notificationRepository.markAllAsReadByRecipientId(userId);
   }
 
   @Override
@@ -118,7 +113,8 @@ public class NotificationServiceImpl implements NotificationService {
     log.info("Created notification for userId={}, campaignId={}", userId, campaignId);
 
     // Push real-time SSE to the user
-    sseNotificationService.sendNotification(userId.toString(), title, notification.getMessage());
+    sseNotificationService.sendNotification(
+        userId.toString(), title, notification.getMessage(), NotificationType.SCHEDULE);
   }
 
   @Override
@@ -133,6 +129,7 @@ public class NotificationServiceImpl implements NotificationService {
     log.info("Created admin notification for adminId={}", adminId);
 
     // Push real-time SSE to admin
-    sseNotificationService.sendNotification(adminId.toString(), title, message);
+    sseNotificationService.sendNotification(
+        adminId.toString(), title, message, NotificationType.REGISTRATION);
   }
 }
