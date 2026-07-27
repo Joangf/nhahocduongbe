@@ -72,6 +72,8 @@ public class SecurityConfig {
                   .permitAll()
                   .requestMatchers("/api/auth/refresh")
                   .permitAll()
+                  .requestMatchers("/api/sse/notifications")
+                  .permitAll()
                   .requestMatchers("/api/auth/guest-login")
                   .permitAll()
                   .requestMatchers("/api/auth/forgot-password")
