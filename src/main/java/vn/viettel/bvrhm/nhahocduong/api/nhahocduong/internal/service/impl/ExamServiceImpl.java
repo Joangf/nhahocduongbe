@@ -2,6 +2,7 @@ package vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl;
 
 import static java.util.Objects.isNull;
 
+import java.util.ArrayList;
 //import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -32,6 +33,7 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.ExamService;
 
 @Service
+@Transactional(readOnly = true)
 public class ExamServiceImpl implements ExamService {
 
   @Autowired private ExamRepository examRepository;
@@ -62,7 +64,7 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
-  @CacheEvict(value = {"reExams", "dashboardStats"}, allEntries = true)
+  @Transactional
   public ExamDTO createExam(ExamDTO newExamDTO) {
     Exam newExam = examMapper.toEntity(newExamDTO);
     newExam.setId(null);
@@ -136,6 +138,7 @@ public class ExamServiceImpl implements ExamService {
 
   /** Bệnh mãn tính */
   @Override
+  @Transactional
   public List<String> updateChronicDiseasesCodesByExamId(
       Long examId, List<String> diseaseCodeList) {
     Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
@@ -177,7 +180,7 @@ public class ExamServiceImpl implements ExamService {
 //  }
 
   @Override
-  @CacheEvict(value = {"reExams", "dashboardStats"}, allEntries = true)
+  @Transactional
   public boolean delete(Long id) {
     Exam exam =
         examRepository
@@ -192,7 +195,7 @@ public class ExamServiceImpl implements ExamService {
   }
 
   @Override
-  @CacheEvict(value = "reExams", allEntries = true)
+  @Transactional
   public ExamDTO updateExam(ExamDTO examDTO) {
     Exam exam = examRepository.findExamByIdAndPatientId(examDTO.getId(), examDTO.getPatientId());
     if (isNull(exam)) {
@@ -217,25 +220,48 @@ public class ExamServiceImpl implements ExamService {
   @Override
   @Cacheable(value = "reExams")
   public List<ExamDTO> getReExams() {
-    List<Exam> exams = examRepository.findUpcomingReExams();
-    return examMapper.toDtoList(exams);
+    // FIX: dùng findAllActiveWithDetails() → JOIN FETCH TeethRecord, tránh N+1
+    List<Exam> allExams = examRepository.findAllActiveWithDetails();
+
+    List<ExamDTO> reExams = new ArrayList<>();
+    for (Exam exam : allExams) {
+      TeethRecord tr = exam.getTeethRecord();
+      if (tr != null && tr.getRecord() != null) {
+        boolean hasCaries = tr.getRecord().values().stream()
+            .anyMatch(cond -> cond != null
+                && cond.getProblem() == vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem.CARIES);
+        if (hasCaries) {
+          ExamDTO dto = examMapper.toDto(exam);
+          // Tính ngày tái khám dự kiến = ngày khám + 6 tháng
+          if (exam.getDate() != null) {
+            dto.setReExamDate(exam.getDate().plusMonths(6));
+          } else {
+            dto.setReExamDate(java.time.LocalDate.now().plusMonths(6));
+          }
+          dto.setReExamNote("Cần tái khám điều trị sâu răng");
+          reExams.add(dto);
+        }
+      }
+    }
+    return reExams;
   }
 
   @Override
-  @Cacheable(value = "dashboardStats")
+  @Cacheable(value = "dashboardQuickStats")
   public vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO getDashboardStats() {
     vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO stats = new vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DashboardStatsDTO();
-    
-    long totalCampaigns = examCampaignRepository.count();
+
+    long totalCampaigns  = examCampaignRepository.count();
+    // FIX: countByStatus() thay vì findAllByStatus().size() — tránh load toàn bộ list
     long activeCampaigns = examCampaignRepository.countByStatus(true);
-    long totalStudents = patientRepository.count();
-    long totalExamined = examRepository.countTotalExamined();
-    
+    long totalStudents   = patientRepository.count();
+    long totalExamined   = examRepository.countTotalExamined();
+
     stats.setTotalCampaigns(totalCampaigns);
     stats.setActiveCampaigns(activeCampaigns);
     stats.setTotalStudents(totalStudents);
     stats.setTotalExamined(totalExamined);
-    
+
     return stats;
   }
 

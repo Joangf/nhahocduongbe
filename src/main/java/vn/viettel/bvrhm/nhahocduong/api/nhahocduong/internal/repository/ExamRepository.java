@@ -57,8 +57,12 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
   @Query("SELECT COUNT(e) FROM Exam e WHERE e.status = true OR e.status IS NULL")
   Long countTotalExamined();
 
-  @Query("SELECT COUNT(e) FROM Exam e WHERE e.organization.id = :orgId AND (e.status = true OR e.status IS NULL)")
-  Long countTotalExaminedByOrganization(@Param("orgId") Long orgId);
+  /**
+   * Dashboard query: fetch active exams với JOIN FETCH để tránh N+1 lazy loading.
+   * Load Organization và TeethRecord trong cùng 1 SQL query.
+   */
+  @Query("SELECT DISTINCT e FROM Exam e LEFT JOIN FETCH e.organization LEFT JOIN FETCH e.teethRecord WHERE e.status = true")
+  List<Exam> findAllActiveWithDetails();
 
   Exam findTopByPatientIdAndStatusOrderByIdDesc(Long patientId, boolean status);
 
