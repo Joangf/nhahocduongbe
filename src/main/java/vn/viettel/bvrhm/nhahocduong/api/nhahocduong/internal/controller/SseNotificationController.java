@@ -27,16 +27,14 @@ public class SseNotificationController {
 
     @PostMapping("/ticket")
     public Map<String, String> createTicket(
-            @RequestHeader(value = "Authorization", required = false) String authHeader,
-            @RequestParam(required = false) String token) {
-        String jwtToken = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwtToken = authHeader.substring(7);
-        } else if (token != null && !token.isBlank()) {
-            jwtToken = token;
+            @RequestHeader(value = "Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Thiếu Authorization header");
         }
 
-        if (jwtToken == null || !jwtService.isTokenValid(jwtToken)) {
+        String jwtToken = authHeader.substring(7);
+
+        if (!jwtService.isTokenValid(jwtToken)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token không hợp lệ hoặc đã hết hạn");
         }
 
@@ -47,20 +45,15 @@ public class SseNotificationController {
 
     @GetMapping(value = "/notifications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(
-            @RequestParam(required = false) String ticket,
-            @RequestParam(required = false) String token) {
+            @RequestParam(required = false) String ticket) {
         String userId = null;
 
         if (ticket != null && !ticket.isBlank()) {
             userId = service.consumeTicket(ticket);
         }
 
-        if (userId == null && token != null && !token.isBlank() && jwtService.isTokenValid(token)) {
-            userId = jwtService.extractUserId(token);
-        }
-
         if (userId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Xác thực không hợp lệ hoặc ticket đã hết hạn");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Ticket không hợp lệ hoặc đã hết hạn");
         }
 
         return service.subscribe(userId);
