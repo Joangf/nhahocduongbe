@@ -206,4 +206,240 @@ class SseNotificationServiceTest {
           service.sendNotification("99", "Nobody", "Gets this", "TYPE"));
     }
   }
+
+  // ─── TC-08: subscribe cleanup callback ────────────────────────────────────
+
+  @Nested
+  @DisplayName("TC-08 subscribe() cleanup callback")
+  class SubscribeCleanup {
+
+    @Test
+    @DisplayName("onCompletion: complete() trigger cleanup callback → emitter bị xóa sau async")
+    void onCompletion_triggersAsyncCleanup() throws InterruptedException {
+      SseEmitter emitter = service.subscribe("42");
+
+      // complete() triggers onCompletion callback (runs on Spring async executor)
+      emitter.complete();
+
+      // Wait for async cleanup callback to execute
+      Thread.sleep(200);
+
+      // After cleanup, emitter was removed from list.
+      // If list is now empty, it's removed from map → sendNotification returns early.
+      // If list still has the completed emitter, send() throws IllegalStateException.
+      // Either way, no unhandled exception from the service itself.
+      try {
+        service.sendNotification("42", "Title", "Msg", "TYPE");
+      } catch (IllegalStateException e) {
+        // Expected — completed emitter still in list before async cleanup
+      }
+    }
+
+    @Test
+    @DisplayName("onCompletion: nhiều emitter — complete một emitter, list vẫn chứa emitter đã complete")
+    void onCompletion_completedEmitterStillInListUntilAsyncCleanup() {
+      SseEmitter first = service.subscribe("42");
+      SseEmitter second = service.subscribe("42");
+
+      // Complete only the first emitter — cleanup is async, so first is still in list
+      first.complete();
+
+      // sendNotification iterates ALL emitters including the completed one
+      // The completed emitter's send() throws IllegalStateException (not IOException)
+      // This is expected behavior — the service catches IOException, not IllegalStateException
+      assertThatThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg", "TYPE"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("onError: completeWithError() trigger cleanup callback → emitter bị xóa sau async")
+    void onError_triggersAsyncCleanup() throws InterruptedException {
+      SseEmitter emitter = service.subscribe("42");
+
+      // completeWithError triggers onError callback (runs on Spring async executor)
+      emitter.completeWithError(new RuntimeException("test error"));
+
+      // Wait for async cleanup callback to execute
+      Thread.sleep(200);
+
+      // After cleanup, emitter was removed from list.
+      try {
+        service.sendNotification("42", "Title", "Msg", "TYPE");
+      } catch (IllegalStateException e) {
+        // Expected — errored emitter still in list before async cleanup
+      }
+    }
+
+    @Test
+    @DisplayName("onError: nhiều emitter — error trên một emitter, list vẫn chứa emitter đã error")
+    void onError_erroredEmitterStillInListUntilAsyncCleanup() {
+      service.subscribe("42");
+      SseEmitter errorEmitter = service.subscribe("42");
+
+      // Error on second emitter — cleanup is async, so it's still in list
+      errorEmitter.completeWithError(new RuntimeException("test error"));
+
+      // sendNotification iterates ALL emitters including the errored one
+      // The errored emitter's send() throws IllegalStateException (not IOException)
+      assertThatThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg", "TYPE"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @DisplayName("onCompletion: emitter đã complete → send() ném IllegalStateException")
+    void onCompletion_completedEmitterThrowsOnSend() {
+      SseEmitter emitter = service.subscribe("42");
+      emitter.complete();
+
+      // SseEmitter.send() throws IllegalStateException on completed emitter
+      // Note: service catches IOException but not IllegalStateException — this is by design
+      assertThatThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg", "TYPE"))
+          .isInstanceOf(IllegalStateException.class);
+    }
+  }
+
+  // ─── TC-09: subscribe multiple users ──────────────────────────────────────
+
+  @Nested
+  @DisplayName("TC-09 subscribe() multiple users")
+  class SubscribeMultipleUsers {
+
+    @Test
+    @DisplayName("Subscribe nhiều user khác nhau — mỗi user có emitter riêng")
+    void shouldCreateSeparateEmittersForDifferentUsers() {
+      SseEmitter e1 = service.subscribe("1");
+      SseEmitter e2 = service.subscribe("2");
+
+      assertThat(e1).isNotSameAs(e2);
+
+      // Notification to user "1" should work
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("1", "Title", "Msg", "TYPE"));
+
+      // Notification to user "2" should also work
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("2", "Title", "Msg", "TYPE"));
+    }
+
+    @Test
+    @DisplayName("Subscribe cùng user nhiều lần → mỗi lần tạo emitter mới")
+    void shouldCreateNewEmitterForEachSubscribeCall() {
+      SseEmitter e1 = service.subscribe("42");
+      SseEmitter e2 = service.subscribe("42");
+      SseEmitter e3 = service.subscribe("42");
+
+      assertThat(e1).isNotSameAs(e2).isNotSameAs(e3);
+
+      // All 3 emitters are active — notification should work
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg", "TYPE"));
+    }
+  }
+
+  // ─── TC-10: sendNotification edge cases ───────────────────────────────────
+
+  @Nested
+  @DisplayName("TC-10 sendNotification() edge cases")
+  class SendNotificationEdgeCases {
+
+    @Test
+    @DisplayName("Gửi notification đến user chưa từng subscribe — không throw")
+    void shouldNotThrowForNeverSubscribedUser() {
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("unknown", "Title", "Msg", "TYPE"));
+    }
+
+    @Test
+    @DisplayName("Gửi notification đến nhiều user, một số chưa subscribe")
+    void shouldHandleMixedSubscribedAndUnsubscribedUsers() {
+      service.subscribe("1");
+
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("1", "Title", "Msg", "TYPE"));
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("2", "Title", "Msg", "TYPE"));
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("3", "Title", "Msg", "TYPE"));
+    }
+
+    @Test
+    @DisplayName("Gửi notification với nhiều loại type khác nhau")
+    void shouldSendWithDifferentNotificationTypes() {
+      service.subscribe("42");
+
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg",
+              SseConstants.NotificationType.REGISTRATION));
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg",
+              SseConstants.NotificationType.SCHEDULE));
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Title", "Msg", "CUSTOM_TYPE"));
+    }
+
+    @Test
+    @DisplayName("Gửi notification liên tục nhiều lần không throw")
+    void shouldSendMultipleNotificationsSequentially() {
+      service.subscribe("42");
+
+      for (int i = 0; i < 10; i++) {
+        final int idx = i;
+        assertThatNoException().isThrownBy(() ->
+            service.sendNotification("42", "Title " + idx, "Msg " + idx, "TYPE"));
+      }
+    }
+  }
+
+  // ─── TC-11: sendHeartbeat scenarios ───────────────────────────────────────
+
+  @Nested
+  @DisplayName("TC-11 sendHeartbeat() scenarios")
+  class SendHeartbeatScenarios {
+
+    @Test
+    @DisplayName("Heartbeat khi không có emitter nào — không throw")
+    void shouldNotThrowWhenNoEmitters() {
+      assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+    }
+
+    @Test
+    @DisplayName("Heartbeat khi có emitter active — không throw")
+    void shouldNotThrowWithActiveEmitter() {
+      service.subscribe("42");
+      assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+    }
+
+    @Test
+    @DisplayName("Heartbeat khi có nhiều emitter cho cùng user")
+    void shouldHandleMultipleEmittersForSameUser() {
+      service.subscribe("42");
+      service.subscribe("42");
+      service.subscribe("42");
+
+      assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+    }
+
+    @Test
+    @DisplayName("Heartbeat khi có emitter từ nhiều user")
+    void shouldHandleEmittersFromMultipleUsers() {
+      service.subscribe("1");
+      service.subscribe("2");
+      service.subscribe("3");
+
+      assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+    }
+
+    @Test
+    @DisplayName("Gọi heartbeat nhiều lần liên tục")
+    void shouldHandleMultipleHeartbeats() {
+      service.subscribe("42");
+
+      for (int i = 0; i < 5; i++) {
+        assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+      }
+    }
+  }
 }

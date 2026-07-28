@@ -12,7 +12,9 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +37,8 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.ExamS
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.AssessmentUpdateDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ImageUpdateDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Tooth;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.ToothProblem;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.*;
@@ -514,6 +518,60 @@ class ExamServiceImplTest {
         }
 
         @Test
+        @DisplayName("Only lower image provided — updates lower, leaves upper untouched")
+        void updateImages_onlyLower_updatesLowerPreservesUpper() {
+            // Arrange
+            Exam exam = createMockExam();
+            ImageUpdateDTO dto = new ImageUpdateDTO();
+            dto.setImageLowerUrl("https://new-lower.jpg");
+            dto.setImageLowerTime(LocalDateTime.of(2026, 7, 1, 12, 0));
+            // Upper fields are null — should NOT overwrite
+
+            when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+            when(examRepository.save(any(Exam.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(examMapper.toDto(any(Exam.class))).thenReturn(createMockExamDTO());
+
+            // Act
+            examService.updateImages(1L, dto);
+
+            // Assert
+            verify(examRepository).save(examCaptor.capture());
+            Exam saved = examCaptor.getValue();
+            assertThat(saved.getImageLowerUrl()).isEqualTo("https://new-lower.jpg");
+            assertThat(saved.getImageLowerTime()).isEqualTo(LocalDateTime.of(2026, 7, 1, 12, 0));
+            // Upper preserved
+            assertThat(saved.getImageUpperUrl()).isEqualTo("https://example.com/upper.jpg");
+            assertThat(saved.getImageUpperTime()).isEqualTo(LocalDateTime.of(2026, 3, 15, 10, 0));
+        }
+
+        @Test
+        @DisplayName("All four fields provided — all updated")
+        void updateImages_allFourFields_updatesAll() {
+            // Arrange
+            Exam exam = createMockExam();
+            ImageUpdateDTO dto = new ImageUpdateDTO();
+            dto.setImageUpperUrl("https://new-upper.jpg");
+            dto.setImageUpperTime(LocalDateTime.of(2026, 8, 1, 14, 0));
+            dto.setImageLowerUrl("https://new-lower.jpg");
+            dto.setImageLowerTime(LocalDateTime.of(2026, 8, 1, 14, 30));
+
+            when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
+            when(examRepository.save(any(Exam.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(examMapper.toDto(any(Exam.class))).thenReturn(createMockExamDTO());
+
+            // Act
+            examService.updateImages(1L, dto);
+
+            // Assert
+            verify(examRepository).save(examCaptor.capture());
+            Exam saved = examCaptor.getValue();
+            assertThat(saved.getImageUpperUrl()).isEqualTo("https://new-upper.jpg");
+            assertThat(saved.getImageUpperTime()).isEqualTo(LocalDateTime.of(2026, 8, 1, 14, 0));
+            assertThat(saved.getImageLowerUrl()).isEqualTo("https://new-lower.jpg");
+            assertThat(saved.getImageLowerTime()).isEqualTo(LocalDateTime.of(2026, 8, 1, 14, 30));
+        }
+
+        @Test
         @DisplayName("Exam not found — throws 404")
         void updateImages_examNotFound_throws404() {
             // Arrange
@@ -730,6 +788,60 @@ class ExamServiceImplTest {
             // Assert
             assertThat(result).containsExactly("D01", "D02");
         }
+
+        @Test
+        @DisplayName("Exam not found — throws NoSuchElementException")
+        void updateChronicDiseases_examNotFound_throwsException() {
+            // Arrange
+            when(examRepository.findById(999L)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(() -> examService.updateChronicDiseasesCodesByExamId(999L, List.of("D01")))
+                .isInstanceOf(NoSuchElementException.class);
+        }
+    }
+
+    // ─── getChronicDiseasesCodesByExamId() Tests ──────────────────────
+
+    @Nested
+    @DisplayName("getChronicDiseasesCodesByExamId()")
+    class GetChronicDiseasesCodesTests {
+
+        @Test
+        @DisplayName("Happy path — exam with chronic conditions returns disease codes")
+        void getChronicDiseasesCodes_happyPath_returnsCodes() {
+            // Arrange
+            Exam exam = createMockExam();
+            Disease d1 = new Disease();
+            d1.setCode("D01");
+            Disease d2 = new Disease();
+            d2.setCode("D02");
+            exam.setChronicConditions(List.of(d1, d2));
+
+            when(examRepository.getReferenceById(1L)).thenReturn(exam);
+
+            // Act
+            List<String> result = examService.getChronicDiseasesCodesByExamId(1L);
+
+            // Assert
+            assertThat(result).containsExactly("D01", "D02");
+        }
+
+        @Test
+        @DisplayName("Empty chronic conditions — returns empty list")
+        void getChronicDiseasesCodes_emptyList_returnsEmpty() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setChronicConditions(Collections.emptyList());
+
+            when(examRepository.getReferenceById(1L)).thenReturn(exam);
+
+            // Act
+            List<String> result = examService.getChronicDiseasesCodesByExamId(1L);
+
+            // Assert
+            assertThat(result).isEmpty();
+        }
     }
 
     // ─── getDashboardStats() Tests ─────────────────────────────────────
@@ -755,6 +867,143 @@ class ExamServiceImplTest {
             assertThat(stats.getActiveCampaigns()).isEqualTo(5L);
             assertThat(stats.getTotalStudents()).isEqualTo(200L);
             assertThat(stats.getTotalExamined()).isEqualTo(150L);
+        }
+    }
+
+    // ─── getReExams() Tests ───────────────────────────────────────────
+
+    @Nested
+    @DisplayName("getReExams()")
+    class GetReExamsTests {
+
+        private TeethRecord createTeethRecordWithProblem(ToothProblem problem) {
+            TeethRecord tr = new TeethRecord();
+            Map<Tooth, ToothCondition> recordMap = new HashMap<>();
+            ToothCondition tc = new ToothCondition();
+            tc.setProblem(problem);
+            recordMap.put(Tooth._11, tc);
+            tr.setRecord(recordMap);
+            return tr;
+        }
+
+        private TeethRecord createTeethRecordNoProblem() {
+            return createTeethRecordWithProblem(ToothProblem.NO_PROBLEM);
+        }
+
+        @Test
+        @DisplayName("Exam with caries — included in result with correct reExamDate")
+        void getReExams_examWithCaries_includedInResult() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setDate(LocalDate.of(2026, 3, 15));
+            exam.setTeethRecord(createTeethRecordWithProblem(ToothProblem.CARIES));
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+            ExamDTO mockDto = createMockExamDTO();
+            when(examMapper.toDto(exam)).thenReturn(mockDto);
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).hasSize(1);
+            ExamDTO resultDto = result.get(0);
+            assertThat(resultDto.getReExamDate()).isEqualTo(LocalDate.of(2026, 9, 15));
+            assertThat(resultDto.getReExamNote()).isEqualTo("Cần tái khám điều trị sâu răng");
+        }
+
+        @Test
+        @DisplayName("Exam without caries — excluded from result")
+        void getReExams_examWithoutCaries_excludedFromResult() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setTeethRecord(createTeethRecordNoProblem());
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Exam with null teethRecord — excluded from result")
+        void getReExams_nullTeethRecord_excludedFromResult() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setTeethRecord(null);
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Exam with null record map — excluded from result")
+        void getReExams_nullRecordMap_excludedFromResult() {
+            // Arrange
+            Exam exam = createMockExam();
+            TeethRecord tr = new TeethRecord();
+            tr.setRecord(null);
+            exam.setTeethRecord(tr);
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Exam with null date — reExamDate = now + 6 months")
+        void getReExams_nullDate_usesNowPlusSixMonths() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setDate(null);
+            exam.setTeethRecord(createTeethRecordWithProblem(ToothProblem.CARIES));
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+
+            ExamDTO mockDto = new ExamDTO();
+            when(examMapper.toDto(exam)).thenReturn(mockDto);
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getReExamDate()).isEqualTo(LocalDate.now().plusMonths(6));
+            assertThat(result.get(0).getReExamNote()).isEqualTo("Cần tái khám điều trị sâu răng");
+        }
+
+        @Test
+        @DisplayName("Exam with valid date — reExamDate = date + 6 months")
+        void getReExams_validDate_usesDatePlusSixMonths() {
+            // Arrange
+            Exam exam = createMockExam();
+            exam.setDate(LocalDate.of(2026, 1, 20));
+            exam.setTeethRecord(createTeethRecordWithProblem(ToothProblem.CARIES));
+
+            when(examRepository.findAllActiveWithDetails()).thenReturn(List.of(exam));
+
+            ExamDTO mockDto = new ExamDTO();
+            when(examMapper.toDto(exam)).thenReturn(mockDto);
+
+            // Act
+            List<ExamDTO> result = examService.getReExams();
+
+            // Assert
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getReExamDate()).isEqualTo(LocalDate.of(2026, 7, 20));
+            assertThat(result.get(0).getReExamNote()).isEqualTo("Cần tái khám điều trị sâu răng");
         }
     }
 }

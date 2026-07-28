@@ -5,9 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 
 import jakarta.persistence.EntityManager;
 import java.util.Collections;
@@ -38,8 +42,10 @@ import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseM
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.dto.AreaDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.enums.Grade;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.PatientSearchCriteria;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.DiseaseDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.PatientDTO;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Disease;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Exam;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
@@ -318,6 +324,41 @@ class PatientServiceImplTest {
             assertThat(result).isTrue();
             verify(patientRepository).save(any(Patient.class));
         }
+
+        @Test
+        @DisplayName("School account can delete patient from same org")
+        void deletePatientById_sameOrg_softDeletes() {
+            // Arrange
+            Patient patient = createMockPatient(); // org.id = 10
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+            when(examRepository.getExamsByPatientIdAndStatusOrderByIdDesc(1L, true))
+                .thenReturn(Collections.emptyList());
+
+            // Act
+            boolean result = patientService.deletePatientById(1L);
+
+            // Assert
+            assertThat(result).isTrue();
+            verify(patientRepository).save(patientCaptor.capture());
+            assertThat(patientCaptor.getValue().getStatus()).isFalse();
+        }
+
+        @Test
+        @DisplayName("School account — patient with null org throws 403")
+        void deletePatientById_nullOrg_throwsForbidden() {
+            // Arrange
+            Patient patient = createMockPatient();
+            patient.setOrganization(null);
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+
+            // Act & Assert
+            assertThatThrownBy(() -> patientService.deletePatientById(1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode())
+                    .isEqualTo(HttpStatus.FORBIDDEN));
+        }
     }
 
     // ─── getPatientsByCondition() Tests ─────────────────────────────────
@@ -429,6 +470,32 @@ class PatientServiceImplTest {
             assertThat(result.getTotalElements()).isZero();
             assertThat(result.getContent()).isEmpty();
             verify(patientRepository, never()).findAllByCondition(any(), any(), any(), any(), any(), eq(true), any());
+        }
+
+        @Test
+        @DisplayName("Area code with null children — uses empty list for query")
+        void getPatientsByCondition_nullChildren_usesEmptyList() {
+            // Arrange
+            PatientSearchCriteria criteria = new PatientSearchCriteria();
+            criteria.setAreaCode("001");
+
+            when(authorizationService.authorize()).thenReturn(createAdminAuthData());
+            when(areaService.getAreaByCode("001")).thenReturn(new AreaDTO(null, "001", "Test", 1, null));
+            when(areaService.getChildrenAreaCode("001")).thenReturn(null);
+
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Patient> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+            when(patientRepository.findAllByCondition(
+                any(), any(), any(), eq(Collections.emptyList()), any(), eq(true), eq(pageable)
+            )).thenReturn(emptyPage);
+
+            // Act
+            Page<PatientDTO> result = patientService.getPatientsByCondition(criteria, pageable);
+
+            // Assert
+            assertThat(result.getTotalElements()).isZero();
+            verify(patientRepository).findAllByCondition(
+                any(), any(), any(), eq(Collections.emptyList()), any(), eq(true), eq(pageable));
         }
     }
 
@@ -556,6 +623,41 @@ class PatientServiceImplTest {
                 .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode())
                     .isEqualTo(HttpStatus.FORBIDDEN));
         }
+
+        @Test
+        @DisplayName("School account can view patient from same org")
+        void getPatientById_sameOrg_returnsDTO() {
+            // Arrange
+            Patient patient = createMockPatient(); // org.id = 10
+            PatientDTO dto = createMockPatientDTO();
+
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+            when(patientMapper.toDto(patient)).thenReturn(dto);
+
+            // Act
+            PatientDTO result = patientService.getPatientById(1L);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getFullName()).isEqualTo("Nguyen Van A");
+        }
+
+        @Test
+        @DisplayName("School account — patient with null org throws 403")
+        void getPatientById_nullOrg_throwsForbidden() {
+            // Arrange
+            Patient patient = createMockPatient();
+            patient.setOrganization(null);
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+
+            // Act & Assert
+            assertThatThrownBy(() -> patientService.getPatientById(1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode())
+                    .isEqualTo(HttpStatus.FORBIDDEN));
+        }
     }
 
     // ─── updatePatient() Tests ─────────────────────────────────────────
@@ -600,6 +702,118 @@ class PatientServiceImplTest {
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode())
                     .isEqualTo(HttpStatus.FORBIDDEN));
+        }
+
+        @Test
+        @DisplayName("School account can update patient from same org")
+        void updatePatient_sameOrg_succeeds() {
+            // Arrange
+            Patient existing = createMockPatient(); // org.id = 10
+            PatientDTO inputDTO = createMockPatientDTO();
+            PatientDTO expectedDTO = createMockPatientDTO();
+
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(existing));
+            when(patientMapper.toEntity(inputDTO)).thenReturn(existing);
+            when(patientMapper.toDto(existing)).thenReturn(expectedDTO);
+
+            // Act
+            PatientDTO result = patientService.updatePatient(inputDTO, 1L);
+
+            // Assert
+            assertThat(result).isNotNull();
+            verify(patientRepository).save(any(Patient.class));
+        }
+
+        @Test
+        @DisplayName("School account — patient not found throws 404")
+        void updatePatient_patientNotFound_throws404() {
+            // Arrange
+            PatientDTO inputDTO = createMockPatientDTO();
+
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+            when(patientRepository.findById(999L)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThatThrownBy(() -> patientService.updatePatient(inputDTO, 999L))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> {
+                    ResponseStatusException rse = (ResponseStatusException) ex;
+                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+                    assertThat(rse.getReason()).contains("Không tìm thấy học sinh");
+                });
+        }
+
+        @Test
+        @DisplayName("School account — patient with null org throws 403")
+        void updatePatient_nullOrg_throwsForbidden() {
+            // Arrange
+            Patient existing = createMockPatient();
+            existing.setOrganization(null);
+            PatientDTO inputDTO = createMockPatientDTO();
+
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+            when(patientRepository.findById(1L)).thenReturn(Optional.of(existing));
+
+            // Act & Assert
+            assertThatThrownBy(() -> patientService.updatePatient(inputDTO, 1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode())
+                    .isEqualTo(HttpStatus.FORBIDDEN));
+        }
+
+        @Test
+        @DisplayName("With chronic conditions — fetches diseases from repository")
+        void updatePatient_withChronicConditions_fetchesDiseases() {
+            // Arrange
+            PatientDTO inputDTO = createMockPatientDTO();
+            DiseaseDTO diseaseDTO = new DiseaseDTO(1L, "D001", "Diabetes");
+            inputDTO.setChronicConditions(List.of(diseaseDTO));
+
+            Patient entity = createMockPatient();
+            PatientDTO expectedDTO = createMockPatientDTO();
+
+            Disease disease = new Disease();
+            disease.setId(1L);
+            disease.setCode("D001");
+            disease.setName("Diabetes");
+
+            when(authorizationService.authorize()).thenReturn(createAdminAuthData());
+            when(patientMapper.toEntity(inputDTO)).thenReturn(entity);
+            when(diseaseRepository.findAllById(List.of(1L))).thenReturn(List.of(disease));
+            when(patientMapper.toDto(entity)).thenReturn(expectedDTO);
+
+            // Act
+            PatientDTO result = patientService.updatePatient(inputDTO, 1L);
+
+            // Assert
+            assertThat(result).isNotNull();
+            verify(diseaseRepository).findAllById(List.of(1L));
+            verify(patientRepository).save(patientCaptor.capture());
+            assertThat(patientCaptor.getValue().getChronicConditions()).containsExactly(disease);
+        }
+
+        @Test
+        @DisplayName("With empty chronic conditions — sets null chronicConditions")
+        void updatePatient_emptyChronicConditions_setsNull() {
+            // Arrange
+            PatientDTO inputDTO = createMockPatientDTO();
+            inputDTO.setChronicConditions(Collections.emptyList());
+
+            Patient entity = createMockPatient();
+            PatientDTO expectedDTO = createMockPatientDTO();
+
+            when(authorizationService.authorize()).thenReturn(createAdminAuthData());
+            when(patientMapper.toEntity(inputDTO)).thenReturn(entity);
+            when(patientMapper.toDto(entity)).thenReturn(expectedDTO);
+
+            // Act
+            patientService.updatePatient(inputDTO, 1L);
+
+            // Assert — diseaseRepository not called, chronicConditions set to null
+            verify(diseaseRepository, never()).findAllById(any());
+            verify(patientRepository).save(patientCaptor.capture());
+            assertThat(patientCaptor.getValue().getChronicConditions()).isNull();
         }
     }
 
@@ -649,6 +863,100 @@ class PatientServiceImplTest {
             verify(patientRepository).findAllByCondition(
                 eq(null), eq(null), eq(10L), eq(Collections.emptyList()), eq(null), eq(true), eq(pageable));
             verify(patientRepository, never()).findAll(pageable);
+        }
+    }
+
+    // ─── getPatientsByConditionCacheKey() Tests ────────────────────────
+
+    @Nested
+    @DisplayName("getPatientsByConditionCacheKey()")
+    class GetPatientsByConditionCacheKeyTests {
+
+        @Test
+        @DisplayName("Admin account — cache key starts with 'all'")
+        void getPatientsByConditionCacheKey_admin_startsAll() {
+            // Arrange
+            PatientSearchCriteria criteria = new PatientSearchCriteria();
+            criteria.setSearchText("Nguyen");
+            criteria.setOrganizationName("School A");
+            criteria.setSchoolClass("1A");
+            criteria.setAreaCode("001");
+
+            Pageable pageable = PageRequest.of(0, 10);
+            when(authorizationService.authorize()).thenReturn(createAdminAuthData());
+
+            // Act
+            String key = patientService.getPatientsByConditionCacheKey(criteria, pageable);
+
+            // Assert
+            assertThat(key).startsWith("all|");
+            assertThat(key).contains("Nguyen");
+            assertThat(key).contains("School A");
+            assertThat(key).contains("1A");
+            assertThat(key).contains("001");
+        }
+
+        @Test
+        @DisplayName("School account — cache key starts with 'org-{id}'")
+        void getPatientsByConditionCacheKey_school_startsWithOrgId() {
+            // Arrange
+            PatientSearchCriteria criteria = new PatientSearchCriteria();
+            criteria.setSearchText("");
+            Pageable pageable = PageRequest.of(0, 20);
+
+            when(authorizationService.authorize()).thenReturn(createSchoolAuthData(10L));
+
+            // Act
+            String key = patientService.getPatientsByConditionCacheKey(criteria, pageable);
+
+            // Assert
+            assertThat(key).startsWith("org-10|");
+        }
+    }
+
+    // ─── generateExcelTemplateFile() Tests ─────────────────────────────
+
+    @Nested
+    @DisplayName("generateExcelTemplateFile()")
+    class GenerateExcelTemplateFileTests {
+
+        @Test
+        @DisplayName("Happy path — returns Excel byte array with correct headers")
+        void generateExcelTemplateFile_success_returnsBytes() throws Exception {
+            // Arrange
+            HttpServletResponse response = mock(HttpServletResponse.class);
+
+            // Act
+            byte[] result = patientService.generateExcelTemplateFile(response);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.length).isGreaterThan(0);
+            verify(response).setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            verify(response).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), eq("attachment; filename=Import_Hocsinh.xlsx"));
+        }
+    }
+
+    // ─── exportPatients() Tests ────────────────────────────────────────
+
+    @Nested
+    @DisplayName("exportPatients()")
+    class ExportPatientsTests {
+
+        @Test
+        @DisplayName("Happy path — returns Excel byte array with patient data")
+        void exportPatients_success_returnsBytes() throws Exception {
+            // Arrange
+            HttpServletResponse response = mock(HttpServletResponse.class);
+
+            // Act
+            byte[] result = patientService.exportPatients(response);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.length).isGreaterThan(0);
+            verify(response).setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            verify(response).setHeader(eq(HttpHeaders.CONTENT_DISPOSITION), eq("attachment; filename=Export_Hocsinh.xlsx"));
         }
     }
 }

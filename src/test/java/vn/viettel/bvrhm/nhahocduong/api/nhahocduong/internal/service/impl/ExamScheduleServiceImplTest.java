@@ -241,6 +241,186 @@ class ExamScheduleServiceImplTest {
 
       verify(examScheduleRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Campaign not found — throws 404 NOT_FOUND")
+    void addOrUpdateSchedule_campaignNotFound_throws404() {
+      when(examCampaignRepository.findByIdAndStatus(99L, true)).thenReturn(Optional.empty());
+
+      assertThatThrownBy(() -> examScheduleService.addOrUpdateSchedule(99L, new ExamScheduleDTO()))
+          .isInstanceOf(ResponseStatusException.class)
+          .hasMessageContaining("404 NOT_FOUND")
+          .hasMessageContaining("Campaign not found with id: 99");
+
+      verify(examScheduleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Organization not found — throws 404 NOT_FOUND")
+    void addOrUpdateSchedule_organizationNotFound_throws404() {
+      ExamCampaign campaign = createMockCampaign(1L);
+
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 999L, "THPT Chu Văn An", "10A1", LocalDate.of(2026, 10, 1),
+          true, null, null);
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(999L)).thenReturn(Optional.empty());
+
+      assertThatThrownBy(() -> examScheduleService.addOrUpdateSchedule(1L, inputDto))
+          .isInstanceOf(ResponseStatusException.class)
+          .hasMessageContaining("404 NOT_FOUND")
+          .hasMessageContaining("Organization not found with id: 999");
+
+      verify(examScheduleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Null school class — throws 400 BAD_REQUEST")
+    void addOrUpdateSchedule_nullSchoolClass_throws400() {
+      ExamCampaign campaign = createMockCampaign(1L);
+      Organization org = createMockOrganization(10L);
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 10L, "THPT Chu Văn An", null, LocalDate.of(2026, 10, 1),
+          true, null, null);
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(10L)).thenReturn(Optional.of(org));
+
+      assertThatThrownBy(() -> examScheduleService.addOrUpdateSchedule(1L, inputDto))
+          .isInstanceOf(ResponseStatusException.class)
+          .hasMessageContaining("400 BAD_REQUEST")
+          .hasMessageContaining("School class cannot be empty");
+
+      verify(examScheduleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Dentist user not found — dentist filtered out of schedule")
+    void addOrUpdateSchedule_dentistUserNotFound_filtersOutDentist() {
+      ExamCampaign campaign = createMockCampaign(1L);
+      Organization org = createMockOrganization(10L);
+      Dentist orphanDentist = createMockDentist(200L, 600L);
+
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 10L, "THPT Chu Văn An", "10A1", LocalDate.of(2026, 10, 1),
+          true, List.of(200L), List.of("BS Orphan"));
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(10L)).thenReturn(Optional.of(org));
+      when(examScheduleRepository.findByCampaignIdAndOrganizationIdAndSchoolClassAndStatus(
+          1L, 10L, "10A1", true)).thenReturn(Optional.empty());
+      when(dentistRepository.findAllById(List.of(200L))).thenReturn(List.of(orphanDentist));
+      when(userRepository.findById(600L)).thenReturn(Optional.empty());
+
+      ExamSchedule savedEntity = new ExamSchedule();
+      when(examScheduleRepository.save(any(ExamSchedule.class))).thenAnswer(inv -> {
+        ExamSchedule s = inv.getArgument(0);
+        assertThat(s.getDentists()).isEmpty();
+        return savedEntity;
+      });
+      when(examScheduleMapper.toDto(savedEntity)).thenReturn(new ExamScheduleDTO());
+
+      examScheduleService.addOrUpdateSchedule(1L, inputDto);
+
+      verify(examScheduleRepository, times(1)).save(any(ExamSchedule.class));
+    }
+
+    @Test
+    @DisplayName("Dentist user status null — dentist filtered out of schedule")
+    void addOrUpdateSchedule_dentistUserStatusNull_filtersOutDentist() {
+      ExamCampaign campaign = createMockCampaign(1L);
+      Organization org = createMockOrganization(10L);
+      Dentist dentist = createMockDentist(201L, 601L);
+      User userWithNullStatus = createMockUser(601L, null, true);
+
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 10L, "THPT Chu Văn An", "10A1", LocalDate.of(2026, 10, 1),
+          true, List.of(201L), List.of("BS NullStatus"));
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(10L)).thenReturn(Optional.of(org));
+      when(examScheduleRepository.findByCampaignIdAndOrganizationIdAndSchoolClassAndStatus(
+          1L, 10L, "10A1", true)).thenReturn(Optional.empty());
+      when(dentistRepository.findAllById(List.of(201L))).thenReturn(List.of(dentist));
+      when(userRepository.findById(601L)).thenReturn(Optional.of(userWithNullStatus));
+
+      ExamSchedule savedEntity = new ExamSchedule();
+      when(examScheduleRepository.save(any(ExamSchedule.class))).thenAnswer(inv -> {
+        ExamSchedule s = inv.getArgument(0);
+        assertThat(s.getDentists()).isEmpty();
+        return savedEntity;
+      });
+      when(examScheduleMapper.toDto(savedEntity)).thenReturn(new ExamScheduleDTO());
+
+      examScheduleService.addOrUpdateSchedule(1L, inputDto);
+
+      verify(examScheduleRepository, times(1)).save(any(ExamSchedule.class));
+    }
+
+    @Test
+    @DisplayName("Dentist user registerStatus null — dentist filtered out of schedule")
+    void addOrUpdateSchedule_dentistUserRegisterStatusNull_filtersOutDentist() {
+      ExamCampaign campaign = createMockCampaign(1L);
+      Organization org = createMockOrganization(10L);
+      Dentist dentist = createMockDentist(202L, 602L);
+      User userWithNullRegisterStatus = createMockUser(602L, true, null);
+
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 10L, "THPT Chu Văn An", "10A1", LocalDate.of(2026, 10, 1),
+          true, List.of(202L), List.of("BS NullRegStatus"));
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(10L)).thenReturn(Optional.of(org));
+      when(examScheduleRepository.findByCampaignIdAndOrganizationIdAndSchoolClassAndStatus(
+          1L, 10L, "10A1", true)).thenReturn(Optional.empty());
+      when(dentistRepository.findAllById(List.of(202L))).thenReturn(List.of(dentist));
+      when(userRepository.findById(602L)).thenReturn(Optional.of(userWithNullRegisterStatus));
+
+      ExamSchedule savedEntity = new ExamSchedule();
+      when(examScheduleRepository.save(any(ExamSchedule.class))).thenAnswer(inv -> {
+        ExamSchedule s = inv.getArgument(0);
+        assertThat(s.getDentists()).isEmpty();
+        return savedEntity;
+      });
+      when(examScheduleMapper.toDto(savedEntity)).thenReturn(new ExamScheduleDTO());
+
+      examScheduleService.addOrUpdateSchedule(1L, inputDto);
+
+      verify(examScheduleRepository, times(1)).save(any(ExamSchedule.class));
+    }
+
+    @Test
+    @DisplayName("Dentist user registerStatus false — dentist filtered out of schedule")
+    void addOrUpdateSchedule_dentistUserRegisterStatusFalse_filtersOutDentist() {
+      ExamCampaign campaign = createMockCampaign(1L);
+      Organization org = createMockOrganization(10L);
+      Dentist dentist = createMockDentist(203L, 603L);
+      User userWithFalseRegisterStatus = createMockUser(603L, true, false);
+
+      ExamScheduleDTO inputDto = new ExamScheduleDTO(
+          null, 1L, 10L, "THPT Chu Văn An", "10A1", LocalDate.of(2026, 10, 1),
+          true, List.of(203L), List.of("BS FalseRegStatus"));
+
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(organizationRepository.findById(10L)).thenReturn(Optional.of(org));
+      when(examScheduleRepository.findByCampaignIdAndOrganizationIdAndSchoolClassAndStatus(
+          1L, 10L, "10A1", true)).thenReturn(Optional.empty());
+      when(dentistRepository.findAllById(List.of(203L))).thenReturn(List.of(dentist));
+      when(userRepository.findById(603L)).thenReturn(Optional.of(userWithFalseRegisterStatus));
+
+      ExamSchedule savedEntity = new ExamSchedule();
+      when(examScheduleRepository.save(any(ExamSchedule.class))).thenAnswer(inv -> {
+        ExamSchedule s = inv.getArgument(0);
+        assertThat(s.getDentists()).isEmpty();
+        return savedEntity;
+      });
+      when(examScheduleMapper.toDto(savedEntity)).thenReturn(new ExamScheduleDTO());
+
+      examScheduleService.addOrUpdateSchedule(1L, inputDto);
+
+      verify(examScheduleRepository, times(1)).save(any(ExamSchedule.class));
+    }
   }
 
   @Nested
@@ -277,6 +457,19 @@ class ExamScheduleServiceImplTest {
       boolean deleted = examScheduleService.deleteSchedule(1L, 99L);
 
       assertThat(deleted).isFalse();
+      verify(examScheduleRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("deleteSchedule() — campaign not found throws 404 NOT_FOUND")
+    void deleteSchedule_campaignNotFound_throws404() {
+      when(examCampaignRepository.findByIdAndStatus(99L, true)).thenReturn(Optional.empty());
+
+      assertThatThrownBy(() -> examScheduleService.deleteSchedule(99L, 10L))
+          .isInstanceOf(ResponseStatusException.class)
+          .hasMessageContaining("404 NOT_FOUND")
+          .hasMessageContaining("Campaign not found with id: 99");
+
       verify(examScheduleRepository, never()).save(any());
     }
   }

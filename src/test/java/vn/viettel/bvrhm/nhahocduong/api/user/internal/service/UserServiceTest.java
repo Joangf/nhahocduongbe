@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
@@ -12,6 +13,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -170,6 +173,155 @@ class UserServiceTest {
 
       assertThat(result).isEqualTo(expectedDto);
       verify(userRepository, times(1)).save(mappedUser);
+    }
+
+    @Test
+    @DisplayName("Happy path with roles — maps roles, creates user, notifies admins")
+    void createUser_withRoles_mapsRolesAndNotifiesAdmins() throws Exception {
+      // Arrange
+      RoleDTO roleDTO = new RoleDTO("1", "DENTIST", "Dentist", true, null);
+      UserDTO inputDto = createMockUserDTO("dentist1", "StrongPass@123", List.of(roleDTO));
+
+      User mappedUser = new User();
+      Role mockRole = new Role();
+      mockRole.setId(1L);
+      mockRole.setCode("DENTIST");
+
+      User savedUser = createMockUser(100L, "dentist1", false, true);
+      UserDTO expectedDto = createMockUserDTO("dentist1", "encoded", List.of(roleDTO));
+
+      User adminUser = createMockUser(1L, "admin", true, true);
+
+      when(userRepository.getByUsername("dentist1")).thenReturn(Optional.empty());
+      when(userMapper.userFromUserDTO(inputDto)).thenReturn(mappedUser);
+      when(roleRepository.getReferenceById(1L)).thenReturn(mockRole);
+      when(passwordEncoder.encode("StrongPass@123")).thenReturn("hashed_password");
+      when(userRepository.save(mappedUser)).thenReturn(savedUser);
+      when(userMapper.userDTOFromUser(savedUser)).thenReturn(expectedDto);
+      when(userRepository.findUsersByRoleCode("ADMIN")).thenReturn(List.of(adminUser));
+
+      // Act
+      UserDTO result = userService.createUser(inputDto);
+
+      // Assert
+      assertThat(result).isNotNull().isEqualTo(expectedDto);
+      assertThat(mappedUser.getRegisterStatus()).isFalse();
+      assertThat(mappedUser.getStatus()).isTrue();
+      verify(userRepository, times(1)).save(mappedUser);
+      verify(roleRepository).getReferenceById(1L);
+      verify(notificationService).createNotificationForAdmin(
+          eq(1L), eq("Tài khoản mới cần duyệt"), anyString());
+    }
+
+    @Test
+    @DisplayName("Empty role list — skips role mapping, creates user")
+    void createUser_emptyRoleList_skipsRoleMapping() throws Exception {
+      // Arrange
+      UserDTO inputDto = createMockUserDTO("user3", "Strong@1234", Collections.emptyList());
+      User mappedUser = new User();
+      User savedUser = createMockUser(102L, "user3", false, true);
+      UserDTO expectedDto = createMockUserDTO("user3", "hashed", null);
+
+      when(userRepository.getByUsername("user3")).thenReturn(Optional.empty());
+      when(userMapper.userFromUserDTO(inputDto)).thenReturn(mappedUser);
+      when(passwordEncoder.encode("Strong@1234")).thenReturn("hashed_password");
+      when(userRepository.save(mappedUser)).thenReturn(savedUser);
+      when(userMapper.userDTOFromUser(savedUser)).thenReturn(expectedDto);
+      when(userRepository.findUsersByRoleCode("ADMIN")).thenReturn(Collections.emptyList());
+
+      // Act
+      UserDTO result = userService.createUser(inputDto);
+
+      // Assert
+      assertThat(result).isEqualTo(expectedDto);
+      verify(roleRepository, never()).getReferenceById(any());
+      verify(notificationService, never()).createNotificationForAdmin(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("No admin users — skips notification, still creates user")
+    void createUser_noAdmins_skipsNotification() throws Exception {
+      // Arrange
+      UserDTO inputDto = createMockUserDTO("user4", "Strong@1234", null);
+      User mappedUser = new User();
+      User savedUser = createMockUser(103L, "user4", false, true);
+      UserDTO expectedDto = createMockUserDTO("user4", "hashed", null);
+
+      when(userRepository.getByUsername("user4")).thenReturn(Optional.empty());
+      when(userMapper.userFromUserDTO(inputDto)).thenReturn(mappedUser);
+      when(passwordEncoder.encode("Strong@1234")).thenReturn("hashed_password");
+      when(userRepository.save(mappedUser)).thenReturn(savedUser);
+      when(userMapper.userDTOFromUser(savedUser)).thenReturn(expectedDto);
+      when(userRepository.findUsersByRoleCode("ADMIN")).thenReturn(Collections.emptyList());
+
+      // Act
+      UserDTO result = userService.createUser(inputDto);
+
+      // Assert
+      assertThat(result).isEqualTo(expectedDto);
+      verify(notificationService, never()).createNotificationForAdmin(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("Null lastName and firstName — notification uses empty string fallback")
+    void createUser_nullNames_notificationUsesEmptyFallback() throws Exception {
+      // Arrange
+      UserDTO inputDto = createMockUserDTO("user5", "Strong@1234", null);
+      User mappedUser = new User();
+      User savedUser = new User();
+      savedUser.setId(104L);
+      savedUser.setUsername("user5");
+      savedUser.setFirstName(null);
+      savedUser.setLastName(null);
+      savedUser.setRegisterStatus(false);
+      savedUser.setStatus(true);
+      UserDTO expectedDto = createMockUserDTO("user5", "hashed", null);
+
+      User adminUser = createMockUser(1L, "admin", true, true);
+
+      when(userRepository.getByUsername("user5")).thenReturn(Optional.empty());
+      when(userMapper.userFromUserDTO(inputDto)).thenReturn(mappedUser);
+      when(passwordEncoder.encode("Strong@1234")).thenReturn("hashed_password");
+      when(userRepository.save(mappedUser)).thenReturn(savedUser);
+      when(userMapper.userDTOFromUser(savedUser)).thenReturn(expectedDto);
+      when(userRepository.findUsersByRoleCode("ADMIN")).thenReturn(List.of(adminUser));
+
+      // Act
+      UserDTO result = userService.createUser(inputDto);
+
+      // Assert
+      assertThat(result).isEqualTo(expectedDto);
+      verify(notificationService).createNotificationForAdmin(
+          eq(1L), eq("Tài khoản mới cần duyệt"),
+          eq("Người dùng \"user5\" () vừa đăng ký tài khoản và đang chờ được duyệt."));
+    }
+
+    @Test
+    @DisplayName("Multiple admins — notifies each admin")
+    void createUser_multipleAdmins_notifiesEachAdmin() throws Exception {
+      // Arrange
+      UserDTO inputDto = createMockUserDTO("user6", "Strong@1234", null);
+      User mappedUser = new User();
+      User savedUser = createMockUser(105L, "user6", false, true);
+      UserDTO expectedDto = createMockUserDTO("user6", "hashed", null);
+
+      User admin1 = createMockUser(1L, "admin1", true, true);
+      User admin2 = createMockUser(2L, "admin2", true, true);
+
+      when(userRepository.getByUsername("user6")).thenReturn(Optional.empty());
+      when(userMapper.userFromUserDTO(inputDto)).thenReturn(mappedUser);
+      when(passwordEncoder.encode("Strong@1234")).thenReturn("hashed_password");
+      when(userRepository.save(mappedUser)).thenReturn(savedUser);
+      when(userMapper.userDTOFromUser(savedUser)).thenReturn(expectedDto);
+      when(userRepository.findUsersByRoleCode("ADMIN")).thenReturn(List.of(admin1, admin2));
+
+      // Act
+      UserDTO result = userService.createUser(inputDto);
+
+      // Assert
+      assertThat(result).isEqualTo(expectedDto);
+      verify(notificationService).createNotificationForAdmin(eq(1L), anyString(), anyString());
+      verify(notificationService).createNotificationForAdmin(eq(2L), anyString(), anyString());
     }
   }
 
