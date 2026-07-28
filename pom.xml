@@ -275,7 +275,7 @@
                                 <!-- Validators -->
                                 <exclude>**/validator/**</exclude>
                                 <!-- Helper/utility classes -->
-                                <exclude>**/helper/**</exclude>
+                                <!-- <exclude>**/helper/**</exclude> -->
                                 <!-- System/database/openapi config -->
                                 <exclude>**/system/**</exclude>
                                 <!-- Auth top-level POJOs (LoginRequest, TokenPair...) -->

@@ -1288,6 +1288,133 @@ class AcademicYearServiceImplTest {
     }
 
     @Nested
+    @DisplayName("getTransitionHistory() — malformed JSON branches")
+    class GetTransitionHistoryMalformedJsonTests {
+
+        @Test
+        @DisplayName("Malformed JSON in oldValue for old year → catch block, oldYearName = null")
+        void getHistory_malformedOldValueJson_catchBlock() {
+            String sessionId = "session-malformed-old";
+
+            // oldValue contains "name" but is not valid JSON → objectMapper.readTree throws
+            SystemLog oldYearLog = createAcademicYearLog(sessionId, 1L,
+                "NOT_JSON{name:\"2025-2026\",status:\"CURRENT\"}",
+                "{\"status\":\"COMPLETED\"}");
+            // newValue for new year is valid
+            SystemLog newYearLog = createAcademicYearLog(sessionId, 2L,
+                null,
+                "{\"name\":\"2026-2027\",\"status\":\"CURRENT\"}");
+
+            when(systemLogRepository.findAll()).thenReturn(List.of(oldYearLog, newYearLog));
+
+            List<Map<String, Object>> result = academicYearService.getTransitionHistory();
+
+            assertThat(result).hasSize(1);
+            @SuppressWarnings("unchecked")
+            List<String> summary = (List<String>) result.get(0).get("summary");
+            // oldYearName is null → year transition summary block not added at all
+            assertThat(summary.stream().noneMatch(s -> s.contains("Đóng năm học"))).isTrue();
+            assertThat(summary.stream().noneMatch(s -> s.contains("Mở năm học mới"))).isTrue();
+            assertThat(summary).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Malformed JSON in newValue for new year → catch block, newYearName = null")
+        void getHistory_malformedNewValueJson_catchBlock() {
+            String sessionId = "session-malformed-new";
+
+            // oldValue for old year is valid
+            SystemLog oldYearLog = createAcademicYearLog(sessionId, 1L,
+                "{\"name\":\"2025-2026\",\"status\":\"CURRENT\"}",
+                "{\"status\":\"COMPLETED\"}");
+            // newValue contains "name" but is not valid JSON → objectMapper.readTree throws
+            SystemLog newYearLog = createAcademicYearLog(sessionId, 2L,
+                null,
+                "NOT_JSON{name:\"2026-2027\",status:\"CURRENT\"}");
+
+            when(systemLogRepository.findAll()).thenReturn(List.of(oldYearLog, newYearLog));
+
+            List<Map<String, Object>> result = academicYearService.getTransitionHistory();
+
+            assertThat(result).hasSize(1);
+            @SuppressWarnings("unchecked")
+            List<String> summary = (List<String>) result.get(0).get("summary");
+            // newYearName is null → year transition summary block not added at all
+            assertThat(summary.stream().noneMatch(s -> s.contains("Đóng năm học"))).isTrue();
+            assertThat(summary.stream().noneMatch(s -> s.contains("Mở năm học mới"))).isTrue();
+            assertThat(summary).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Malformed JSON in promoted student newValue → catch block, student skipped")
+        void getHistory_malformedPromotedStudentJson_catchBlock() {
+            String sessionId = "session-malformed-promoted";
+
+            SystemLog oldYearLog = createAcademicYearLog(sessionId, 1L,
+                "{\"name\":\"2025-2026\",\"status\":\"CURRENT\"}",
+                "{\"status\":\"COMPLETED\"}");
+            SystemLog newYearLog = createAcademicYearLog(sessionId, 2L,
+                null, "{\"name\":\"2026-2027\",\"status\":\"CURRENT\"}");
+
+            // STUDENT_AFFILIATION log with malformed JSON in newValue
+            SystemLog affLog = new SystemLog();
+            affLog.setSessionId(sessionId);
+            affLog.setAction("YEAR_TRANSITION");
+            affLog.setEntityType("STUDENT_AFFILIATION");
+            affLog.setEntityId(100L);
+            affLog.setOldValue(null);
+            affLog.setNewValue("NOT_JSON{student_id:100,class_id:50}");
+            affLog.setCreatedDate(LocalDateTime.now());
+
+            when(systemLogRepository.findAll()).thenReturn(List.of(oldYearLog, newYearLog, affLog));
+
+            List<Map<String, Object>> result = academicYearService.getTransitionHistory();
+
+            assertThat(result).hasSize(1);
+            @SuppressWarnings("unchecked")
+            List<String> summary = (List<String>) result.get(0).get("summary");
+            // Malformed JSON → student not parsed → no "lên" in summary
+            assertThat(summary.stream().noneMatch(s -> s.contains("lên"))).isTrue();
+            // Year transition info still present
+            assertThat(summary.stream().anyMatch(s -> s.contains("2025-2026"))).isTrue();
+        }
+
+        @Test
+        @DisplayName("Malformed JSON in graduated student oldValue → catch block, student skipped")
+        void getHistory_malformedGraduatedStudentJson_catchBlock() {
+            String sessionId = "session-malformed-graduated";
+
+            SystemLog oldYearLog = createAcademicYearLog(sessionId, 1L,
+                "{\"name\":\"2025-2026\",\"status\":\"CURRENT\"}",
+                "{\"status\":\"COMPLETED\"}");
+            SystemLog newYearLog = createAcademicYearLog(sessionId, 2L,
+                null, "{\"name\":\"2026-2027\",\"status\":\"CURRENT\"}");
+
+            // STUDENT_AFFILIATION log with malformed JSON in oldValue containing "GRADUATED"
+            SystemLog gradLog = new SystemLog();
+            gradLog.setSessionId(sessionId);
+            gradLog.setAction("YEAR_TRANSITION");
+            gradLog.setEntityType("STUDENT_AFFILIATION");
+            gradLog.setEntityId(200L);
+            gradLog.setOldValue("NOT_JSON{student_id:200,status:GRADUATED}");
+            gradLog.setNewValue("{\"status\":\"GRADUATED\"}");
+            gradLog.setCreatedDate(LocalDateTime.now());
+
+            when(systemLogRepository.findAll()).thenReturn(List.of(oldYearLog, newYearLog, gradLog));
+
+            List<Map<String, Object>> result = academicYearService.getTransitionHistory();
+
+            assertThat(result).hasSize(1);
+            @SuppressWarnings("unchecked")
+            List<String> summary = (List<String>) result.get(0).get("summary");
+            // Malformed JSON → graduated student not parsed → no "tốt nghiệp" in summary
+            assertThat(summary.stream().noneMatch(s -> s.contains("tốt nghiệp"))).isTrue();
+            // Year transition info still present
+            assertThat(summary.stream().anyMatch(s -> s.contains("2026-2027"))).isTrue();
+        }
+    }
+
+    @Nested
     @DisplayName("toDTO() — additional branches")
     class ToDTOAdditionalTests {
 
