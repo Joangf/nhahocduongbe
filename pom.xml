@@ -246,6 +246,47 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <!-- Entity & DTO -->
+                                <exclude>**/entity/**</exclude>
+                                <exclude>**/dto/**</exclude>
+                                <!-- MapStruct mappers -->
+                                <exclude>**/mapper/**</exclude>
+                                <!-- Spring config -->
+                                <exclude>**/config/**</exclude>
+                                <!-- Constants & enums -->
+                                <exclude>**/constants/**</exclude>
+                                <exclude>**/constant/**</exclude>
+                                <!-- Response/request models -->
+                                <exclude>**/model/**</exclude>
+                                <!-- Spring Data repository interfaces -->
+                                <exclude>**/repository/**</exclude>
+                                <!-- Exception classes -->
+                                <exclude>**/exception/**</exclude>
+                                <!-- Simple data objects (auth objects like TokenPair, LoginRequest...) -->
+                                <exclude>**/object/**</exclude>
+                                <!-- JPA converters -->
+                                <exclude>**/converter/**</exclude>
+                                <!-- Servlet filters -->
+                                <exclude>**/filter/**</exclude>
+                                <!-- Data/excel templates -->
+                                <exclude>**/data/**</exclude>
+                                <!-- Validators -->
+                                <exclude>**/validator/**</exclude>
+                                <!-- Helper/utility classes -->
+                                <exclude>**/helper/**</exclude>
+                                <!-- System/database/openapi config -->
+                                <exclude>**/system/**</exclude>
+                                <!-- Auth top-level POJOs (LoginRequest, TokenPair...) -->
+                                <exclude>**/auth/*</exclude>
+                                <!-- Inner/nested data holder classes -->
+                                <exclude>**/*AuthorizationData*</exclude>
+                                <exclude>**/*TicketInfo*</exclude>
+                                <!-- Main application class -->
+                                <exclude>**/*Application.*</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
