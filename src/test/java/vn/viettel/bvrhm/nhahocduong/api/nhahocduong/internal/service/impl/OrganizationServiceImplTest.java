@@ -22,13 +22,19 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService;
+import vn.viettel.bvrhm.nhahocduong.api.auth.internal.service.AuthorizationService.AuthorizationData;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.model.response.UpsertResponseModel;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.service.AreaService;
 import vn.viettel.bvrhm.nhahocduong.api.common.internal.dto.AreaDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.constants.ResponseMessage;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.data.criteria.OrganizationSearchCriteria;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.OrganizationDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Organization;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.Patient;
@@ -499,6 +505,226 @@ class OrganizationServiceImplTest {
 
             // Assert
             assertThat(result).hasSize(1);
+        }
+    }
+
+    // ─── getByCondition() Tests ────────────────────────────────────────
+
+    @Nested
+    @DisplayName("getByCondition()")
+    class GetByConditionTests {
+
+        @Test
+        @DisplayName("Returns matching organizations by name")
+        void getByCondition_matchingName_returnsList() {
+            // Arrange
+            Organization org = createMockOrganization();
+            OrganizationDTO dto = createMockOrganizationDTO();
+            when(organizationRepository.findByNameIsLikeOrderByName("Truong"))
+                .thenReturn(List.of(org));
+            when(organizationMapper.toDtoList(List.of(org)))
+                .thenReturn(List.of(dto));
+
+            // Act
+            List<OrganizationDTO> result = organizationService.getByCondition("Truong");
+
+            // Assert
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getName()).isEqualTo("Truong Tieu Hoc ABC");
+            verify(organizationRepository).findByNameIsLikeOrderByName("Truong");
+        }
+
+        @Test
+        @DisplayName("No match — returns empty list")
+        void getByCondition_noMatch_returnsEmptyList() {
+            // Arrange
+            when(organizationRepository.findByNameIsLikeOrderByName("NonExistent"))
+                .thenReturn(Collections.emptyList());
+            when(organizationMapper.toDtoList(Collections.emptyList()))
+                .thenReturn(Collections.emptyList());
+
+            // Act
+            List<OrganizationDTO> result = organizationService.getByCondition("NonExistent");
+
+            // Assert
+            assertThat(result).isEmpty();
+        }
+    }
+
+    // ─── search() Tests ────────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("search()")
+    class SearchTests {
+
+        @Test
+        @DisplayName("Admin account — searches without org restriction")
+        void search_admin_returnsAllMatching() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            criteria.setSearchText("Truong");
+            Pageable pageable = PageRequest.of(0, 10);
+
+            AuthorizationData authData = new AuthorizationData();
+            authData.setOrganizationId(null);
+            authData.setAreaCode(null);
+            when(authorizationService.authorize()).thenReturn(authData);
+
+            when(areaService.getChildrenAreaCode(null)).thenReturn(Collections.emptyList());
+
+            Organization org = createMockOrganization();
+            Page<Organization> orgPage = new PageImpl<>(List.of(org), pageable, 1);
+            when(organizationRepository.findByCriteria(
+                eq(Collections.emptyList()), eq(criteria), eq(null), eq(pageable)
+            )).thenReturn(orgPage);
+
+            OrganizationDTO dto = createMockOrganizationDTO();
+            when(organizationMapper.toDto(org)).thenReturn(dto);
+
+            // Act
+            Page<OrganizationDTO> result = organizationService.search(criteria, pageable);
+
+            // Assert
+            assertThat(result.getTotalElements()).isEqualTo(1);
+            assertThat(result.getContent().get(0).getName()).isEqualTo("Truong Tieu Hoc ABC");
+            verify(organizationRepository).findByCriteria(
+                eq(Collections.emptyList()), eq(criteria), eq(null), eq(pageable));
+        }
+
+        @Test
+        @DisplayName("School account — restricts by organizationId")
+        void search_school_restrictedByOrgId() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            Pageable pageable = PageRequest.of(0, 10);
+
+            AuthorizationData authData = new AuthorizationData();
+            authData.setOrganizationId(10L);
+            authData.setAreaCode(null);
+            when(authorizationService.authorize()).thenReturn(authData);
+
+            when(areaService.getChildrenAreaCode(null)).thenReturn(Collections.emptyList());
+
+            Page<Organization> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+            when(organizationRepository.findByCriteria(
+                any(), any(), eq(10L), eq(pageable)
+            )).thenReturn(emptyPage);
+
+            // Act
+            Page<OrganizationDTO> result = organizationService.search(criteria, pageable);
+
+            // Assert
+            assertThat(result.getTotalElements()).isZero();
+            verify(organizationRepository).findByCriteria(
+                any(), any(), eq(10L), eq(pageable));
+        }
+
+        @Test
+        @DisplayName("Area code from auth — overrides search criteria")
+        void search_areaCodeFromAuth_overridesCriteria() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            criteria.setAreaCode("001");
+            Pageable pageable = PageRequest.of(0, 10);
+
+            AuthorizationData authData = new AuthorizationData();
+            authData.setOrganizationId(null);
+            authData.setAreaCode("002");
+            when(authorizationService.authorize()).thenReturn(authData);
+
+            when(areaService.getAreaByCode("002")).thenReturn(new AreaDTO(null, "002", "Area", 1, null));
+            when(areaService.getChildrenAreaCode("002")).thenReturn(List.of("002"));
+
+            Page<Organization> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+            when(organizationRepository.findByCriteria(
+                eq(List.of("002")), eq(criteria), eq(null), eq(pageable)
+            )).thenReturn(emptyPage);
+
+            // Act
+            organizationService.search(criteria, pageable);
+
+            // Assert — area code was overridden by authorization
+            assertThat(criteria.getAreaCode()).isEqualTo("002");
+        }
+
+        @Test
+        @DisplayName("Invalid area code — returns empty page")
+        void search_invalidAreaCode_returnsEmptyPage() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            criteria.setAreaCode("INVALID");
+            Pageable pageable = PageRequest.of(0, 10);
+
+            AuthorizationData authData = new AuthorizationData();
+            authData.setOrganizationId(null);
+            authData.setAreaCode(null);
+            when(authorizationService.authorize()).thenReturn(authData);
+
+            when(areaService.getAreaByCode("INVALID")).thenReturn(null);
+
+            // Act
+            Page<OrganizationDTO> result = organizationService.search(criteria, pageable);
+
+            // Assert
+            assertThat(result.getTotalElements()).isZero();
+            assertThat(result.getContent()).isEmpty();
+            verify(organizationRepository, never()).findByCriteria(any(), any(), any(), any());
+        }
+
+        @Test
+        @DisplayName("Authorization throws exception — treats as public page (no auth restriction)")
+        void search_authThrows_treatsAsPublicPage() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            Pageable pageable = PageRequest.of(0, 10);
+
+            when(authorizationService.authorize()).thenThrow(new RuntimeException("No auth"));
+
+            when(areaService.getChildrenAreaCode(null)).thenReturn(Collections.emptyList());
+
+            Organization org = createMockOrganization();
+            Page<Organization> orgPage = new PageImpl<>(List.of(org), pageable, 1);
+            when(organizationRepository.findByCriteria(
+                eq(Collections.emptyList()), eq(criteria), eq(null), eq(pageable)
+            )).thenReturn(orgPage);
+
+            OrganizationDTO dto = createMockOrganizationDTO();
+            when(organizationMapper.toDto(org)).thenReturn(dto);
+
+            // Act
+            Page<OrganizationDTO> result = organizationService.search(criteria, pageable);
+
+            // Assert — should still work, no org restriction
+            assertThat(result.getTotalElements()).isEqualTo(1);
+            verify(organizationRepository).findByCriteria(
+                eq(Collections.emptyList()), eq(criteria), eq(null), eq(pageable));
+        }
+
+        @Test
+        @DisplayName("Null area code — queries with children codes from areaService")
+        void search_nullAreaCode_queriesWithChildrenCodes() {
+            // Arrange
+            OrganizationSearchCriteria criteria = new OrganizationSearchCriteria();
+            // areaCode is null by default
+            Pageable pageable = PageRequest.of(0, 10);
+
+            AuthorizationData authData = new AuthorizationData();
+            authData.setOrganizationId(null);
+            authData.setAreaCode(null);
+            when(authorizationService.authorize()).thenReturn(authData);
+
+            when(areaService.getChildrenAreaCode(null)).thenReturn(Collections.emptyList());
+
+            Page<Organization> emptyPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+            when(organizationRepository.findByCriteria(
+                eq(Collections.emptyList()), eq(criteria), eq(null), eq(pageable)
+            )).thenReturn(emptyPage);
+
+            // Act
+            Page<OrganizationDTO> result = organizationService.search(criteria, pageable);
+
+            // Assert
+            assertThat(result.getTotalElements()).isZero();
         }
     }
 }
