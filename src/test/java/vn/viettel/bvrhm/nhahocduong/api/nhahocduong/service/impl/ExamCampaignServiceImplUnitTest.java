@@ -6,8 +6,10 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.ExamCampaignDTO;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.dto.StudentExamStatusDTO;
-import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.ExamCampaign;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.entity.*;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.mapper.ExamCampaignMapper;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamCampaignRepository;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.ExamScheduleRepository;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.repository.PatientRepository;
+import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.NotificationService;
 import vn.viettel.bvrhm.nhahocduong.api.nhahocduong.internal.service.impl.ExamCampaignServiceImpl;
 
 @DisplayName("ExamCampaignServiceImpl — Unit Tests")
@@ -31,6 +35,8 @@ class ExamCampaignServiceImplUnitTest {
   @Mock ExamCampaignRepository examCampaignRepository;
   @Mock ExamCampaignMapper examCampaignMapper;
   @Mock PatientRepository patientRepository;
+  @Mock ExamScheduleRepository examScheduleRepository;
+  @Mock NotificationService notificationService;
   @InjectMocks ExamCampaignServiceImpl service;
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -244,30 +250,41 @@ class ExamCampaignServiceImplUnitTest {
   class NotifyDentists {
 
     @Test
-    @DisplayName("Không làm gì khi campaign không tồn tại")
-    void shouldDoNothingWhenCampaignNotFound() {
-      when(patientRepository.findStudentExamStatusByCampaignId(99L)).thenReturn(Collections.emptyList());
-      when(examCampaignRepository.findById(99L)).thenReturn(Optional.empty());
+    @DisplayName("Ném 404 khi campaign không tồn tại")
+    void shouldThrowWhenCampaignNotFound() {
+      when(examCampaignRepository.findByIdAndStatus(99L, true)).thenReturn(Optional.empty());
 
-      // Không ném exception
-      assertThatNoException().isThrownBy(() -> service.notifyDentists(99L));
+      assertThatThrownBy(() -> service.notifyDentists(99L))
+          .isInstanceOf(ResponseStatusException.class)
+          .hasMessageContaining("Campaign not found with id: 99");
     }
 
     @Test
-    @DisplayName("Chỉ gửi thông báo cho học sinh chưa khám")
-    void shouldOnlyNotifyUnexaminedStudents() {
+    @DisplayName("Gửi thông báo cho bác sĩ được phân công")
+    void shouldNotifyAssignedDentists() {
       ExamCampaign campaign = campaign(1L, "Đợt Q1");
-      Object[] examinedRow = {1L, "Nguyễn Văn A", "HS001", "5A", "0909", 10L, java.sql.Date.valueOf(LocalDate.now()), "Trường học", "EXAMINED"};
-      Object[] notExaminedRow = {2L, "Trần Thị B", "HS002", "5B", "0909", null, null, null, "NOT_EXAMINED"};
 
-      when(patientRepository.findStudentExamStatusByCampaignId(1L)).thenReturn(List.of(examinedRow, notExaminedRow));
-      when(examCampaignRepository.findById(1L)).thenReturn(Optional.of(campaign));
+      // Tạo lịch khám với bác sĩ được phân công
+      Dentist dentist = new Dentist();
+      dentist.setUserId(10L);
+      Organization org = new Organization();
+      org.setName("Trường TH A");
+      Set<Dentist> dentistSet = new HashSet<>();
+      dentistSet.add(dentist);
+      ExamSchedule schedule = new ExamSchedule();
+      schedule.setDentists(dentistSet);
+      schedule.setOrganization(org);
+      schedule.setSchoolClass("5A");
+      schedule.setExamDate(LocalDate.of(2026, 6, 15));
 
-      // Chạy không ném exception
-      assertThatNoException().isThrownBy(() -> service.notifyDentists(1L));
-      // (Mock email - chỉ verify gọi đúng)
-      verify(patientRepository).findStudentExamStatusByCampaignId(1L);
-      verify(examCampaignRepository).findById(1L);
+      when(examCampaignRepository.findByIdAndStatus(1L, true)).thenReturn(Optional.of(campaign));
+      when(examScheduleRepository.findByCampaignIdAndStatus(1L, true)).thenReturn(List.of(schedule));
+
+      int count = service.notifyDentists(1L);
+
+      assertThat(count).isEqualTo(1);
+      verify(notificationService).createNotificationForDentist(
+          eq(10L), eq(1L), eq("Đợt Q1"), anyList());
     }
   }
 }
