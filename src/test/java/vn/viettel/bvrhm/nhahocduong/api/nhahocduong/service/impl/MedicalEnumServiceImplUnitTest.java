@@ -36,7 +36,7 @@ class MedicalEnumServiceImplUnitTest {
       assertThat(result).isNotEmpty();
     }
 
-    @Test 
+    @Test
     @DisplayName("mỗi item có code và description không null")
     void shouldHaveCodeAndDesc(){
       List<TartarConditionDTO> result = service.getListTartarCondition();
@@ -44,8 +44,35 @@ class MedicalEnumServiceImplUnitTest {
       assertThat(result)
         .allMatch(item -> item.code() != null && !item.code().isBlank(),
                   "code không được rỗng, không được null")
-        .allMatch(item -> item.description() != null && !item.description().isBlank(), 
-                  "description không được null, không được rỗng");   
+        .allMatch(item -> item.description() != null && !item.description().isBlank(),
+                  "description không được null, không được rỗng");
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // getListPlaqueCondition
+  // ──────────────────────────────────────────────
+
+  @Nested
+  @DisplayName("getListPlaqueCondition()")
+  class GetListPlaqueCondition {
+
+    @Test
+    @DisplayName("trả về list không rỗng")
+    void shouldReturnNonEmptyList() {
+      List<PlaqueConditionDTO> result = service.getListPlaqueCondition();
+
+      assertThat(result).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("mỗi item có code và description không null")
+    void shouldHaveCodeAndDesc(){
+      List<PlaqueConditionDTO> result = service.getListPlaqueCondition();
+
+      assertThat(result)
+        .allMatch(item -> item.code() != null && !item.code().isBlank())
+        .allMatch(item -> item.description() != null && !item.description().isBlank());
     }
   }
 

@@ -150,12 +150,60 @@ class SseNotificationServiceTest {
     }
 
     @Test
+    @DisplayName("Không throw khi có emitter active")
+    void shouldNotThrowWhenHasEmitters() {
+      service.subscribe("42");
+
+      assertThatNoException().isThrownBy(() -> service.sendHeartbeat());
+    }
+
+    @Test
     @DisplayName("Cleanup ticket hết hạn")
     void shouldCleanupExpiredTickets() {
-      // Tạo ticket nhưng không consume → heartbeat sẽ dọn nếu quá 30s
       String ticket = service.createTicket("42");
-      // Ticket còn valid ngay sau khi tạo
       assertThat(service.consumeTicket(ticket)).isEqualTo("42");
+    }
+  }
+
+  // ─── TC-06: sendNotification after subscribe ──────────────────────────────
+
+  @Nested
+  @DisplayName("TC-06 sendNotification after subscribe")
+  class SendAfterSubscribe {
+
+    @Test
+    @DisplayName("Gửi đến user có subscriber không throw")
+    void shouldSendToSubscribedUser() {
+      service.subscribe("42");
+      service.subscribe("42"); // 2 connections
+
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Test", "Hello", "TYPE"));
+    }
+
+    @Test
+    @DisplayName("Gửi đến user không có subscriber không throw")
+    void shouldSendToUnsubscribedUser() {
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("99", "Test", "Hello", "TYPE"));
+    }
+  }
+
+  // ─── TC-07: Multi-user ────────────────────────────────────────────────────
+
+  @Nested
+  @DisplayName("TC-07 Multi-user scenarios")
+  class MultiUser {
+
+    @Test
+    @DisplayName("Chỉ user được subscribe mới nhận được notification")
+    void onlySubscribedUserGetsNotification() {
+      service.subscribe("42");
+
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("42", "Only 42", "Gets this", "TYPE"));
+      assertThatNoException().isThrownBy(() ->
+          service.sendNotification("99", "Nobody", "Gets this", "TYPE"));
     }
   }
 }
