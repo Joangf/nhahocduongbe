@@ -62,7 +62,7 @@ services:
       - POSTGRES_PASSWORD=nhahocduong
     volumes:
       - nhd-db-data:/var/lib/postgresql/data
-      - ./backup_nhahocduong.sql:/docker-entrypoint-initdb.d/backup_nhahocduong.sql
+      - ./nhahocduong_backup03.sql:/docker-entrypoint-initdb.d/nhahocduong_backup03.sql
   cache:
     image: redis:alpine
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-password}"]

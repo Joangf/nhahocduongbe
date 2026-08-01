@@ -263,7 +263,7 @@ class ExamServiceImplTest {
             ExamDTO expectedDTO = createMockExamDTO();
             expectedDTO.setTeethRecordId(100L);
 
-            when(examRepository.getReferenceById(1L)).thenReturn(exam);
+            when(examRepository.findById(1L)).thenReturn(Optional.of(exam));
             when(teethRecordRepository.getReferenceById(100L)).thenReturn(teethRecord);
             when(examRepository.save(exam)).thenReturn(updatedExam);
             when(examMapper.toDto(updatedExam)).thenReturn(expectedDTO);

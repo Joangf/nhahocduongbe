@@ -36,7 +36,10 @@ public interface ExamMapper {
     @Mapping(target = "dentistName", source = "dentist.title"),
     @Mapping(target = "organizationId", source = "organization.id"),
     @Mapping(target = "organizationName", source = "organization.name"),
-    @Mapping(target = "campaignId", source = "campaign.id")
+    @Mapping(target = "campaignId", source = "campaign.id"),
+    @Mapping(target = "teethRecordId", source = "teethRecord.id"),
+    @Mapping(target = "plaqueRecordId", source = "plaqueRecord.id"),
+    @Mapping(target = "tartarRecordId", source = "tartarRecord.id")
   })
   ExamDTO toDto(Exam exam);
 
