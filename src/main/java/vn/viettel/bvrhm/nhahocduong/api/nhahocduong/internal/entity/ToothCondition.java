@@ -20,5 +20,5 @@ public class ToothCondition {
   private List<ToothSide> locations;
 
   // Điều trị
-  private ToothTreatment treatment = ToothTreatment.CROWN;
+  private ToothTreatment treatment;
 }

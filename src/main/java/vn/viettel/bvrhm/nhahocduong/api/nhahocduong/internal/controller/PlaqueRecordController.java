@@ -25,7 +25,20 @@ public class PlaqueRecordController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestBody PlaqueRecordDTO plagueRecordDTO) {
-
+    if (plagueRecordDTO.id() == null) {
+      var existingExam = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
+      if (existingExam != null && existingExam.getPlaqueRecordId() != null) {
+        plagueRecordDTO =
+            new PlaqueRecordDTO(
+                existingExam.getPlaqueRecordId(),
+                plagueRecordDTO._17_16n(),
+                plagueRecordDTO._11n(),
+                plagueRecordDTO._26_27n(),
+                plagueRecordDTO._47_46t(),
+                plagueRecordDTO._31n(),
+                plagueRecordDTO._36_37t());
+      }
+    }
     PlaqueRecordDTO plaqueRecordDTO = plaqueRecordService.upsertPlaqueRecord(plagueRecordDTO);
     examService.updatePlaqueRecordIdOfExam(examId, plaqueRecordDTO.id());
     return plaqueRecordDTO;

@@ -59,19 +59,19 @@ public class Exam extends BaseEntity {
   @Column(name = "date")
   private LocalDate date;
 
+  @Column(name = "use_vecni_flour")
+  private Boolean useVecniFlour;
+
   @OneToOne
   @JoinColumn(name = "teeth_record_id")
-  @Where(clause = "status = true")
   private TeethRecord teethRecord;
 
   @OneToOne
   @JoinColumn(name = "plaque_record_id")
-  @Where(clause = "status = true")
   private PlaqueRecord plaqueRecord;
 
   @OneToOne
   @JoinColumn(name = "tartar_record_id")
-  @Where(clause = "status = true")
   private TartarRecord tartarRecord;
 
   @ManyToMany()

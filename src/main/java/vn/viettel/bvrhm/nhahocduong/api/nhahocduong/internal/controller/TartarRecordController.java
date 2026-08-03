@@ -25,7 +25,20 @@ public class TartarRecordController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestBody TartarRecordDTO tartarRecordDTO) {
-
+    if (tartarRecordDTO.id() == null) {
+      var existingExam = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
+      if (existingExam != null && existingExam.getTartarRecordId() != null) {
+        tartarRecordDTO =
+            new TartarRecordDTO(
+                existingExam.getTartarRecordId(),
+                tartarRecordDTO._17_16n(),
+                tartarRecordDTO._11n(),
+                tartarRecordDTO._26_27n(),
+                tartarRecordDTO._47_46t(),
+                tartarRecordDTO._31n(),
+                tartarRecordDTO._36_37t());
+      }
+    }
     TartarRecordDTO savedTartarRecordDTO = tartarRecordService.upsertTartarRecord(tartarRecordDTO);
     examService.updateTartarRecordIdOfExam(examId, savedTartarRecordDTO.id());
     return savedTartarRecordDTO;

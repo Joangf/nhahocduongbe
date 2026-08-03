@@ -36,6 +36,12 @@ public class TeethRecordController {
       @PathVariable("patientId") Long patientId,
       @PathVariable("examId") Long examId,
       @RequestBody TeethRecordDTO teethRecordDTO) {
+    if (teethRecordDTO.id() == null) {
+      var existingExam = examService.getExamByIdAndPatientIdAndStatus(examId, patientId, true);
+      if (existingExam != null && existingExam.getTeethRecordId() != null) {
+        teethRecordDTO = new TeethRecordDTO(existingExam.getTeethRecordId(), teethRecordDTO.record());
+      }
+    }
     TeethRecordDTO createdDto = teethRecordService.upsertTeethRecord(teethRecordDTO);
     examService.updateTeethRecordIdOfExam(examId, createdDto.id());
     return createdDto;

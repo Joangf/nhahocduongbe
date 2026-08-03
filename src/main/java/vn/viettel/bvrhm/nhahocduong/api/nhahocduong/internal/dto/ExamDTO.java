@@ -25,6 +25,7 @@ public class ExamDTO implements Serializable {
   private String year;
   private Long profileNumber;
   private LocalDate date;
+  private Boolean useVecniFlour;
   private Long teethRecordId;
   private Long plaqueRecordId;
   private Long tartarRecordId;

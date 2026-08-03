@@ -79,7 +79,7 @@ public class ExamServiceImpl implements ExamService {
       backoff = @Backoff(delay = 300))
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public ExamDTO updateTeethRecordIdOfExam(Long examId, Long teethRecordId) {
-    Exam exam = examRepository.getReferenceById(examId);
+    Exam exam = examRepository.findById(examId).orElseThrow(NoSuchElementException::new);
     exam.setTeethRecord(teethRecordRepository.getReferenceById(teethRecordId));
     var updated = examRepository.save(exam);
     return examMapper.toDto(updated);
